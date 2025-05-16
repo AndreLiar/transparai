@@ -1,0 +1,11 @@
+# Ignore all environment configuration and service account secrets
+*.env
+.env.*
+.env
+config/*.json
+*.json
+
+# Node.js dependencies and build artifacts (just to be safe)
+node_modules/
+dist/
+build/
