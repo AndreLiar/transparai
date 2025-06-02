@@ -1,5 +1,6 @@
 // src/components/AuthComponents/MagicLink/MagicLinkMessage.tsx
 import React from 'react';
+import './magic-link.css';
 
 interface Props {
   message?: string;
@@ -8,8 +9,8 @@ interface Props {
 
 const MagicLinkMessage: React.FC<Props> = ({ message, error }) => (
   <>
-    {message && <div className="alert alert-success text-center">{message}</div>}
-    {error && <div className="alert alert-danger text-center">{error}</div>}
+    {message && <div className="alert success">{message}</div>}
+    {error && <div className="alert error">{error}</div>}
   </>
 );
 

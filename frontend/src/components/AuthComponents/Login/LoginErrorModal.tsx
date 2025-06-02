@@ -1,6 +1,6 @@
-// src/components/AuthComponents/LoginErrorModal.tsx
+// src/components/AuthComponents/Login/LoginErrorModal.tsx
 import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import './LoginErrorModal.css';
 
 interface LoginErrorModalProps {
   show: boolean;
@@ -9,16 +9,23 @@ interface LoginErrorModalProps {
 }
 
 const LoginErrorModal: React.FC<LoginErrorModalProps> = ({ show, onClose, message }) => {
+  if (!show) return null;
+
   return (
-    <Modal show={show} onHide={onClose} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>Erreur de connexion</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>{message}</Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>Fermer</Button>
-      </Modal.Footer>
-    </Modal>
+    <div className="modal-overlay">
+      <div className="modal-box">
+        <div className="modal-header">
+          <h3 className="modal-title">Erreur de connexion</h3>
+          <button className="modal-close" onClick={onClose}>&times;</button>
+        </div>
+        <div className="modal-body">
+          <p>{message}</p>
+        </div>
+        <div className="modal-footer">
+          <button className="modal-button" onClick={onClose}>Fermer</button>
+        </div>
+      </div>
+    </div>
   );
 };
 

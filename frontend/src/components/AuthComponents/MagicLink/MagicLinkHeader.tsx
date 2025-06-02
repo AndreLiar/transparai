@@ -2,17 +2,16 @@
 // src/components/AuthComponents/MagicLink/MagicLinkHeader.tsx
 import React from 'react';
 import logo from '@/assets/logo.png';
-
+import './magic-link.css';
 const MagicLinkHeader: React.FC = () => (
-  <div className="text-center mb-4">
+  <div className="header">
     <img
       src={logo}
       alt="TransparAI logo"
-      style={{ height: '48px', maxWidth: '160px', objectFit: 'contain' }}
-      className="mb-2"
+      className="header-logo"
     />
-    <h2 className="text-primary fw-bold">Connexion par lien magique 🔐</h2>
-    <p className="text-muted mb-0">Recevez un lien sécurisé dans votre boîte email</p>
+    <h2 className="header-title">Connexion par lien magique 🔐</h2>
+    <p className="header-subtitle">Recevez un lien sécurisé dans votre boîte email</p>
   </div>
 );
 

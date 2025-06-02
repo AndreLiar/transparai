@@ -1,4 +1,4 @@
-//src/screens/AuthenticationsPages/Signup.tsx
+// src/screens/AuthenticationsPages/Signup.tsx
 import React, { useState } from 'react';
 import { auth } from '@/configFirebase/Firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
@@ -9,6 +9,7 @@ import SignupForm from '@/components/AuthComponents/Signup/SignupForm';
 import VerificationModal from '@/components/AuthComponents/Signup/VerificationModal';
 import { validatePassword } from '@/utils/validatePassword';
 import { validateEmail } from '@/utils/validateEmail';
+import './auth.css';
 
 const Signup: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -49,12 +50,12 @@ const Signup: React.FC = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100">
-      <div className="card shadow-sm border-0 rounded-4 p-4" style={{ maxWidth: 500, width: '100%' }}>
-        <div className="text-center mb-3">
-          <img src={logo} alt="TransparAI Logo" style={{ height: '48px' }} className="mb-2" />
-          <h2 className="text-primary fw-bold">Créer un compte</h2>
-          <p className="text-muted mb-0">L’IA qui éclaire vos conditions d’abonnement.</p>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <div className="auth-logo-section">
+          <img src={logo} alt="TransparAI Logo" />
+          <h2>Créer un compte</h2>
+          <p>L’IA qui éclaire vos conditions d’abonnement.</p>
         </div>
 
         <SignupForm

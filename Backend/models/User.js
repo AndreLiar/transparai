@@ -15,20 +15,25 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    index: true, // ✅ for performance
+    index: true
   },
   email: {
     type: String,
     required: true,
-    default: '', // will be updated later if needed
+    default: ''
   },
   plan: {
     type: String,
-    default: 'starter',
+    enum: ['starter', 'standard', 'premium'],
+    default: 'starter'
   },
   dailyQuota: {
     used: { type: Number, default: 0 },
-    limit: { type: Number, default: 10 } // ✔️ fallback for starter
+    limit: { type: Number, default: 2 } // default for 'starter'
+  },
+  lastQuotaReset: {
+    type: Date,
+    default: new Date()
   },
   analyses: [analysisSchema],
 });

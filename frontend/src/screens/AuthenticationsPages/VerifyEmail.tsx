@@ -1,9 +1,10 @@
-//src/screens/AuthenticationsPages/VerifyEmail.tsx
+// src/screens/AuthenticationsPages/VerifyEmail.tsx
 import React, { useState } from 'react';
 import { sendEmailVerification } from 'firebase/auth';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import logo from '@/assets/logo.png';
+import './auth.css';
 
 const VerifyEmail: React.FC = () => {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ const VerifyEmail: React.FC = () => {
     try {
       await sendEmailVerification(user);
       setMessage("📩 Lien de vérification renvoyé !");
-    } catch (err: any) {
+    } catch {
       setError("❌ Erreur lors de l’envoi de l’email.");
     }
   };
@@ -32,7 +33,7 @@ const VerifyEmail: React.FC = () => {
     if (!user) return;
     setLoading(true);
     try {
-      await user.reload(); // 🔄 Refresh user's email verification status
+      await user.reload();
       if (user.emailVerified) {
         navigate('/dashboard');
       } else {
@@ -45,38 +46,25 @@ const VerifyEmail: React.FC = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100">
-      <div className="card shadow-sm border-0 rounded-4 p-4 w-100" style={{ maxWidth: 600 }}>
-        <div className="text-center mb-3">
-          <img
-            src={logo}
-            alt="TransparAI Logo"
-            style={{ height: '48px', maxWidth: '160px', objectFit: 'contain' }}
-            className="mb-2"
-          />
-          <h2 className="text-primary fw-bold">Vérification email requise</h2>
-          <p className="text-muted">
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <div className="auth-logo-section">
+          <img src={logo} alt="TransparAI Logo" />
+          <h2>Vérification email requise</h2>
+          <p>
             Un email de vérification a été envoyé à <strong>{user?.email}</strong>.
             Merci de cliquer sur le lien dans votre boîte de réception.
           </p>
         </div>
 
-        {message && <div className="alert alert-success text-center">{message}</div>}
-        {error && <div className="alert alert-danger text-center">{error}</div>}
+        {message && <div className="alert success">{message}</div>}
+        {error && <div className="alert error">{error}</div>}
 
-        <div className="text-center mt-4 d-flex justify-content-center gap-3 flex-wrap">
-          <button
-            onClick={handleResend}
-            className="btn btn-outline-primary"
-            disabled={loading}
-          >
+        <div className="auth-button-group">
+          <button onClick={handleResend} disabled={loading} className="btn outline">
             Renvoyer le lien
           </button>
-          <button
-            onClick={handleCheckAndGo}
-            className="btn btn-success"
-            disabled={loading}
-          >
+          <button onClick={handleCheckAndGo} disabled={loading} className="btn primary">
             {loading ? 'Vérification...' : 'Accéder au tableau de bord'}
           </button>
         </div>

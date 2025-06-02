@@ -11,12 +11,18 @@ const analyzeText = async (req, res) => {
     }
 
     const result = await processAnalysis({ uid, email, text, source });
-    res.json(result);
+
+    if (result.quotaReached) {
+      return res.status(429).json(result); // ⛔ Quota exceeded
+    }
+
+    return res.json(result);
   } catch (err) {
     console.error('❌ Erreur analyse :', err.message);
-    res.status(500).json({ message: 'Erreur serveur' });
+    res.status(500).json({ message: err.message || 'Erreur serveur' });
   }
 };
 
 module.exports = { analyzeText };
+
 

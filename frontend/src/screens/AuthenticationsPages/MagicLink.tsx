@@ -1,4 +1,5 @@
 //src/screens/AuthenticationsPages/MagicLink.tsx
+// src/screens/AuthenticationsPages/MagicLink.tsx
 import React, { useEffect, useState } from 'react';
 import {
   isSignInWithEmailLink,
@@ -13,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import MagicLinkHeader from '@/components/AuthComponents/MagicLink/MagicLinkHeader';
 import MagicLinkForm from '@/components/AuthComponents/MagicLink/MagicLinkForm';
 import MagicLinkMessage from '@/components/AuthComponents/MagicLink/MagicLinkMessage';
+import './auth.css';
 
 const MagicLink: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -25,7 +27,7 @@ const MagicLink: React.FC = () => {
     const completeMagicLogin = async () => {
       if (isSignInWithEmailLink(auth, window.location.href)) {
         const storedEmail = window.localStorage.getItem('emailForSignIn');
-        let emailToUse = storedEmail || window.prompt('Entrez votre email pour confirmer');
+        const emailToUse = storedEmail || window.prompt('Entrez votre email pour confirmer');
 
         if (!emailToUse) {
           setError("Email requis pour terminer la connexion.");
@@ -33,7 +35,7 @@ const MagicLink: React.FC = () => {
         }
 
         try {
-          await setPersistence(auth, browserSessionPersistence); // ✅ secure session
+          await setPersistence(auth, browserSessionPersistence);
           await signInWithEmailLink(auth, emailToUse, window.location.href);
           window.localStorage.removeItem('emailForSignIn');
           navigate('/dashboard');
@@ -52,13 +54,11 @@ const MagicLink: React.FC = () => {
     setError('');
     setLoading(true);
 
-    const actionCodeSettings = {
-      url: `${window.location.origin}/magic-link`,
-      handleCodeInApp: true
-    };
-
     try {
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      await sendSignInLinkToEmail(auth, email, {
+        url: `${window.location.origin}/magic-link`,
+        handleCodeInApp: true
+      });
       window.localStorage.setItem('emailForSignIn', email);
       setMessage("📩 Lien envoyé ! Vérifiez votre boîte de réception.");
     } catch {
@@ -69,8 +69,8 @@ const MagicLink: React.FC = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100">
-      <div className="card shadow-sm border-0 rounded-4 p-4" style={{ maxWidth: 480, width: '100%' }}>
+    <div className="auth-wrapper">
+      <div className="auth-card">
         <MagicLinkHeader />
         <MagicLinkMessage message={message} error={error} />
         <MagicLinkForm

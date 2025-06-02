@@ -1,16 +1,18 @@
+//src/components/AuthComponents/Login/LoginHeader.tsx
+// src/components/AuthComponents/Login/LoginHeader.tsx
 import React from 'react';
 import logo from '@/assets/logo.png';
+import './LoginHeader.css';
 
 const LoginHeader: React.FC = () => (
-  <div className="text-center mb-4">
+  <div className="login-header">
     <img
       src={logo}
       alt="TransparAI logo"
-      style={{ height: '48px', maxWidth: '160px', objectFit: 'contain' }}
-      className="mb-2"
+      className="login-logo"
     />
-    <h2 className="text-primary fw-bold">Connexion</h2>
-    <p className="text-muted mb-0">L’IA qui éclaire vos conditions d’abonnement.</p>
+    <h2 className="login-title">Connexion</h2>
+    <p className="login-subtitle">L’IA qui éclaire vos conditions d’abonnement.</p>
   </div>
 );
 

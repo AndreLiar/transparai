@@ -1,6 +1,7 @@
 //src/components/AuthComponents/SignupForm.tsx
 import React, { useState, useEffect } from 'react';
 import { validatePassword } from '@/utils/validatePassword';
+import './signup.css';
 
 export interface SignupFormProps {
   email: string;
@@ -29,13 +30,12 @@ const SignupForm: React.FC<SignupFormProps> = ({
   }, [password]);
 
   return (
-    <form onSubmit={onSubmit} className="mt-3">
-      <div className="mb-3">
-        <label htmlFor="email" className="form-label">Adresse email</label>
+    <form onSubmit={onSubmit} className="form">
+      <div className="form-group">
+        <label htmlFor="email">Adresse email</label>
         <input
           type="email"
           id="email"
-          className="form-control"
           required
           value={email}
           onChange={onChangeEmail}
@@ -43,13 +43,12 @@ const SignupForm: React.FC<SignupFormProps> = ({
         />
       </div>
 
-      <div className="mb-3">
-        <label htmlFor="password" className="form-label">Mot de passe</label>
+      <div className="form-group">
+        <label htmlFor="password">Mot de passe</label>
         <div className="input-group">
           <input
             type={showPassword ? 'text' : 'password'}
             id="password"
-            className="form-control"
             required
             value={password}
             onChange={onChangePassword}
@@ -57,25 +56,25 @@ const SignupForm: React.FC<SignupFormProps> = ({
           />
           <button
             type="button"
-            className="btn btn-outline-secondary"
+            className="btn-secondary"
             onClick={() => setShowPassword((prev) => !prev)}
           >
             {showPassword ? 'Cacher' : 'Voir'}
           </button>
         </div>
         {password && passwordFeedback && (
-          <div className="form-text text-danger">{passwordFeedback}</div>
+          <div className="form-feedback error">{passwordFeedback}</div>
         )}
       </div>
 
-      {error && <div className="alert alert-danger text-center">{error}</div>}
+      {error && <div className="alert error">{error}</div>}
 
-      <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+      <button type="submit" className="btn-primary" disabled={loading}>
         {loading ? 'Création...' : "S'inscrire"}
       </button>
 
-      <p className="text-center mt-3 mb-0">
-        Déjà inscrit ? <a href="/login" className="text-decoration-none">Se connecter</a>
+      <p className="link-text">
+        Déjà inscrit ? <a href="/login">Se connecter</a>
       </p>
     </form>
   );

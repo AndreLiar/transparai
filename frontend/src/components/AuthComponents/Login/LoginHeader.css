@@ -1,0 +1,27 @@
+/* src/components/AuthComponents/Login/LoginHeader.css */
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .login-logo {
+    height: 48px;
+    max-width: 160px;
+    object-fit: contain;
+    margin-bottom: 0.75rem;
+  }
+  
+  .login-title {
+    font-size: 1.75rem;
+    color: #4f46e5; /* Tailwind Indigo-600 */
+    font-weight: 700;
+    margin: 0;
+  }
+  
+  .login-subtitle {
+    font-size: 0.95rem;
+    color: #6b7280; /* Tailwind Gray-500 */
+    margin: 0.25rem 0 0;
+  }
+  

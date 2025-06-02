@@ -1,27 +1,58 @@
-import React, { useState } from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { analyzeCGA } from '@/services/analyze';
+import { fetchDashboardData } from '@/services/InfoService';
 import Tesseract from 'tesseract.js';
 import * as pdfjsLib from 'pdfjs-dist';
+import AnalyzeForm from '@/components/Analyze/AnalyzeForm';
+import QuotaDisplay from '@/components/Analyze/QuotaDisplay';
+import ResultDisplay from '@/components/Analyze/ResultDisplay';
+
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.mjs';
 
-// PDF.js types
 type TextItem = { str: string };
 type TextContent = { items: Array<TextItem | { type: string }> };
 
 const Analyze: React.FC = () => {
   const { user } = useAuth();
-  const [text, setText] = useState('');
-  const [source, setSource] = useState<'upload' | 'ocr'>('upload');
-  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [ocrStatus, setOcrStatus] = useState('');
   const [error, setError] = useState('');
-  const [result, setResult] = useState<{
-    summary: string;
-    score: string;
-    clauses: string[];
-  } | null>(null);
+  const [result, setResult] = useState<{ summary: string; score: string; clauses: string[] } | null>(null);
+  const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
+  const [countdown, setCountdown] = useState('');
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const midnight = new Date();
+      midnight.setHours(24, 0, 0, 0);
+      const diff = midnight.getTime() - now.getTime();
+      const h = Math.floor(diff / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      setCountdown(`${h}h ${m}min`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const loadQuota = async () => {
+      if (!user) return;
+      try {
+        const token = await user.getIdToken(true);
+        const infos = await fetchDashboardData(token);
+        setQuota(infos.quota);
+      } catch (err) {
+        console.error('Erreur chargement quota:', err);
+      }
+    };
+    loadQuota();
+  }, [user]);
 
   const extractTextFromPDF = async (pdfFile: File): Promise<string> => {
     setOcrStatus('📄 Extraction du texte natif du PDF...');
@@ -49,9 +80,8 @@ const Analyze: React.FC = () => {
     return data.text;
   };
 
-  const handleAnalyze = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
+  const handleAnalyze = async (text: string, source: 'upload' | 'ocr', file: File | null) => {
+    if (!user || (quota && quota.limit !== -1 && quota.used >= quota.limit)) return;
 
     setError('');
     setResult(null);
@@ -67,7 +97,6 @@ const Analyze: React.FC = () => {
             analysisText = await extractTextFromPDF(file);
             if (!analysisText.trim()) throw new Error('PDF vide');
           } catch {
-            console.warn('PDF extraction échouée, passage à OCR...');
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
             let ocrText = '';
@@ -82,7 +111,6 @@ const Analyze: React.FC = () => {
                 canvasContext: canvas.getContext('2d')!,
                 viewport,
               }).promise;
-
               const dataUrl = canvas.toDataURL('image/png');
               ocrText += '\n' + (await extractTextWithOCR(dataUrl));
             }
@@ -92,13 +120,14 @@ const Analyze: React.FC = () => {
         } else {
           analysisText = await extractTextWithOCR(file);
         }
-
-        setText(analysisText); // optional preview
       }
 
       const token = await user.getIdToken(true);
       const response = await analyzeCGA(token, analysisText, source);
       setResult(response);
+
+      const infos = await fetchDashboardData(token);
+      setQuota(infos.quota);
     } catch (err: any) {
       setError(err.message || 'Erreur inconnue');
     } finally {
@@ -110,66 +139,29 @@ const Analyze: React.FC = () => {
   return (
     <div className="container mt-5">
       <h2 className="mb-4">📑 Analyse de CGA</h2>
-      <form onSubmit={handleAnalyze}>
-        <div className="mb-3">
-          <label className="form-label">Source</label>
-          <select
-            className="form-select"
-            value={source}
-            onChange={(e) => setSource(e.target.value as 'upload' | 'ocr')}
-          >
-            <option value="upload">Texte (copier-coller)</option>
-            <option value="ocr">OCR (image/PDF)</option>
-          </select>
-        </div>
 
-        {source === 'upload' && (
-          <div className="mb-3">
-            <label className="form-label">Texte CGA à analyser</label>
-            <textarea
-              className="form-control"
-              rows={6}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              required
-            />
-          </div>
-        )}
+      {quota && (
+        <>
+          <QuotaDisplay used={quota.used} limit={quota.limit} countdown={countdown} />
+          {quota.limit !== -1 && quota.used >= quota.limit && (
+            <div className="alert alert-warning">
+              🚫 Vous avez atteint votre quota d'analyses pour aujourd'hui. Veuillez attendre la réinitialisation à minuit ou <a href="/upgrade">mettre à niveau</a> votre plan.
+            </div>
+          )}
+        </>
+      )}
 
-        {source === 'ocr' && (
-          <div className="mb-3">
-            <label className="form-label">📄 Fichier image ou PDF</label>
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              className="form-control"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              required
-            />
-          </div>
-        )}
-
-        {ocrStatus && <div className="alert alert-info">{ocrStatus}</div>}
-
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Analyse en cours...' : 'Lancer l’analyse'}
-        </button>
-      </form>
+      <AnalyzeForm
+        onSubmit={handleAnalyze}
+        loading={loading}
+        ocrStatus={ocrStatus}
+        quotaExceeded={quota ? quota.limit !== -1 && quota.used >= quota.limit : false}
+      />
 
       {error && <div className="alert alert-danger mt-4">{error}</div>}
 
       {result && (
-        <div className="mt-4">
-          <h5>✅ Résultat</h5>
-          <p><strong>Résumé :</strong> {result.summary}</p>
-          <p><strong>Score :</strong> {result.score}</p>
-          <p><strong>Clauses :</strong></p>
-          <ul>
-            {result.clauses.map((clause, i) => (
-              <li key={i}>{clause}</li>
-            ))}
-          </ul>
-        </div>
+        <ResultDisplay summary={result.summary} score={result.score} clauses={result.clauses} />
       )}
     </div>
   );
