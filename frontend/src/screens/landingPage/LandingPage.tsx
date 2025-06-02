@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import './LandingPage.css';
 
 import Header from '@/components/LandingComponents/Header';
 import Features from '@/components/LandingComponents/Features';
@@ -22,33 +23,25 @@ const fadeInUp = {
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="bg-light text-dark min-vh-100 d-flex flex-column">
-
+    <div className="landing-wrapper">
       <Header />
 
       {/* Hero Section */}
-      <motion.section
-        className="bg-white py-5 text-center"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container">
-          <h1 className="display-5 fw-bold mb-3">L’IA qui éclaire vos CGA</h1>
-          <p className="lead">Analysez vos conditions d’abonnement avec transparence. Résumés, score, pièges détectés.</p>
-          <div className="d-flex justify-content-center flex-wrap gap-3 mt-4">
-            <Link to="/analyze" className="btn btn-primary px-4">Analyser un CGA</Link>
-            <Link to="/signup" className="btn btn-outline-secondary px-4">Essayer gratuitement</Link>
+      <motion.section className="hero-section" {...fadeInUp}>
+        <div className="hero-content">
+          <h1>L’IA qui éclaire vos CGA</h1>
+          <p className="subtitle">Analysez vos conditions d’abonnement avec transparence. Résumés, score, pièges détectés.</p>
+          <div className="hero-buttons">
+            <Link to="/analyze" className="btn primary">Analyser un CGA</Link>
+            <Link to="/signup" className="btn outline">Essayer gratuitement</Link>
           </div>
         </div>
       </motion.section>
 
-      {/* Features Section */}
       <motion.div {...fadeInUp}>
         <Features />
       </motion.div>
 
-      {/* AI Analysis Section */}
       <motion.div {...fadeInUp}>
         <FeatureSection
           title="Analyse intelligente de documents"
@@ -59,21 +52,18 @@ const LandingPage: React.FC = () => {
         />
       </motion.div>
 
-      {/* Transparency Score Section */}
       <motion.div {...fadeInUp}>
         <FeatureSection
           title="Score de transparence"
           description="Chaque CGA analysé obtient un score de clarté (ex: A+, 95/100) basé sur sa lisibilité, ses clauses critiques, et sa transparence globale."
           image={featureScore}
-          bg="bg-light"
           reverse
           ctaText="Créer un compte"
           ctaLink="/signup"
-          ctaVariant="outline-primary"
+          ctaVariant="outline"
         />
       </motion.div>
 
-      {/* Clause Detection Section */}
       <motion.div {...fadeInUp}>
         <FeatureSection
           title="Détection des clauses abusives"
@@ -81,22 +71,15 @@ const LandingPage: React.FC = () => {
           image={featureShield}
           ctaText="Protégez-vous maintenant"
           ctaLink="/signup"
-          ctaVariant="outline-danger"
+          ctaVariant="outline"
         />
       </motion.div>
 
-      {/* Pricing */}
       <motion.div {...fadeInUp}>
         <Pricing />
       </motion.div>
 
-      {/* Footer */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        viewport={{ once: true }}
-      >
+      <motion.div {...fadeInUp}>
         <Footer />
       </motion.div>
     </div>
@@ -104,3 +87,4 @@ const LandingPage: React.FC = () => {
 };
 
 export default LandingPage;
+

@@ -1,25 +1,39 @@
 //src/components/LandingComponents/Header.tsx
 
-import React from 'react';
+// src/components/LandingComponents/Header.tsx
+// src/components/LandingComponents/Header.tsx
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '@/assets/logo.png';
+import './Header.css';
 
-const Header: React.FC = () => (
-  <header className="container py-2 d-flex justify-content-between align-items-center">
-    <div className="d-flex align-items-center">
-      <img
-        src={logo}
-        alt="TransparAI logo"
-        style={{ height: '48px', maxWidth: '160px', objectFit: 'contain' }}
-        className="me-2"
-      />
-      <span className="fs-5 fw-bold">TransparAI</span>
-    </div>
-    <div>
-      <Link to="/login" className="btn btn-outline-primary me-2 btn-sm">Connexion</Link>
-      <Link to="/signup" className="btn btn-primary btn-sm">S’inscrire</Link>
-    </div>
-  </header>
-);
+const Header: React.FC = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <header className="main-header">
+      <div className="header-container">
+        <div className="logo-section">
+          <img src={logo} alt="TransparAI" />
+          <span className="logo-text">TransparAI</span>
+        </div>
+
+        <button
+          className="menu-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          ☰
+        </button>
+
+        <nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
+          <Link to="/login" className="btn outline" onClick={() => setMenuOpen(false)}>Connexion</Link>
+          <Link to="/signup" className="btn primary" onClick={() => setMenuOpen(false)}>S’inscrire</Link>
+        </nav>
+      </div>
+    </header>
+  );
+};
 
 export default Header;
+
