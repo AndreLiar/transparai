@@ -6,9 +6,11 @@ import { analyzeCGA } from '@/services/analyze';
 import { fetchDashboardData } from '@/services/InfoService';
 import Tesseract from 'tesseract.js';
 import * as pdfjsLib from 'pdfjs-dist';
+import Sidebar from '@/components/Layout/Sidebar';
 import AnalyzeForm from '@/components/Analyze/AnalyzeForm';
 import QuotaDisplay from '@/components/Analyze/QuotaDisplay';
 import ResultDisplay from '@/components/Analyze/ResultDisplay';
+import './Analyze.css'; // Optional custom styles
 
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.mjs';
 
@@ -23,6 +25,7 @@ const Analyze: React.FC = () => {
   const [result, setResult] = useState<{ summary: string; score: string; clauses: string[] } | null>(null);
   const [quota, setQuota] = useState<{ used: number; limit: number } | null>(null);
   const [countdown, setCountdown] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -107,10 +110,7 @@ const Analyze: React.FC = () => {
               const canvas = document.createElement('canvas');
               canvas.width = viewport.width;
               canvas.height = viewport.height;
-              await page.render({
-                canvasContext: canvas.getContext('2d')!,
-                viewport,
-              }).promise;
+              await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
               const dataUrl = canvas.toDataURL('image/png');
               ocrText += '\n' + (await extractTextWithOCR(dataUrl));
             }
@@ -137,32 +137,34 @@ const Analyze: React.FC = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="mb-4">📑 Analyse de CGA</h2>
+    <div className="dashboard-layout">
+      <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      <div className="dashboard-main">
+        <h2 className="mb-4">📑 Analyse de CGA</h2>
 
-      {quota && (
-        <>
-          <QuotaDisplay used={quota.used} limit={quota.limit} countdown={countdown} />
-          {quota.limit !== -1 && quota.used >= quota.limit && (
-            <div className="alert alert-warning">
-              🚫 Vous avez atteint votre quota d'analyses pour aujourd'hui. Veuillez attendre la réinitialisation à minuit ou <a href="/upgrade">mettre à niveau</a> votre plan.
-            </div>
-          )}
-        </>
-      )}
+        {quota && (
+          <>
+            <QuotaDisplay used={quota.used} limit={quota.limit} countdown={countdown} />
+            {quota.limit !== -1 && quota.used >= quota.limit && (
+              <div className="alert alert-warning">
+                🚫 Quota atteint. Veuillez patienter jusqu’à minuit ou <a href="/upgrade">mettre à niveau</a>.
+              </div>
+            )}
+          </>
+        )}
 
-      <AnalyzeForm
-        onSubmit={handleAnalyze}
-        loading={loading}
-        ocrStatus={ocrStatus}
-        quotaExceeded={quota ? quota.limit !== -1 && quota.used >= quota.limit : false}
-      />
+        <AnalyzeForm
+          onSubmit={handleAnalyze}
+          loading={loading}
+          ocrStatus={ocrStatus}
+          quotaExceeded={quota ? quota.limit !== -1 && quota.used >= quota.limit : false}
+        />
 
-      {error && <div className="alert alert-danger mt-4">{error}</div>}
+        {error && <div className="alert alert-danger mt-4">{error}</div>}
 
-      {result && (
-        <ResultDisplay summary={result.summary} score={result.score} clauses={result.clauses} />
-      )}
+        {result && <ResultDisplay summary={result.summary} score={result.score} clauses={result.clauses} />}
+      </div>
     </div>
   );
 };

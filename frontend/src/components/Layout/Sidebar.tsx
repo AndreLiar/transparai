@@ -1,4 +1,5 @@
 // src/components/Layout/Sidebar.tsx
+// src/components/Layout/Sidebar.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
@@ -21,23 +22,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   return (
     <>
-      {/* Backdrop for mobile */}
-      <div className={`sidebar-backdrop ${isOpen ? 'visible' : ''}`} onClick={() => setIsOpen(false)}></div>
-
+      <div className={`sidebar-backdrop ${isOpen ? 'visible' : ''}`} onClick={() => setIsOpen(false)} />
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <h4>🧠 Logo</h4>
+          <span className="logo">🧠 TransparAI</span>
           <button className="close-btn mobile-only" onClick={() => setIsOpen(false)}>✖</button>
         </div>
 
         <nav className="sidebar-menu">
-          <button onClick={() => { navigate('/infos'); setIsOpen(false); }}>Infos</button>
-          <button onClick={() => { navigate('/history'); setIsOpen(false); }}>Historique</button>
-          <button onClick={() => { navigate('/analyze'); setIsOpen(false); }}>Analyze</button>
+          <button onClick={() => { navigate('/infos'); setIsOpen(false); }}>📄 Infos</button>
+          <button onClick={() => { navigate('/history'); setIsOpen(false); }}>📚 Historique</button>
+          <button onClick={() => { navigate('/analyze'); setIsOpen(false); }}>🔍 Analyse</button>
         </nav>
 
         <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout}>Déconnexion</button>
+          <button className="logout-btn" onClick={handleLogout}>🚪 Déconnexion</button>
         </div>
       </aside>
     </>
