@@ -10,7 +10,10 @@ import PrivateRoute from '@/components/guard/PrivateRoute';
 import Dashboard from '@/screens/Dashboard/Dashboard';
 import Infos from '@/screens/Infos/Infos'; // ✅ NEW
 import Analyze from '@/screens/Analyse/Analyze'; // ✅ Added
-
+import Upgrade from '@/screens/upgrade/Upgrade'; // ✅ Correct (matches folder casing)
+import UpgradeSuccess from '@/screens/upgrade/UpgradeSuccess';
+import UpgradeCancel from '@/screens/upgrade/UpgradeCancel';
+import History from '@/screens/history/History';
 
 const AppRoutes = () => {
   return (
@@ -48,7 +51,26 @@ const AppRoutes = () => {
         }
       />
       {/* Future pages: */}
-    
+    {/* ✅ Upgrade Page (Protected) */}
+      <Route
+        path="/upgrade"
+        element={
+          <PrivateRoute requireEmailVerified>
+            <Upgrade />
+          </PrivateRoute>
+        }
+      />
+
+      <Route path="/upgrade-success" element={<UpgradeSuccess />} />
+<Route path="/upgrade-cancel" element={<UpgradeCancel />} />
+<Route
+  path="/history"
+  element={
+    <PrivateRoute requireEmailVerified>
+      <History />
+    </PrivateRoute>
+  }
+/>
     </Routes>
   );
 };

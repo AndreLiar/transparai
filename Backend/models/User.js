@@ -27,9 +27,17 @@ const userSchema = new mongoose.Schema({
     enum: ['starter', 'standard', 'premium'],
     default: 'starter'
   },
+  stripeCustomerId: {
+    type: String,
+    default: null
+  },
+  stripeSubscriptionId: {
+    type: String,
+    default: null
+  },
   dailyQuota: {
     used: { type: Number, default: 0 },
-    limit: { type: Number, default: 2 } // default for 'starter'
+    limit: { type: Number, default: 2 }
   },
   lastQuotaReset: {
     type: Date,

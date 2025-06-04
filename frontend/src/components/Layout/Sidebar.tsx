@@ -24,10 +24,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     <>
       <div className={`sidebar-backdrop ${isOpen ? 'visible' : ''}`} onClick={() => setIsOpen(false)} />
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-        <div className="sidebar-header">
-          <span className="logo">🧠 TransparAI</span>
-          <button className="close-btn mobile-only" onClick={() => setIsOpen(false)}>✖</button>
-        </div>
+      <div className="sidebar-header">
+  <button 
+    className="logo" 
+    onClick={() => { 
+      navigate('/dashboard'); 
+      setIsOpen(false); // Optional: Close sidebar if needed (especially for mobile)
+    }}
+    style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+  >
+    🧠 TransparAI
+  </button>
+  <button className="close-btn mobile-only" onClick={() => setIsOpen(false)}>✖</button>
+</div>
 
         <nav className="sidebar-menu">
           <button onClick={() => { navigate('/infos'); setIsOpen(false); }}>📄 Infos</button>
