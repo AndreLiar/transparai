@@ -9,4 +9,4 @@ config/*.json
 node_modules/
 dist/
 build/
-.transparai-f544f-firebase-adminsdk-fbsvc-3f24ae6c23.json
+transparai-f544f-firebase-adminsdk-fbsvc-3f24ae6c23.json
