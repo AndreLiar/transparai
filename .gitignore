@@ -1,3 +1,13 @@
-node_modules/
-.DS_Store
+# Ignore environment files
+*.env
+.env
 frontend/.env
+config/*.json
+
+# Ignore compiled files
+node_modules/
+dist/
+build/
+
+# Ignore macOS system files
+.DS_Store
