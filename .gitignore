@@ -1,3 +1,5 @@
 node_modules/
 # frontend secrets
 frontend/.env
+# macOS system files
+.DS_Store
