@@ -6,12 +6,16 @@ import { fetchDashboardData } from '@/services/InfoService';
 import { fetchUserAnalyses, Analysis } from '@/services/historyService';
 import { exportAnalysisPdf } from '@/services/export';
 import { useNavigate } from 'react-router-dom';
+import '@/styles/Layout.css';
+import './History.css';
+
+const PAGE_SIZE = 2;
 
 const History: React.FC = () => {
   const { user } = useAuth();
   const [plan, setPlan] = useState<string | null>(null);
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
-  //const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -50,6 +54,10 @@ const History: React.FC = () => {
     }
   };
 
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedAnalyses = analyses.slice(startIndex, startIndex + PAGE_SIZE);
+  const totalPages = Math.ceil(analyses.length / PAGE_SIZE);
+
   return (
     <div className="dashboard-layout">
       <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
@@ -61,37 +69,44 @@ const History: React.FC = () => {
 
         {plan === 'starter' && (
           <div className="alert alert-info">
-            🚫 Historique réservé aux abonnés payants. <a onClick={() => navigate('/upgrade')}>Passez à un plan payant</a>.
+            🚫 Historique réservé aux abonnés payants.{' '}
+            <a onClick={() => navigate('/upgrade')}>Passez à un plan payant</a>.
           </div>
         )}
 
         {plan !== 'starter' && analyses.length === 0 && <p>Aucune analyse trouvée.</p>}
 
-        {plan !== 'starter' && analyses.length > 0 && (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Résumé</th>
-                <th>Score</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {analyses.map((a) => (
-                <tr key={a._id}>
-                  <td>{new Date(a.date).toLocaleDateString()}</td>
-                  <td>{a.summary.slice(0, 40)}...</td>
-                  <td>{a.score}</td>
-                  <td>
-                    <button className="btn btn-outline-secondary btn-sm" onClick={() => handleExport(a._id)}>
-                      Exporter en PDF
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {plan !== 'starter' && paginatedAnalyses.length > 0 && (
+          <div className="history-list">
+            {paginatedAnalyses.map((a) => (
+              <div className="history-card" key={a._id}>
+                <div className="history-card-header">
+                  <span className="history-date">{new Date(a.date).toLocaleDateString()}</span>
+                  <span className={`history-score ${a.score === 'bonnes' ? 'score-good' : a.score === 'moyennes' ? 'score-medium' : 'score-bad'}`}>
+                    {a.score}
+                  </span>
+                </div>
+                <p className="history-summary">{a.summary.slice(0, 120)}...</p>
+                <button className="btn export-btn" onClick={() => handleExport(a._id)}>
+                  📥 Exporter en PDF
+                </button>
+              </div>
+            ))}
+
+            {totalPages > 1 && (
+              <div className="pagination">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    className={`page-btn ${page === currentPage ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </main>
     </div>

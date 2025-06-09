@@ -15,6 +15,7 @@
     "firebase": "^11.6.1",
     "framer-motion": "^12.9.4",
     "pdfjs-dist": "^5.2.133",
+    "phosphor-react": "^1.4.1",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",

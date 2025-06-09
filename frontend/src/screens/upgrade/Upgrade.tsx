@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Sidebar from '@/components/Layout/Sidebar';
 import { createCheckoutSession } from '@/services/upgradeService';
+import '@/styles/Layout.css';
 
 const Upgrade: React.FC = () => {
   const { user } = useAuth();

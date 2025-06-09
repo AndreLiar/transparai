@@ -6,6 +6,7 @@ const analyzeRoutes = require('./routes/analyzeRoutes');
 const stripeRoutes = require('./routes/stripeRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 const exportRoutes = require('./routes/exportRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 connectDB();
@@ -35,6 +36,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/analyze', analyzeRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/user', userRoutes);
 
 // ✅ Health check
 app.get('/health', (req, res) => {

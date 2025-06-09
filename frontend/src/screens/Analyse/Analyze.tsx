@@ -10,7 +10,7 @@ import Sidebar from '@/components/Layout/Sidebar';
 import AnalyzeForm from '@/components/Analyze/AnalyzeForm';
 import QuotaDisplay from '@/components/Analyze/QuotaDisplay';
 import ResultDisplay from '@/components/Analyze/ResultDisplay';
-import './Analyze.css'; // Optional custom styles
+import './Analyze.css';
 
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.mjs';
 
@@ -140,8 +140,12 @@ const Analyze: React.FC = () => {
     <div className="dashboard-layout">
       <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-      <div className="dashboard-main">
-        <h2 className="mb-4">📑 Analyse de CGA</h2>
+
+      <main className="dashboard-main">
+        <div className="analyze-header">
+          <h1>📑 Analyse de CGA</h1>
+          <p className="sub">Soumettez un document ou un texte pour analyse juridique automatique.</p>
+        </div>
 
         {quota && (
           <>
@@ -161,10 +165,16 @@ const Analyze: React.FC = () => {
           quotaExceeded={quota ? quota.limit !== -1 && quota.used >= quota.limit : false}
         />
 
-        {error && <div className="alert alert-danger mt-4">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
-        {result && <ResultDisplay summary={result.summary} score={result.score} clauses={result.clauses} />}
-      </div>
+        {result && (
+          <ResultDisplay
+            summary={result.summary}
+            score={result.score}
+            clauses={result.clauses}
+          />
+        )}
+      </main>
     </div>
   );
 };

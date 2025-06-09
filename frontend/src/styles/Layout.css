@@ -1,0 +1,61 @@
+/* Layout.css — global layout styling */
+:root {
+  --primary: #4f46e5;
+  --accent: #f97316;
+  --danger: #ef4444;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-300: #d1d5db;
+  --gray-700: #374151;
+  --text-dark: #1f2937;
+  --radius: 10px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--gray-50);
+  color: var(--text-dark);
+  margin: 0;
+}
+
+/* Layout wrapper */
+.dashboard-layout {
+  display: flex;
+  min-height: 100dvh;
+  background-color: white;
+}
+
+/* Content area */
+.dashboard-main {
+  flex-grow: 1;
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: white;
+  border-top-left-radius: var(--radius);
+  border-bottom-left-radius: var(--radius);
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.03);
+}
+
+/* Mobile layout */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .dashboard-main {
+    padding: 1rem;
+    border-radius: 0;
+  }
+}
+
+/* Utility classes */
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}

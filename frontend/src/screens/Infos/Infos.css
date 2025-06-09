@@ -1,0 +1,77 @@
+.infos-main {
+  flex-grow: 1;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.infos-heading h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.3rem;
+}
+
+.infos-heading p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.infos-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.infos-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.field-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.infos-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.infos-actions button {
+  padding: 0.65rem 1.5rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.infos-actions button:hover {
+  background-color: #dc2626;
+}
+
+.infos-error {
+  color: #b91c1c;
+  background-color: #fee2e2;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.infos-loading {
+  font-size: 1rem;
+  color: #6b7280;
+}
