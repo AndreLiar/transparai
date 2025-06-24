@@ -1,4 +1,6 @@
 //src/screens/history/History.tsx
+// src/screens/history/History.tsx
+
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Sidebar from '@/components/Layout/Sidebar';
@@ -62,8 +64,8 @@ const History: React.FC = () => {
     <div className="dashboard-layout">
       <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-      <main className="dashboard-main">
-        <h2 className="mb-4">📚 Historique des analyses</h2>
+      <main className="history-main">
+        <h2 className="history-heading">📚 Historique des analyses</h2>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
@@ -74,7 +76,9 @@ const History: React.FC = () => {
           </div>
         )}
 
-        {plan !== 'starter' && analyses.length === 0 && <p>Aucune analyse trouvée.</p>}
+        {plan !== 'starter' && analyses.length === 0 && (
+          <p>Aucune analyse trouvée.</p>
+        )}
 
         {plan !== 'starter' && paginatedAnalyses.length > 0 && (
           <div className="history-list">
@@ -82,11 +86,11 @@ const History: React.FC = () => {
               <div className="history-card" key={a._id}>
                 <div className="history-card-header">
                   <span className="history-date">{new Date(a.date).toLocaleDateString()}</span>
-                  <span className={`history-score ${a.score === 'bonnes' ? 'score-good' : a.score === 'moyennes' ? 'score-medium' : 'score-bad'}`}>
-                    {a.score}
+                  <span className={`history-score score-${a.score}`}>
+                    {a.score.charAt(0).toUpperCase() + a.score.slice(1)}
                   </span>
                 </div>
-                <p className="history-summary">{a.summary.slice(0, 120)}...</p>
+                <p className="history-summary">{a.summary}</p>
                 <button className="btn export-btn" onClick={() => handleExport(a._id)}>
                   📥 Exporter en PDF
                 </button>

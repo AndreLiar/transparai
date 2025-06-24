@@ -1,3 +1,32 @@
+.history-main {
+  flex-grow: 1;
+  padding: 3rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.history-heading {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 2rem;
+}
+
+.alert-info {
+  background-color: #eff6ff;
+  border-left: 4px solid #3b82f6;
+  padding: 1rem;
+  border-radius: 8px;
+  color: #1e3a8a;
+  margin-bottom: 1.5rem;
+}
+.alert-info a {
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .history-list {
   display: flex;
   flex-direction: column;
@@ -6,12 +35,18 @@
 
 .history-card {
   background-color: white;
-  padding: 1.25rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
 }
 
 .history-card-header {
@@ -23,35 +58,41 @@
 .history-date {
   font-weight: 500;
   color: #4b5563;
+  font-size: 0.95rem;
 }
 
 .history-score {
-  padding: 0.3rem 0.75rem;
+  padding: 0.4rem 0.9rem;
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: capitalize;
 }
 
-.score-good {
+.score-bonnes {
   background-color: #dcfce7;
   color: #15803d;
 }
 
-.score-medium {
+.score-moyennes {
   background-color: #fef3c7;
   color: #92400e;
 }
 
-.score-bad {
+.score-mauvaises {
   background-color: #fee2e2;
   color: #b91c1c;
 }
 
 .history-summary {
   color: #374151;
-  line-height: 1.4;
+  line-height: 1.5;
   font-size: 0.95rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .export-btn {
@@ -75,14 +116,14 @@
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 .page-btn {
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  padding: 0.4rem 0.75rem;
+  padding: 0.5rem 0.85rem;
   cursor: pointer;
   font-size: 0.9rem;
   color: #1f2937;

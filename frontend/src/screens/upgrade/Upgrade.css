@@ -1,0 +1,100 @@
+.upgrade-main {
+  flex-grow: 1;
+  padding: 3rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.upgrade-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.upgrade-sub {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 2.5rem;
+}
+
+.plans-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  width: 100%;
+}
+
+.plan-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-4px);
+}
+
+.plan-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.plan-icon {
+  font-size: 1.5rem;
+}
+
+.plan-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.plan-desc {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.plan-price {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.plan-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.plan-btn.standard {
+  background-color: #6366f1;
+  color: white;
+}
+
+.plan-btn.premium {
+  background-color: #10b981;
+  color: white;
+}
+
+.plan-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

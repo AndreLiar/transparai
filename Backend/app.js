@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser'); // ✅ Import this
 const connectDB = require('./config/db');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const analyzeRoutes = require('./routes/analyzeRoutes');
@@ -17,11 +18,10 @@ app.use(cors({
   credentials: true
 }));
 
-// ✅ Mount webhook route BEFORE express.json
-// So Stripe can read raw body to validate signature
-app.use('/api/webhook', webhookRoutes);
+// ✅ Mount webhook FIRST with raw body parser
+app.use('/api/webhook', bodyParser.raw({ type: 'application/json' }), webhookRoutes);
 
-// ✅ Then JSON body parsing middleware for everything else
+// ✅ Then mount JSON parser for the rest
 app.use(express.json());
 
 // ✅ Request logger

@@ -1,4 +1,6 @@
 //src/screens/infos/Infos.tsx
+// src/screens/infos/Infos.tsx
+
 import '@/styles/Layout.css';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -58,26 +60,30 @@ const Infos: React.FC = () => {
         {!data && !error && <p className="infos-loading">Chargement...</p>}
 
         {data && (
-          <section className="infos-card">
-            <div className="infos-field">
-              <span className="field-label">📧 Adresse e-mail</span>
-              <span>{user?.email}</span>
-            </div>
-            <div className="infos-field">
-              <span className="field-label">🪪 Plan actuel</span>
-              <span>{data.plan}</span>
-            </div>
-            <div className="infos-field">
-              <span className="field-label">📊 Quota utilisé</span>
-              <span>
-                {data.quota.used} / {data.quota.limit === -1 ? '∞ (illimité)' : data.quota.limit}
-              </span>
-            </div>
+          <>
+            <section className="infos-card">
+              <h2>👤 Compte</h2>
+              <div className="infos-field">
+                <span className="field-label">📧 Adresse e-mail</span>
+                <span>{user?.email}</span>
+              </div>
+            </section>
 
-            <div className="infos-actions">
-              <button onClick={handleDelete}>🗑 Supprimer mon compte</button>
-            </div>
-          </section>
+            <section className="infos-card">
+              <h2>💳 Abonnement</h2>
+              <div className="infos-field">
+                <span className="field-label">🪪 Plan actuel</span>
+                <span>{data.plan}</span>
+              </div>
+              <div className="infos-field">
+                <span className="field-label">📊 Quota utilisé</span>
+                <span>{data.quota.used} / {data.quota.limit === -1 ? '∞ (illimité)' : data.quota.limit}</span>
+              </div>
+              <div className="infos-actions">
+                <button onClick={handleDelete}>🗑 Supprimer mon compte</button>
+              </div>
+            </section>
+          </>
         )}
       </main>
     </div>
