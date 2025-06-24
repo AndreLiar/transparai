@@ -77,7 +77,7 @@ Fonctionnalités clés :
 | OCR | Tesseract.js |
 | Auth | Firebase Authentication |
 | DB | MongoDB |
-| Paiement | PayPal SDK + Webhooks |
+| Paiement | Stripe SDK + Webhooks |
 | Hébergement | Vercel (Front) + Render (API) |
 
 ---
@@ -127,14 +127,6 @@ Fonctionnalités clés :
 
 ---
 
-## ✅ Prochaines Étapes (TODO)
-
-- [ ] Intégration email SendGrid (notifications)
-- [ ] Dashboard admin (monitoring usage/abos)
-- [ ] Passage multilingue (FR/EN)
-- [ ] Amélioration UX mobile-first
-
----
 
 ## 🛠️ Installation Locale (dev)
 
