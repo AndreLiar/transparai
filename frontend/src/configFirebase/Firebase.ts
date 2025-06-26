@@ -1,5 +1,4 @@
 // src/configFirebase/Firebase.ts
-// src/configFirebase/Firebase.ts
 import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 

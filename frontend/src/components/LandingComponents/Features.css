@@ -1,41 +1,125 @@
 /* src/components/Features.css */
+/* Import Google Fonts for Inter and Manrope */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@600;700&display=swap');
+
+/* Base styles for the section */
 .features-section {
-    padding: 3rem 1rem;
-    background-color: #f8f9fa;
-  }
-  
-  .features-container {
-    max-width: 960px;
-    margin: auto;
-    text-align: center;
-  }
-  
-  .features-title {
-    font-size: 1.8rem;
-    margin-bottom: 2rem;
-  }
-  
+  padding: 80px 24px; /* Generous vertical padding for spacious feel */
+  background-color: #F6F8FC; /* Sky Gray background from brand kit */
+  font-family: 'Inter', sans-serif; /* Primary font for body text */
+  color: #0A1E3F; /* Deep Navy for general text */
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Container for content alignment */
+.features-container {
+  max-width: 1200px; /* Max width from brand guide */
+  margin: 0 auto;
+  padding: 0 16px; /* Horizontal padding for smaller screens */
+}
+
+/* Section Title - Commanding Presence */
+.features-title {
+  font-family: 'Manrope', sans-serif; /* Secondary font for headings */
+  font-size: 48px; /* Large and impactful title */
+  font-weight: 700;
+  color: #0A1E3F; /* Deep Navy */
+  margin-bottom: 24px; /* Sufficient space below title */
+  letter-spacing: -0.04em; /* Tighter for sophistication */
+  line-height: 1.15;
+}
+
+/* Section Subtitle - Elegant Context */
+.features-subtitle {
+  font-size: 20px; /* Legible and elegant */
+  color: #0A1E3F;
+  max-width: 800px; /* Controlled width for readability */
+  margin: 0 auto 64px auto; /* More space before grid, centered */
+  line-height: 1.6;
+  opacity: 0.8; /* Softer appearance */
+}
+
+/* Features Grid - Balanced & Responsive */
+.features-grid {
+  display: grid; /* Using CSS Grid for more control over layout */
+  grid-template-columns: 1fr; /* Single column by default */
+  gap: 32px; /* Consistent spacing between cards */
+  justify-items: center; /* Center cards in the grid */
+}
+
+/* Feature Card - A Polished Presentation */
+.feature-card {
+  background: #ffffff;
+  border: 1px solid #DDE3EC; /* Soft border */
+  border-radius: 12px; /* Luxurious rounded corners */
+  padding: 40px; /* Generous internal padding */
+  box-shadow: 0 12px 40px rgba(10, 30, 63, 0.06); /* Deep, elegant shadow */
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smooth luxury transition */
+  width: 100%;
+  max-width: 380px; /* Max width for individual cards */
+  text-align: center;
+}
+
+.feature-card:hover {
+  transform: translateY(-12px); /* Gentle lift on hover */
+  box-shadow: 0 18px 50px rgba(10, 30, 63, 0.12); /* Enhanced shadow on hover */
+}
+
+/* Feature Icon Wrapper - Visual Emphasis */
+.feature-icon-wrapper {
+  width: 72px; /* Larger circular background for icons */
+  height: 72px;
+  background-color: rgba(0, 92, 255, 0.08); /* Primary Blue tint background for icon */
+  border-radius: 50%; /* Perfect circle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px auto; /* Centered, generous margin below */
+  box-shadow: 0 4px 15px rgba(0, 92, 255, 0.1); /* Subtle shadow for icon wrapper */
+}
+
+.feature-icon-emoji {
+  font-size: 36px; /* Large emoji size */
+  line-height: 1; /* Ensure emoji is vertically centered */
+}
+
+/* Feature Title - Clear & Concise */
+.feature-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 24px; /* Prominent title for each feature */
+  font-weight: 700;
+  color: #0A1E3F;
+  margin-bottom: 12px; /* Space between title and description */
+}
+
+/* Feature Description - Informative & Legible */
+.feature-description {
+  font-size: 18px; /* Easy to read */
+  color: #0A1E3F;
+  opacity: 0.85; /* Slightly softer text */
+  line-height: 1.6;
+}
+
+/* Responsive Adjustments for a Multi-Column Layout */
+@media (min-width: 768px) {
   .features-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
+    gap: 32px;
   }
-  
-  .feature-card {
-    padding: 1rem;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+@media (min-width: 1024px) {
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns on desktop */
+    gap: 32px;
   }
-  
-  @media (min-width: 768px) {
-    .features-grid {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    .feature-card {
-      flex: 1;
-      margin: 0 0.5rem;
-    }
+}
+
+/* Adjustments for even larger screens if necessary */
+@media (min-width: 1440px) {
+  .features-container {
+    max-width: 1400px; /* Even wider container for very large displays */
   }
-  
+}

@@ -1,0 +1,83 @@
+{
+  "source_label": "Source",
+  "upload_option": "Texte (copier-coller)",
+  "ocr_option": "OCR (image/PDF)",
+  "text_input_label": "Texte CGA à analyser",
+  "file_input_label": "📄 Fichier image ou PDF",
+  "submit_button": "Lancer l’analyse",
+  "analyzing_button": "Analyse en cours...",
+  "quota_label": "Quota utilisé",
+   "quota_analyses_used": "analyses utilisées",
+  "quota_reset_in": "Réinitialisation du quota dans {{countdown}}",
+  "reset_in": "Réinitialisation du quota dans",
+  "result_title": "Résultat de l’analyse",
+    "result_subtitle": "Analyse synthétique du document soumis",
+  "summary": "Résumé",
+  "score": "Score",
+  "important_clauses": "Clauses importantes",
+  "logout": "Déconnexion",
+  "plan_standard": "Plan Standard",
+  "plan_premium": "Plan Premium",
+  "upgrade_title": "🚀 Mettre à niveau votre plan",
+  "upgrade_sub": "Choisissez un plan pour débloquer davantage d'analyses",
+   "sidebar": {
+    "infos": "Infos",
+    "history": "Historique",
+    "analyze": "Analyse",
+    "upgrade": "Upgrade",
+    "logout": "Déconnexion",
+    "open_menu": "Ouvrir menu",
+    "home": "Accueil"
+  },
+   "dashboard": {
+    "greeting": "Bonjour",
+    "default_user": "Utilisateur",
+    "welcome": "Bienvenue dans votre espace personnel TransparAI.",
+    "call_to_action": "Choisissez une action à gauche pour commencer."
+  },
+   "upgrade": {
+    "title": "Mettre à niveau votre plan",
+    "subtitle": "Choisissez un plan pour débloquer davantage d'analyses.",
+    "error_unexpected": "Erreur inattendue",
+    "redirecting": "Redirection...",
+    "standard_title": "Plan Standard",
+    "standard_desc": "10 analyses / jour",
+    "standard_price": "9.99€/mois",
+    "standard_button": "Passer au Standard",
+    "premium_title": "Plan Premium",
+    "premium_desc": "Analyses illimitées",
+    "premium_price": "19.99€/mois",
+    "premium_button": "Passer au Premium"
+  },
+    "upgrade_cancel": {
+    "title": "Paiement annulé",
+    "message": "Votre mise à niveau a été annulée. Vous pouvez réessayer à tout moment."
+  },
+  "upgrade_success": {
+    "title": "Paiement réussi",
+    "message": "Votre plan a été mis à jour avec succès. Merci pour votre confiance !"
+  },
+    "history": {
+    "title": "Historique des analyses",
+    "paid_only": "Historique réservé aux abonnés payants.",
+    "upgrade_link": "Passez à un plan payant",
+    "no_analysis": "Aucune analyse trouvée.",
+    "export_pdf": "Exporter en PDF"
+  },
+    "infos": {
+    "title": "Informations utilisateur",
+    "subtitle": "Gérez votre plan, quota et compte depuis cet espace.",
+    "account": "Compte",
+    "email": "Adresse e-mail",
+    "subscription": "Abonnement",
+    "plan": "Plan actuel",
+    "quota": "Quota utilisé",
+    "unlimited": "illimité",
+    "delete_account": "Supprimer mon compte",
+    "loading": "Chargement...",
+    "unknown_error": "Erreur inconnue",
+    "confirm_delete": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
+    "token_error": "Token non disponible, veuillez vous reconnecter.",
+    "delete_success": "Compte supprimé avec succès."
+  }
+}

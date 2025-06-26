@@ -1,16 +1,17 @@
 //src/screens/upgrade/Upgrade.tsx
 
 // src/screens/upgrade/Upgrade.tsx
-
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Sidebar from '@/components/Layout/Sidebar';
 import { createCheckoutSession } from '@/services/upgradeService';
+import { useTranslation } from 'react-i18next';
 import '@/styles/Layout.css';
 import './Upgrade.css';
 
 const Upgrade: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -25,7 +26,7 @@ const Upgrade: React.FC = () => {
       const checkoutUrl = await createCheckoutSession(token, plan);
       window.location.href = checkoutUrl;
     } catch (err: any) {
-      setError(err.message || 'Erreur inattendue');
+      setError(err.message || t('upgrade.error_unexpected'));
     } finally {
       setLoading(false);
     }
@@ -37,8 +38,8 @@ const Upgrade: React.FC = () => {
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       <main className="upgrade-main">
-        <h1 className="upgrade-title">🚀 Mettre à niveau votre plan</h1>
-        <p className="upgrade-sub">Choisissez un plan pour débloquer davantage d'analyses.</p>
+        <h1 className="upgrade-title">🚀 {t('upgrade.title')}</h1>
+        <p className="upgrade-sub">{t('upgrade.subtitle')}</p>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
@@ -46,32 +47,32 @@ const Upgrade: React.FC = () => {
           <div className="plan-card">
             <div className="plan-header">
               <span className="plan-icon">🔒</span>
-              <h3 className="plan-name">Plan Standard</h3>
+              <h3 className="plan-name">{t('upgrade.standard_title')}</h3>
             </div>
-            <p className="plan-desc">10 analyses / jour</p>
-            <p className="plan-price">2€/mois</p>
+            <p className="plan-desc">{t('upgrade.standard_desc')}</p>
+            <p className="plan-price">{t('upgrade.standard_price')}</p>
             <button
               disabled={loading}
               className="plan-btn standard"
               onClick={() => handleUpgrade('standard')}
             >
-              {loading ? 'Redirection...' : 'Passer au Standard'}
+              {loading ? t('upgrade.redirecting') : t('upgrade.standard_button')}
             </button>
           </div>
 
           <div className="plan-card">
             <div className="plan-header">
               <span className="plan-icon">🌟</span>
-              <h3 className="plan-name">Plan Premium</h3>
+              <h3 className="plan-name">{t('upgrade.premium_title')}</h3>
             </div>
-            <p className="plan-desc">Analyses illimitées</p>
-            <p className="plan-price">5€/mois</p>
+            <p className="plan-desc">{t('upgrade.premium_desc')}</p>
+            <p className="plan-price">{t('upgrade.premium_price')}</p>
             <button
               disabled={loading}
               className="plan-btn premium"
               onClick={() => handleUpgrade('premium')}
             >
-              {loading ? 'Redirection...' : 'Passer au Premium'}
+              {loading ? t('upgrade.redirecting') : t('upgrade.premium_button')}
             </button>
           </div>
         </div>
@@ -81,3 +82,4 @@ const Upgrade: React.FC = () => {
 };
 
 export default Upgrade;
+

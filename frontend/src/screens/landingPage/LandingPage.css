@@ -1,107 +1,177 @@
 /* src/screens/landingPage/LandingPage.css */
 
+/* Import Google Fonts for Inter and Manrope */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@600;700;800&display=swap'); /* Added 800 weight for Manrope */
+
+/* Global Reset/Base Styles for Luxury Feel */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif; /* Default body font */
+  color: #0A1E3F; /* Deep Navy for general text */
+  background-color: #F6F8FC; /* Sky Gray for overall background */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .landing-wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #f9f9f9;
-    color: #222;
-    font-family: system-ui, sans-serif;
-    padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Hero Section - The Captivating Crown Jewel */
+.hero-section {
+  position: relative;
+  padding: 120px 24px; /* Generous padding for a grand feel (8pt system) */
+  background-color: #ffffff; /* Base white for crispness */
+  /* ENHANCEMENT: Subtle Radial Gradient Background */
+  background-image: radial-gradient(at 50% 0%, rgba(0, 92, 255, 0.03) 0%, transparent 70%),
+                    radial-gradient(at 0% 100%, rgba(95, 109, 245, 0.02) 0%, transparent 70%); /* Accent Purple hint */
+  background-size: 100% 100%; /* Cover the entire section */
+  background-repeat: no-repeat;
+  text-align: center;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 75vh; /* Increased min-height for more commanding presence */
+  box-shadow: 0 10px 40px rgba(10, 30, 63, 0.06); /* Slightly deeper subtle shadow */
+}
+
+.hero-content {
+  max-width: 900px; /* Wider content area for a more expansive feel */
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* Hero Title - Bold, Impactful, and On-Brand */
+.hero-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 64px; /* Increased base font size for more impact */
+  font-weight: 800; /* Bolder weight for luxury and dominance */
+  color: #0A1E3F;
+  margin-bottom: 24px;
+  line-height: 1.1; /* Tighter line height for a more solid block */
+  letter-spacing: -0.06em; /* Even tighter for a modern, sleek look */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.03); /* Very subtle text shadow for depth */
+}
+
+.hero-highlight {
+  color: #005CFF; /* Primary Blue for brand name highlight */
+  font-weight: 800; /* Consistent bold weight */
+}
+
+/* Hero Subtitle - Elegant and Clear */
+.hero-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 26px; /* Slightly larger subtitle */
+  color: #0A1E3F;
+  margin-bottom: 56px; /* More space before buttons for visual break */
+  line-height: 1.6;
+  opacity: 0.85; /* Slightly less subdued for better readability */
+  max-width: 800px; /* Controlled width */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Hero Buttons - Prominent and Interactive */
+.hero-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Base button styles (replicated from brand kit + luxury enhancements) */
+.btn {
+  padding: 20px 56px; /* Increased padding for a more substantial button */
+  font-size: 19px; /* Slightly larger text */
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother, more 'elastic' transition */
+  cursor: pointer;
+  min-width: 260px; /* Wider buttons for a bolder presence */
+  text-align: center;
+  font-weight: 700; /* Slightly bolder for emphasis */
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.03em; /* Slightly more letter spacing for buttons */
+}
+
+.btn-primary {
+  background-color: #005CFF; /* Primary Blue */
+  color: #ffffff;
+  border: 1px solid #005CFF;
+  box-shadow: 0 8px 25px rgba(0, 92, 255, 0.3); /* Stronger, more vibrant shadow */
+}
+
+.btn-primary:hover {
+  background-color: #0044cc; /* Darker Primary Blue on hover */
+  border-color: #0044cc;
+  transform: translateY(-5px); /* More significant lift for a premium feel */
+  box-shadow: 0 12px 35px rgba(0, 92, 255, 0.45); /* Enhanced, glowing shadow on hover */
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: #005CFF; /* Primary Blue text */
+  border: 2px solid #005CFF;
+}
+
+.btn-outline:hover {
+  background-color: rgba(0, 92, 255, 0.1); /* Slightly more prominent tint on hover */
+  color: #0044cc;
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 92, 255, 0.2); /* Subtle shadow on hover */
+}
+
+/* Responsive Enhancements - Grandeur Across Devices */
+@media (min-width: 640px) {
+  .hero-title {
+    font-size: 72px; /* Even larger on medium screens */
   }
-  
-  /* Hero Section */
-  .hero-section {
-    background-color: #ffffff;
-    padding: 3rem 1rem;
-    text-align: center;
+
+  .hero-subtitle {
+    font-size: 28px;
   }
-  
-  .hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .hero-content h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    line-height: 1.2;
-  }
-  
-  .subtitle {
-    font-size: 1rem;
-    color: #444;
-    margin-bottom: 2rem;
-    line-height: 1.5;
-  }
-  
-  /* Button group */
+
   .hero-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: row;
+    justify-content: center;
   }
-  
-  .btn {
-    padding: 0.75rem 2rem;
-    font-size: 1rem;
-    border-radius: 5px;
-    text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-    cursor: pointer;
-    min-width: 200px;
-    text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .hero-section {
+    padding: 160px 40px;
+    min-height: 85vh; /* Even more commanding presence */
   }
-  
-  .btn.primary {
-    background-color: #4f46e5;
-    color: white;
-    border: none;
+
+  .hero-title {
+    font-size: 96px; /* Truly grand scale for desktop */
   }
-  
-  .btn.primary:hover {
-    background-color: #3730a3;
+
+  .hero-subtitle {
+    font-size: 32px; /* Maximum readability and impact */
+    max-width: 950px;
   }
-  
-  .btn.outline {
-    border: 2px solid #4f46e5;
-    color: #4f46e5;
-    background: transparent;
+}
+
+@media (min-width: 1440px) {
+  .hero-content {
+    max-width: 1200px;
   }
-  
-  .btn.outline:hover {
-    background-color: #e0e7ff;
+  .hero-title {
+    font-size: 110px; /* Ultimate grandeur */
+    line-height: 1; /* Tightest line height */
   }
-  
-  /* Responsive Enhancements */
-  @media (min-width: 640px) {
-    .hero-content h1 {
-      font-size: 2.5rem;
-    }
-  
-    .subtitle {
-      font-size: 1.1rem;
-    }
-  
-    .hero-buttons {
-      flex-direction: row;
-      justify-content: center;
-    }
+  .hero-subtitle {
+    font-size: 34px;
+    max-width: 1050px;
   }
-  
-  @media (min-width: 1024px) {
-    .hero-section {
-      padding: 5rem 2rem;
-    }
-  
-    .hero-content h1 {
-      font-size: 3rem;
-    }
-  
-    .subtitle {
-      font-size: 1.25rem;
-    }
-  }
-  
+}

@@ -2,9 +2,13 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/configFirebase/Firebase';
+import { useTranslation } from 'react-i18next';
 import {
   User, BookOpen, MagnifyingGlass, ArrowCircleUp, SignOut, X, List
 } from 'phosphor-react';
+import LanguageSwitcher from '@/components/Layout/LanguageSwitcher'; // 👈 Import switcher
+import ThemeSwitcher from '@/components/Layout/ThemeSwitcher'; // adjust path if needed
+
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -13,6 +17,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,15 +28,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   };
 
   const navItems = [
-    { label: 'Infos', path: '/infos', icon: <User size={20} /> },
-    { label: 'Historique', path: '/history', icon: <BookOpen size={20} /> },
-    { label: 'Analyse', path: '/analyze', icon: <MagnifyingGlass size={20} /> },
-    { label: 'Upgrade', path: '/upgrade', icon: <ArrowCircleUp size={20} /> },
+    { label: t('sidebar.infos'), path: '/infos', icon: <User size={20} /> },
+    { label: t('sidebar.history'), path: '/history', icon: <BookOpen size={20} /> },
+    { label: t('sidebar.analyze'), path: '/analyze', icon: <MagnifyingGlass size={20} /> },
+    { label: t('sidebar.upgrade'), path: '/upgrade', icon: <ArrowCircleUp size={20} /> },
   ];
 
   return (
     <>
-      <button className="hamburger-toggle" onClick={() => setIsOpen(true)} aria-label="Ouvrir menu">
+      <button className="hamburger-toggle" onClick={() => setIsOpen(true)} aria-label={t('sidebar.open_menu')}>
         <List size={24} />
       </button>
 
@@ -48,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               navigate('/dashboard');
               setIsOpen(false);
             }}
-            aria-label="Accueil"
+            aria-label={t('sidebar.home')}
           >
             🧠 TransparAI
           </button>
@@ -73,12 +78,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           ))}
         </nav>
 
-        <div className="sidebar-footer">
-          <button className="logout-btn" onClick={handleLogout}>
-            <SignOut size={20} className="icon" />
-            Déconnexion
-          </button>
-        </div>
+  <div className="sidebar-footer">
+  <div className="sidebar-controls">
+    <LanguageSwitcher />
+    <ThemeSwitcher />
+  </div>
+  <button className="logout-btn" onClick={handleLogout}>
+    <SignOut size={20} className="icon" />
+    {t('sidebar.logout')}
+  </button>
+</div>
+
       </aside>
     </>
   );

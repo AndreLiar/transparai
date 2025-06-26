@@ -1,0 +1,83 @@
+{
+  "source_label": "Source",
+  "upload_option": "Text (paste)",
+  "ocr_option": "OCR (image/PDF)",
+  "text_input_label": "CGA text to analyze",
+  "file_input_label": "📄 Image or PDF file",
+  "submit_button": "Start analysis",
+  "analyzing_button": "Analyzing...",
+  "quota_label": "Quota used",
+   "quota_analyses_used": "analyses used",
+  "quota_reset_in": "Quota resets in {{countdown}}",
+  "reset_in": "Quota resets in",
+  "result_title": "Analysis result",
+    "result_subtitle": "Synthetic analysis of the submitted document",
+  "summary": "Summary",
+  "score": "Score",
+  "important_clauses": "Important clauses",
+  "logout": "Logout",
+  "plan_standard": "Standard Plan",
+  "plan_premium": "Premium Plan",
+  "upgrade_title": "Upgrade your plan",
+  "upgrade_sub": "Unlock more analyses with a plan",
+    "sidebar": {
+    "infos": "Infos",
+    "history": "History",
+    "analyze": "Analyze",
+    "upgrade": "Upgrade",
+    "logout": "Logout",
+    "open_menu": "Open menu",
+    "home": "Home"
+  },
+  "dashboard": {
+    "greeting": "Hello",
+    "default_user": "User",
+    "welcome": "Welcome to your TransparAI dashboard.",
+    "call_to_action": "Choose an action on the left to get started."
+  },
+   "upgrade": {
+    "title": "Upgrade your plan",
+    "subtitle": "Choose a plan to unlock more daily analyses.",
+    "error_unexpected": "Unexpected error",
+    "redirecting": "Redirecting...",
+    "standard_title": "Standard Plan",
+    "standard_desc": "10 analyses / day",
+    "standard_price": "€9.99/month",
+    "standard_button": "Upgrade to Standard",
+    "premium_title": "Premium Plan",
+    "premium_desc": "Unlimited analyses",
+    "premium_price": "€19.99/month",
+    "premium_button": "Upgrade to Premium"
+  },
+    "upgrade_cancel": {
+    "title": "Payment canceled",
+    "message": "Your upgrade was canceled. You can try again at any time."
+  },
+  "upgrade_success": {
+    "title": "Payment successful",
+    "message": "Your plan has been successfully updated. Thank you for your trust!"
+  },
+  "history": {
+    "title": "Analysis history",
+    "paid_only": "History is reserved for paying users.",
+    "upgrade_link": "Upgrade to a paid plan",
+    "no_analysis": "No analyses found.",
+    "export_pdf": "Export as PDF"
+  },
+    "infos": {
+    "title": "User Information",
+    "subtitle": "Manage your plan, quota, and account from here.",
+    "account": "Account",
+    "email": "Email address",
+    "subscription": "Subscription",
+    "plan": "Current plan",
+    "quota": "Quota used",
+    "unlimited": "unlimited",
+    "delete_account": "Delete my account",
+    "loading": "Loading...",
+    "unknown_error": "Unknown error",
+    "confirm_delete": "Are you sure you want to delete your account? This action is irreversible.",
+    "token_error": "Token not available, please log in again.",
+    "delete_success": "Account successfully deleted."
+  }
+}
