@@ -7,10 +7,12 @@ import { useAuth } from '@/context/AuthContext';
 import { fetchDashboardData, InfoData } from '@/services/InfoService';
 import Sidebar from '@/components/Layout/Sidebar';
 import { deleteAccount } from '@/services/userService';
+import { useTranslation } from 'react-i18next';
 import './Infos.css';
 
 const Infos: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [data, setData] = useState<InfoData | null>(null);
   const [error, setError] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -23,22 +25,22 @@ const Infos: React.FC = () => {
         const infos = await fetchDashboardData(token);
         setData(infos);
       } catch (err: any) {
-        setError(err.message || 'Erreur inconnue');
+        setError(err.message || t('infos.unknown_error'));
       }
     };
     loadInfos();
-  }, [user]);
+  }, [user, t]);
 
   const handleDelete = async () => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) return;
+    if (!confirm(t('infos.confirm_delete'))) return;
     try {
       const token = await user?.getIdToken();
       if (!token) {
-        alert('Token non disponible, veuillez vous reconnecter.');
+        alert(t('infos.token_error'));
         return;
       }
       await deleteAccount(token);
-      alert('Compte supprimé avec succès.');
+      alert(t('infos.delete_success'));
       localStorage.setItem('logout-event', Date.now().toString());
       window.location.href = '/login';
     } catch (err: any) {
@@ -50,37 +52,41 @@ const Infos: React.FC = () => {
     <div className="dashboard-layout">
       <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+
       <main className="infos-main">
         <div className="infos-heading">
-          <h1>Informations utilisateur</h1>
-          <p>Gérez votre plan, quota et compte depuis cet espace.</p>
+          <h1>{t('infos.title')}</h1>
+          <p>{t('infos.subtitle')}</p>
         </div>
 
         {error && <div className="infos-error">{error}</div>}
-        {!data && !error && <p className="infos-loading">Chargement...</p>}
+        {!data && !error && <p className="infos-loading">{t('infos.loading')}</p>}
 
         {data && (
           <>
             <section className="infos-card">
-              <h2>👤 Compte</h2>
+              <h2>👤 {t('infos.account')}</h2>
               <div className="infos-field">
-                <span className="field-label">📧 Adresse e-mail</span>
+                <span className="field-label">📧 {t('infos.email')}</span>
                 <span>{user?.email}</span>
               </div>
             </section>
 
             <section className="infos-card">
-              <h2>💳 Abonnement</h2>
+              <h2>💳 {t('infos.subscription')}</h2>
               <div className="infos-field">
-                <span className="field-label">🪪 Plan actuel</span>
+                <span className="field-label">🪪 {t('infos.plan')}</span>
                 <span>{data.plan}</span>
               </div>
               <div className="infos-field">
-                <span className="field-label">📊 Quota utilisé</span>
-                <span>{data.quota.used} / {data.quota.limit === -1 ? '∞ (illimité)' : data.quota.limit}</span>
+                <span className="field-label">📊 {t('infos.quota')}</span>
+                <span>
+                  {data.quota.used} /{' '}
+                  {data.quota.limit === -1 ? `∞ (${t('infos.unlimited')})` : data.quota.limit}
+                </span>
               </div>
               <div className="infos-actions">
-                <button onClick={handleDelete}>🗑 Supprimer mon compte</button>
+                <button onClick={handleDelete}>🗑 {t('infos.delete_account')}</button>
               </div>
             </section>
           </>
@@ -91,3 +97,4 @@ const Infos: React.FC = () => {
 };
 
 export default Infos;
+

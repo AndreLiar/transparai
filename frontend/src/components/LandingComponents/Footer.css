@@ -1,8 +1,98 @@
 /* src/components/LandingComponents/Footer.css */
-.footer {
-    background-color: #222;
-    color: white;
-    text-align: center;
-    padding: 1rem;
+/* Import Google Fonts for Inter and Manrope, if not already global */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Manrope:wght@600&display=swap');
+
+/* Main Footer Section */
+.site-footer {
+  padding: 40px 24px; /* Generous padding top/bottom (8pt system) */
+  background-color: #0A1E3F; /* Deep Navy from brand kit for a rich, dark footer */
+  color: #F6F8FC; /* Sky Gray for text, offering good contrast */
+  text-align: center;
+  font-family: 'Inter', sans-serif; /* Primary font for footer text */
+  box-sizing: border-box; /* Include padding in element's total width and height */
+}
+
+/* Content wrapper for potential future expansion */
+.footer-content {
+  max-width: 1200px; /* Aligned with your main content width */
+  margin: 0 auto; /* Center the content */
+}
+
+/* Copyright Text Styling */
+.copyright-text {
+  font-size: 16px; /* Clear and readable font size */
+  font-weight: 400; /* Regular weight for clarity */
+  margin: 0; /* Remove default paragraph margin */
+  opacity: 0.85; /* Slightly softer than pure white for a refined look */
+  line-height: 1.5; /* Good line height for readability */
+}
+
+/* Brand Name in Copyright */
+.brand-name {
+  font-weight: 600; /* Make 'TransparAI' stand out slightly */
+  color: #F6F8FC; /* Ensure brand name is clearly visible */
+}
+
+/* --- Optional: Styles for additional luxury elements (uncomment in .tsx if used) --- */
+/* Footer Links (if added) */
+
+.footer-links {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-link {
+  color: #F6F8FC;
+  text-decoration: none;
+  font-size: 16px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.footer-link:hover {
+  opacity: 1;
+  color: #005CFF; 
+}
+
+.separator {
+  color: rgba(246, 248, 252, 0.4);
+  font-size: 16px;
+}
+
+
+/* Social Media Icons (if added) */
+
+.social-media {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.social-media a {
+  color: #F6F8FC;
+  font-size: 20px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.social-media a:hover {
+  color: #005CFF; 
+  transform: translateY(-2px); 
+}
+
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .site-footer {
+    padding: 64px 40px; /* More padding on larger screens */
   }
-  
+
+  /* Optional:
+  .footer-links {
+    gap: 24px; // More space between links on larger screens
+  }
+  */
+}

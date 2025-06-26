@@ -1,6 +1,5 @@
 //src/screens/history/History.tsx
 // src/screens/history/History.tsx
-
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Sidebar from '@/components/Layout/Sidebar';
@@ -8,6 +7,7 @@ import { fetchDashboardData } from '@/services/InfoService';
 import { fetchUserAnalyses, Analysis } from '@/services/historyService';
 import { exportAnalysisPdf } from '@/services/export';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import '@/styles/Layout.css';
 import './History.css';
 
@@ -15,6 +15,7 @@ const PAGE_SIZE = 2;
 
 const History: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [plan, setPlan] = useState<string | null>(null);
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,20 +65,21 @@ const History: React.FC = () => {
     <div className="dashboard-layout">
       <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+
       <main className="history-main">
-        <h2 className="history-heading">📚 Historique des analyses</h2>
+        <h2 className="history-heading">📚 {t('history.title')}</h2>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
         {plan === 'starter' && (
           <div className="alert alert-info">
-            🚫 Historique réservé aux abonnés payants.{' '}
-            <a onClick={() => navigate('/upgrade')}>Passez à un plan payant</a>.
+            🚫 {t('history.paid_only')}{' '}
+            <a onClick={() => navigate('/upgrade')}>{t('history.upgrade_link')}</a>.
           </div>
         )}
 
         {plan !== 'starter' && analyses.length === 0 && (
-          <p>Aucune analyse trouvée.</p>
+          <p>{t('history.no_analysis')}</p>
         )}
 
         {plan !== 'starter' && paginatedAnalyses.length > 0 && (
@@ -92,7 +94,7 @@ const History: React.FC = () => {
                 </div>
                 <p className="history-summary">{a.summary}</p>
                 <button className="btn export-btn" onClick={() => handleExport(a._id)}>
-                  📥 Exporter en PDF
+                  📥 {t('history.export_pdf')}
                 </button>
               </div>
             ))}

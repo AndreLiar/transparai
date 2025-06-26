@@ -1,10 +1,11 @@
 //Backend/config/firebase.js
 const admin = require('firebase-admin');
 
-const serviceAccount = require('./transparai-f544f-firebase-adminsdk-fbsvc-3f24ae6c23.json'); // Your Firebase service account JSON
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
 module.exports = admin;
+

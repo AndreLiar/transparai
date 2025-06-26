@@ -1,54 +1,255 @@
 /* src/components/LandingComponents/Pricing.css */
+/* Import Google Fonts for Inter and Manrope */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@600;700&display=swap');
+
+/* Base styles - TransparAI Brand Kit with Luxury Feel */
 .pricing-section {
-    padding: 3rem 1rem;
-    background-color: #fff;
-    text-align: center;
-  }
-  
-  .section-title {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-  }
-  
+  padding: 80px 24px; /* Increased padding from 64px to 80px for more spacious luxury */
+  background-color: #F6F8FC; /* Sky Gray background - light, clean, modern */
+  font-family: 'Inter', sans-serif; /* Primary font: Inter for UI text */
+  color: #0A1E3F; /* Deep Navy for general text - strong, professional */
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+/* Section Header - Elegant Introduction */
+.section-header {
+  margin-bottom: 80px; /* More generous space for a grander intro */
+}
+
+.section-title {
+  font-family: 'Manrope', sans-serif; /* Secondary font: Manrope for headings - impactful */
+  font-size: 48px; /* Larger, more impactful title for luxury */
+  font-weight: 700;
+  color: #0A1E3F; /* Deep Navy for headings - strong presence */
+  margin-bottom: 16px;
+  letter-spacing: -0.04em; /* Tighter letter spacing for sophisticated look */
+  line-height: 1.15; /* Slightly tighter line height */
+}
+
+.section-subtitle {
+  font-size: 20px;
+  color: #0A1E3F;
+  max-width: 800px; /* Wider subtitle for more refined composition */
+  margin: 0 auto;
+  line-height: 1.6;
+  opacity: 0.8; /* Subtle transparency for a softer touch */
+}
+
+/* Pricing Grid - Balanced & Spacious Layout */
+.pricing-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* Increased gap for more breathing room between cards */
+  align-items: center;
+}
+
+/* Pricing Card - A Visual Statement */
+.pricing-card {
+  background-color: #ffffff;
+  border: 1px solid #DDE3EC; /* Soft, refined border */
+  border-radius: 12px; /* Softer, more luxurious rounded corners */
+  padding: 48px 32px; /* Increased padding for a more substantial feel */
+  box-shadow: 0 12px 40px rgba(10, 30, 63, 0.06); /* Deeper, more luxurious shadow */
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smoother, more elegant transitions */
+  width: 100%;
+  max-width: 400px; /* Slightly wider cards for a bolder presence */
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-card:hover {
+  transform: translateY(-12px); /* More pronounced lift on hover */
+  box-shadow: 0 18px 50px rgba(10, 30, 63, 0.12); /* More prominent shadow on hover */
+}
+
+/* Highlighted Card (Standard) - The Star of the Show */
+.pricing-card.highlight {
+  border: 2px solid #005CFF; /* Primary Blue for emphasis */
+  background-color: #ffffff; /* Keep background clean white */
+  box-shadow: 0 15px 45px rgba(0, 92, 255, 0.2); /* Stronger, more vibrant shadow for highlight */
+}
+
+.pricing-card .ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #005CFF; /* Primary Blue for the ribbon */
+  color: #fff;
+  padding: 10px 40px; /* More substantial ribbon padding */
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em; /* Slightly more spaced for ribbon text */
+  text-transform: uppercase;
+  transform: translateY(25px) rotate(45deg); /* Slightly more pronounced angle */
+  transform-origin: 100% 0;
+  width: 160px; /* Wider ribbon for better visibility */
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); /* Deeper shadow for ribbon */
+}
+
+.plan-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 28px; /* Larger plan titles */
+  font-weight: 700; /* Bolder plan titles */
+  color: #0A1E3F;
+  margin-bottom: 24px; /* Ample space */
+}
+
+.price {
+  font-family: 'Manrope', sans-serif;
+  font-size: 40px; /* Prominent price size */
+  font-weight: 700;
+  color: #005CFF; /* Primary Blue for price - strong brand presence */
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  line-height: 1; /* Ensure tight line height for price */
+}
+
+.price .amount {
+  font-size: 56px; /* Significantly larger amount for impact */
+  line-height: 1;
+}
+
+.price .frequency {
+  font-size: 18px; /* Slightly larger frequency for readability */
+  color: #0A1E3F;
+  margin-left: 8px;
+  opacity: 0.7;
+}
+
+/* Feature List - Clean & Legible */
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 40px; /* More space before button */
+  text-align: left;
+}
+
+.features-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px; /* More space between list items */
+  font-size: 18px; /* Larger font size for features */
+  color: #0A1E3F;
+  opacity: 0.9; /* Slightly softer feature text */
+}
+
+.features-list li .feature-icon {
+  width: 24px; /* Larger, more visible icons */
+  height: 24px;
+  margin-right: 12px;
+  color: #2DD4BF; /* Success Green */
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.features-list li .feature-icon.unavailable-icon {
+  color: #EF4444; /* Error Red */
+}
+
+/* Buttons - Premium Interaction */
+.btn {
+  display: inline-block;
+  padding: 16px 40px; /* More generous padding for a premium feel */
+  border-radius: 8px;
+  font-size: 18px; /* Slightly larger button text */
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smoother, more elegant transitions */
+  min-width: 200px; /* Ensure sufficient width */
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.02em; /* Subtle letter spacing for buttons */
+}
+
+.btn-primary {
+  background-color: #005CFF; /* Primary Blue */
+  color: #ffffff;
+  border: 1px solid #005CFF;
+  box-shadow: 0 4px 15px rgba(0, 92, 255, 0.2); /* Subtle shadow for primary button */
+}
+
+.btn-primary:hover {
+  background-color: #0044cc; /* Darker Primary Blue */
+  border-color: #0044cc;
+  transform: translateY(-3px); /* More noticeable lift on hover */
+  box-shadow: 0 6px 20px rgba(0, 92, 255, 0.3); /* Enhanced shadow on hover */
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: #005CFF; /* Primary Blue text */
+  border: 1px solid #005CFF;
+}
+
+.btn-outline:hover {
+  background-color: rgba(0, 92, 255, 0.07); /* Light blue tint on hover */
+  color: #0044cc;
+  transform: translateY(-3px);
+  box-shadow: 0 3px 10px rgba(0, 92, 255, 0.1); /* Subtle shadow on hover */
+}
+
+/* Call to Action for free analysis - Prominent & Inviting */
+.cta-free {
+  margin-top: 80px; /* Generous top margin */
+  padding: 56px 32px; /* Increased padding for a substantial block */
+  background-color: #ffffff;
+  border-radius: 16px; /* Slightly more rounded for a friendly luxury feel */
+  box-shadow: 0 10px 35px rgba(10, 30, 63, 0.05); /* Soft, elegant shadow */
+}
+
+.cta-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 36px; /* Larger CTA title for impact */
+  font-weight: 700;
+  color: #0A1E3F;
+  margin-bottom: 24px;
+}
+
+.cta-description {
+  font-size: 20px; /* Larger description for readability */
+  color: #0A1E3F;
+  margin-bottom: 40px; /* More space before the button */
+  max-width: 700px; /* Wider description */
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+.btn-large {
+  padding: 20px 48px; /* Even larger padding for the main CTA button */
+  font-size: 20px; /* Larger text for the main CTA button */
+}
+
+/* Responsive adjustments - Maintaining Elegance Across Devices */
+@media (min-width: 768px) {
   .pricing-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    flex-direction: row;
+    justify-content: center;
+    gap: 32px; /* Consistent gap on desktop */
   }
-  
+
   .pricing-card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 2rem;
+    flex: 0 0 calc(33.333% - 32px); /* Even distribution with gap */
+    max-width: 360px; /* Optimal width for a three-column layout */
   }
-  
-  .pricing-card.highlight {
-    border: 2px solid #4f46e5;
+
+  .section-title {
+    font-size: 64px; /* Grand scale title on larger screens */
   }
-  
-  .price {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
+}
+
+@media (min-width: 1200px) {
+  .pricing-section {
+    padding: 120px 64px; /* More extensive padding on very large screens */
   }
-  
-  .cta-free {
-    margin-top: 3rem;
+
+  .pricing-grid {
+    max-width: 1200px; /* Limit grid width as per brand guide */
+    margin: 0 auto;
   }
-  
-  .btn.large {
-    font-size: 1.125rem;
-    padding: 1rem 2rem;
-  }
-  
-  @media (min-width: 768px) {
-    .pricing-grid {
-      flex-direction: row;
-      justify-content: space-around;
-    }
-  
-    .pricing-card {
-      flex: 1;
-    }
-  }
-  
+}
