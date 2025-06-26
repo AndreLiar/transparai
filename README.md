@@ -7,7 +7,7 @@
 
 Version : SaaS 1.0 
 Date : Avril 2025  
-Auteur : Solo Developer – [Votre Nom ou Alias]  
+Auteur :Kanmegne Tabouguie Andre yvan
 
 ---
 
@@ -26,6 +26,16 @@ Fonctionnalités clés :
 - 💳 Abonnement via **Stripe**
 - 🧾 Historique lié à l’UID Firebase
 - 🔒 Conforme RGPD
+- 🔍 Analyse IA via **Gemini 2.0 Flash** produisant résumé, score et clauses détectées
+- 📄 Support texte, PDF et images : extraction natif ou OCR (pdf.js + Tesseract)
+- 📊 Quotas quotidiens par plan (2, 10 ou illimité) remis à zéro automatiquement
+- 🧾 Historique des analyses et export PDF pour les abonnés payants
+- 💳 Abonnement via **Stripe** (Checkout + webhooks) avec mise à jour du plan
+- 🔐 Authentification Firebase (email, magic link, reset, vérif. email) avec déconnexion synchronisée entre onglets
+- 🗑 Suppression de compte dans Firebase et MongoDB
+- 🔒 Routes protégées nécessitant un email vérifié
+- 🏠 Tableau de bord React pour accéder à Analyse, Infos, Historique et Upgrade
+- ✅ Conforme RGPD
 
 ---
 
@@ -77,7 +87,7 @@ Fonctionnalités clés :
 | OCR | Tesseract.js |
 | Auth | Firebase Authentication |
 | DB | MongoDB |
-| Paiement | PayPal SDK + Webhooks |
+| Paiement | Stripe SDK + Webhooks |
 | Hébergement | Vercel (Front) + Render (API) |
 
 ---
@@ -91,6 +101,8 @@ Fonctionnalités clés :
 5. 📥 Export PDF
 6. 📁 Historique (selon forfait)
 7. 👤 Gestion du compte
+7. ⬆️ Mise à niveau du plan via Stripe
+8. 👤 Gestion et suppression du compte
 
 ---
 
@@ -98,44 +110,9 @@ Fonctionnalités clés :
 
 - Aucun texte CGA n’est conservé sans consentement explicite
 - Sessions sécurisées avec Firebase
-- Chiffrement des paiements
-- Accès conditionnel via règles Firebase (`auth.uid`, `email_verified`…)
+
 
 ---
-
-## 📦 Livrables du Projet
-
-- ✅ Frontend React (UI, Auth, OCR, affichage résultat)
-- ✅ Backend Express (API sécurisées + webhooks)
-- ✅ Intégration Firebase Auth complète
-- ✅ Paiement PayPal + quotas dynamiques
-- ✅ Export PDF automatisé
-- ✅ Modèle MongoDB lié à `firebaseUid`
-- ✅ Scripts & documentation de déploiement
-- ✅ Cas de test CGA
-
----
-
-## 📚 Liens Utiles (Notion)
-
-- [Cahier des Charges](https://www.notion.so/1-Cahier-des-Charges-Functional-Non-Functional-Specs-1e555d323f54804abb0bf3388ce36152?pvs=21)
-- [Parcours Utilisateur](https://www.notion.so/Parcours-Utilisateur-Version-Compl-te-SaaS-1-2-1e555d323f5480a4be2ac61efc4b9aff?pvs=21)
-- [Vision Produit](https://www.notion.so/Vision-Statement-1e455d323f5480aa9903da7794e23bb8?pvs=21)
-- [Structure Auth Firebase](https://www.notion.so/auth-1df55d323f548058bb46efd36ec92a68?pvs=21)
-- [Base MongoDB](https://www.notion.so/mongodb-1e955d323f5480babf0cffc74471e8f3?pvs=21)
-- [Backend + Webhooks](https://www.notion.so/backend-1e955d323f5480a8abd7d5c889e27b59?pvs=21)
-
----
-
-## ✅ Prochaines Étapes (TODO)
-
-- [ ] Intégration email SendGrid (notifications)
-- [ ] Dashboard admin (monitoring usage/abos)
-- [ ] Passage multilingue (FR/EN)
-- [ ] Amélioration UX mobile-first
-
----
-
 ## 🛠️ Installation Locale (dev)
 
 ```bash
@@ -157,12 +134,6 @@ npm run dev
 
 ---
 
-## 🤝 Contribuer
-
-Ce projet est solo-dev pour l’instant, mais toute aide ou feedback est bienvenu !
-Fork, issue ou PR sont les bienvenus.
-
----
 
 ## © Licence
 
