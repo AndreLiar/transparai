@@ -14,7 +14,7 @@ connectDB();
 
 // ✅ CORS must come first
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://transparai.vercel.app',
   credentials: true
 }));
 
