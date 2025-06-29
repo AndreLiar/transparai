@@ -17,21 +17,6 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'https://transparai.onrender.com',
-        changeOrigin: true,
-        secure: false,
-        configure: (proxy) => {
-          proxy.on('proxyReq', (proxyReq, req) => {
-            if (req.headers.authorization) {
-              proxyReq.setHeader('Authorization', req.headers.authorization);
-              console.log('✅ Vite Proxy forwarded Authorization header');
-            }
-          });
-        },
-      },
-    },
   },
   resolve: {
     alias: {

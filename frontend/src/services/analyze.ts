@@ -1,6 +1,6 @@
 // src/services/analyze.ts
 export const analyzeCGA = async (token: string, text: string, source: 'upload' | 'ocr') => {
-  const response = await fetch('/api/analyze', {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/analyze`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,

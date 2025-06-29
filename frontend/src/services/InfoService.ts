@@ -5,7 +5,7 @@ export interface InfoData {
   }
   
   export const fetchDashboardData = async (token: string): Promise<InfoData> => {
-    const res = await fetch('/api/dashboard', {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/dashboard`, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
