@@ -1,6 +1,6 @@
 // src/services/upgradeService.ts
 
-export const createCheckoutSession = async (token: string, plan: 'standard' | 'premium'): Promise<string> => {
+export const createCheckoutSession = async (token: string, plan: 'standard' | 'premium' | 'enterprise'): Promise<string> => {
   const res = await fetch('/api/stripe/create-checkout-session', {
     method: 'POST',
     headers: {

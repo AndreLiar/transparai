@@ -38,4 +38,10 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 1600,
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/setupTests.ts',
+    css: true,
+  },
 });

@@ -1,0 +1,1 @@
+{"error":"nodemailer.createTransporter is not a function","level":"error","message":"Gmail SMTP connection failed","timestamp":"2025-11-02 14:48:09"}

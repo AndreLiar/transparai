@@ -5,9 +5,9 @@
 /* Base styles - TransparAI Brand Kit with Luxury Feel */
 .pricing-section {
   padding: 80px 24px; /* Increased padding from 64px to 80px for more spacious luxury */
-  background-color: #F6F8FC; /* Sky Gray background - light, clean, modern */
+  background-color: var(--color-bg-secondary); /* Sky Gray background - light, clean, modern */
   font-family: 'Inter', sans-serif; /* Primary font: Inter for UI text */
-  color: #0A1E3F; /* Deep Navy for general text - strong, professional */
+  color: var(--color-text-primary); /* Deep Navy for general text - strong, professional */
   text-align: center;
   overflow: hidden;
   box-sizing: border-box; /* Ensure padding is included in width */
@@ -22,7 +22,7 @@
   font-family: 'Manrope', sans-serif; /* Secondary font: Manrope for headings - impactful */
   font-size: 48px; /* Larger, more impactful title for luxury */
   font-weight: 700;
-  color: #0A1E3F; /* Deep Navy for headings - strong presence */
+  color: var(--color-text-primary); /* Deep Navy for headings - strong presence */
   margin-bottom: 16px;
   letter-spacing: -0.04em; /* Tighter letter spacing for sophisticated look */
   line-height: 1.15; /* Slightly tighter line height */
@@ -30,7 +30,7 @@
 
 .section-subtitle {
   font-size: 20px;
-  color: #0A1E3F;
+  color: var(--color-text-primary);
   max-width: 800px; /* Wider subtitle for more refined composition */
   margin: 0 auto;
   line-height: 1.6;
@@ -93,7 +93,7 @@
   font-family: 'Manrope', sans-serif;
   font-size: 28px; /* Larger plan titles */
   font-weight: 700; /* Bolder plan titles */
-  color: #0A1E3F;
+  color: var(--color-text-primary);
   margin-bottom: 24px; /* Ample space */
 }
 
@@ -101,7 +101,7 @@
   font-family: 'Manrope', sans-serif;
   font-size: 40px; /* Prominent price size */
   font-weight: 700;
-  color: #005CFF; /* Primary Blue for price - strong brand presence */
+  color: var(--color-primary); /* Primary Blue for price - strong brand presence */
   margin-bottom: 24px;
   display: flex;
   justify-content: center;
@@ -110,15 +110,16 @@
 }
 
 .price .amount {
-  font-size: 56px; /* Significantly larger amount for impact */
+  font-size: clamp(32px, 4vw, 56px); /* Responsive amount size */
   line-height: 1;
 }
 
 .price .frequency {
-  font-size: 18px; /* Slightly larger frequency for readability */
-  color: #0A1E3F;
+  font-size: clamp(14px, 2vw, 18px); /* Responsive frequency size */
+  color: var(--color-text-primary);
   margin-left: 8px;
   opacity: 0.7;
+  word-break: keep-all; /* Prevent line breaks */
 }
 
 /* Feature List - Clean & Legible */
@@ -131,18 +132,19 @@
 
 .features-list li {
   display: flex;
-  align-items: center;
-  margin-bottom: 16px; /* More space between list items */
-  font-size: 18px; /* Larger font size for features */
-  color: #0A1E3F;
-  opacity: 0.9; /* Slightly softer feature text */
+  align-items: flex-start; /* Better alignment for multi-line text */
+  margin-bottom: 16px;
+  font-size: 16px; /* Reduced from 18px for better fit */
+  color: var(--color-text-primary);
+  opacity: 0.9;
+  line-height: 1.5; /* Better line spacing */
 }
 
 .features-list li .feature-icon {
   width: 24px; /* Larger, more visible icons */
   height: 24px;
   margin-right: 12px;
-  color: #2DD4BF; /* Success Green */
+  color: var(--color-success); /* Success Green */
   flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
@@ -153,43 +155,48 @@
 /* Buttons - Premium Interaction */
 .btn {
   display: inline-block;
-  padding: 16px 40px; /* More generous padding for a premium feel */
+  padding: 16px 32px;
   border-radius: 8px;
-  font-size: 18px; /* Slightly larger button text */
+  font-size: 16px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smoother, more elegant transitions */
-  min-width: 200px; /* Ensure sufficient width */
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  width: 100%; /* Full width for consistency */
+  max-width: 240px;
+  text-align: center;
   font-family: 'Inter', sans-serif;
-  letter-spacing: 0.02em; /* Subtle letter spacing for buttons */
+  letter-spacing: 0.02em;
+  border: 2px solid transparent;
+  box-sizing: border-box;
 }
 
 .btn-primary {
-  background-color: #005CFF; /* Primary Blue */
+  background-color: #005CFF;
   color: #ffffff;
-  border: 1px solid #005CFF;
-  box-shadow: 0 4px 15px rgba(0, 92, 255, 0.2); /* Subtle shadow for primary button */
+  border: 2px solid #005CFF;
+  box-shadow: 0 4px 15px rgba(0, 92, 255, 0.2);
 }
 
 .btn-primary:hover {
-  background-color: #0044cc; /* Darker Primary Blue */
+  background-color: #0044cc;
   border-color: #0044cc;
-  transform: translateY(-3px); /* More noticeable lift on hover */
-  box-shadow: 0 6px 20px rgba(0, 92, 255, 0.3); /* Enhanced shadow on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 92, 255, 0.3);
+  color: #ffffff;
 }
 
 .btn-outline {
   background-color: transparent;
-  color: #005CFF; /* Primary Blue text */
-  border: 1px solid #005CFF;
+  color: #005CFF;
+  border: 2px solid #005CFF;
 }
 
 .btn-outline:hover {
-  background-color: rgba(0, 92, 255, 0.07); /* Light blue tint on hover */
-  color: #0044cc;
-  transform: translateY(-3px);
-  box-shadow: 0 3px 10px rgba(0, 92, 255, 0.1); /* Subtle shadow on hover */
+  background-color: #005CFF;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 92, 255, 0.2);
 }
 
 /* Call to Action for free analysis - Prominent & Inviting */
@@ -205,13 +212,13 @@
   font-family: 'Manrope', sans-serif;
   font-size: 36px; /* Larger CTA title for impact */
   font-weight: 700;
-  color: #0A1E3F;
+  color: var(--color-text-primary);
   margin-bottom: 24px;
 }
 
 .cta-description {
   font-size: 20px; /* Larger description for readability */
-  color: #0A1E3F;
+  color: var(--color-text-primary);
   margin-bottom: 40px; /* More space before the button */
   max-width: 700px; /* Wider description */
   margin-left: auto;
@@ -228,28 +235,182 @@
 /* Responsive adjustments - Maintaining Elegance Across Devices */
 @media (min-width: 768px) {
   .pricing-grid {
-    flex-direction: row;
-    justify-content: center;
-    gap: 32px; /* Consistent gap on desktop */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .pricing-card {
-    flex: 0 0 calc(33.333% - 32px); /* Even distribution with gap */
-    max-width: 360px; /* Optimal width for a three-column layout */
+    max-width: none;
+    width: 100%;
   }
 
   .section-title {
-    font-size: 64px; /* Grand scale title on larger screens */
+    font-size: clamp(32px, 5vw, 64px); /* Responsive title scaling */
   }
 }
 
 @media (min-width: 1200px) {
   .pricing-section {
-    padding: 120px 64px; /* More extensive padding on very large screens */
+    padding: 120px 64px;
   }
 
   .pricing-grid {
-    max-width: 1200px; /* Limit grid width as per brand guide */
-    margin: 0 auto;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    max-width: 1400px;
+  }
+
+  .pricing-card {
+    max-width: 320px;
+    justify-self: center;
+  }
+
+  .features-list li {
+    font-size: 15px; /* Smaller text for better fit on 4-column layout */
+  }
+}
+
+/* Enterprise Plan Styling */
+.pricing-card.enterprise {
+  position: relative;
+  background: linear-gradient(135deg, #1e40af 0%, #3730a3 50%, #581c87 100%);
+  color: white;
+  border: 2px solid #fbbf24;
+  box-shadow: 0 20px 50px rgba(30, 64, 175, 0.3);
+  /* Removed transform: scale(1.05) to fix layout overflow */
+}
+
+.enterprise-banner {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #1e40af;
+  padding: 10px 28px;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+  z-index: 10;
+}
+
+.pricing-card.enterprise .plan-title {
+  color: white;
+  margin-top: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Better readability */
+}
+
+.pricing-card.enterprise .price .amount {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pricing-card.enterprise .price .frequency {
+  color: #f3f4f6; /* Better contrast for readability */
+  opacity: 0.9;
+}
+
+.pricing-card.enterprise .features-list li {
+  color: #f8fafc; /* Better contrast on dark background */
+}
+
+.pricing-card.enterprise .feature-icon {
+  color: #fbbf24;
+  margin-top: 2px; /* Align with first line of text */
+}
+
+.pricing-card.enterprise .btn-primary {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #1e40af;
+  font-weight: 700;
+  border: 2px solid #fbbf24;
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+}
+
+.pricing-card.enterprise .btn-primary:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: #f59e0b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.5);
+  color: #1e40af;
+}
+
+/* Mobile-first responsive improvements */
+@media (max-width: 767px) {
+  .pricing-section {
+    padding: 60px 16px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 6vw, 48px);
+    margin-bottom: 12px;
+  }
+
+  .section-subtitle {
+    font-size: 16px;
+    padding: 0 16px;
+  }
+
+  .pricing-grid {
+    gap: 24px;
+  }
+
+  .pricing-card {
+    padding: 32px 24px;
+    max-width: 100%;
+  }
+
+  .plan-title {
+    font-size: 24px;
+  }
+
+  .price {
+    margin-bottom: 20px;
+  }
+
+  .features-list {
+    margin-bottom: 32px;
+  }
+
+  .features-list li {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .btn {
+    padding: 14px 24px;
+    font-size: 15px;
+  }
+
+  .cta-free {
+    margin-top: 60px;
+    padding: 40px 24px;
+  }
+
+  .cta-title {
+    font-size: 28px;
+  }
+
+  .cta-description {
+    font-size: 16px;
+  }
+
+  /* Enterprise card mobile adjustments */
+  .pricing-card.enterprise {
+    margin-top: 24px; /* Extra space for banner */
+  }
+
+  .enterprise-banner {
+    top: -16px;
+    padding: 8px 20px;
+    font-size: 11px;
   }
 }

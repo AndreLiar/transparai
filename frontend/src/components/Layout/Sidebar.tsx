@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/configFirebase/Firebase';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/context/AuthContext';
+import { fetchDashboardData } from '@/services/InfoService';
 import {
-  User, BookOpen, MagnifyingGlass, ArrowCircleUp, SignOut, X, List
+  User, BookOpen, MagnifyingGlass, ArrowCircleUp, SignOut, X, List, ChartBar, Buildings, Users, Headset
 } from 'phosphor-react';
 import LanguageSwitcher from '@/components/Layout/LanguageSwitcher'; // 👈 Import switcher
 import ThemeSwitcher from '@/components/Layout/ThemeSwitcher'; // adjust path if needed
+import UpgradePrompt from '@/components/common/UpgradePrompt';
 
 import './Sidebar.css';
 
@@ -18,8 +21,24 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [userPlan, setUserPlan] = useState('free');
+
+  useEffect(() => {
+    const loadUserPlan = async () => {
+      if (!user) return;
+      try {
+        const token = await user.getIdToken(true);
+        const data = await fetchDashboardData(token);
+        setUserPlan(data.plan);
+      } catch (error) {
+        console.error('Error loading user plan:', error);
+      }
+    };
+    loadUserPlan();
+  }, [user]);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -27,11 +46,29 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     localStorage.setItem('logout-event', Date.now().toString());
   };
 
-  const navItems = [
-    { label: t('sidebar.infos'), path: '/infos', icon: <User size={20} /> },
+  const baseNavItems = [
+    { label: t('sidebar.account'), path: '/account', icon: <User size={20} /> },
     { label: t('sidebar.history'), path: '/history', icon: <BookOpen size={20} /> },
     { label: t('sidebar.analyze'), path: '/analyze', icon: <MagnifyingGlass size={20} /> },
-    { label: t('sidebar.upgrade'), path: '/upgrade', icon: <ArrowCircleUp size={20} /> },
+    { label: 'Support', path: '/support', icon: <Headset size={20} /> },
+  ];
+
+  const premiumNavItems = [
+    { label: 'Analyse Comparative', path: '/compare', icon: <ChartBar size={20} /> },
+  ];
+
+  const enterpriseNavItems = [
+    { label: 'Organisation', path: '/organization', icon: <Buildings size={20} /> },
+    { label: 'Utilisateurs', path: '/user-management', icon: <Users size={20} /> },
+  ];
+
+  const upgradeItem = { label: t('sidebar.upgrade'), path: '/upgrade', icon: <ArrowCircleUp size={20} /> };
+
+  const navItems = [
+    ...baseNavItems,
+    ...(userPlan === 'premium' ? premiumNavItems : []),
+    ...(userPlan === 'enterprise' ? [...premiumNavItems, ...enterpriseNavItems] : []),
+    upgradeItem,
   ];
 
   return (
@@ -70,13 +107,27 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 navigate(path);
                 setIsOpen(false);
               }}
-              className={location.pathname === path ? 'active' : ''}
+              className={
+                location.pathname === path || 
+                (path === '/account' && (location.pathname === '/infos' || location.pathname === '/profile'))
+                  ? 'active' : ''
+              }
             >
               <span className="icon">{icon}</span>
               {label}
             </button>
           ))}
         </nav>
+
+        {/* Upgrade Prompt for Free/Starter Users */}
+        {(userPlan === 'free' || userPlan === 'starter') && (
+          <div className="sidebar-upgrade">
+            <UpgradePrompt 
+              context="enhanced_features"
+              className="upgrade-prompt--compact"
+            />
+          </div>
+        )}
 
   <div className="sidebar-footer">
   <div className="sidebar-controls">

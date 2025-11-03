@@ -31,8 +31,9 @@ const AnalyzeForm: React.FC<AnalyzeFormProps> = ({
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-3">
-        <label className="form-label">{t('source_label')}</label>
+        <label className="form-label" htmlFor="analyze-source">{t('source_label')}</label>
         <select
+          id="analyze-source"
           className="form-select"
           value={source}
           onChange={(e) => setSource(e.target.value as 'upload' | 'ocr')}
@@ -44,8 +45,9 @@ const AnalyzeForm: React.FC<AnalyzeFormProps> = ({
 
       {source === 'upload' && (
         <div className="mb-3">
-          <label className="form-label">{t('text_input_label')}</label>
+          <label className="form-label" htmlFor="analyze-text">{t('text_input_label')}</label>
           <textarea
+            id="analyze-text"
             className="form-control"
             rows={6}
             value={text}
@@ -57,8 +59,9 @@ const AnalyzeForm: React.FC<AnalyzeFormProps> = ({
 
       {source === 'ocr' && (
         <div className="mb-3">
-          <label className="form-label">{t('file_input_label')}</label>
+          <label className="form-label" htmlFor="analyze-file">{t('file_input_label')}</label>
           <input
+            id="analyze-file"
             type="file"
             accept="image/*,.pdf"
             className="form-control"

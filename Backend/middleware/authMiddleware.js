@@ -1,15 +1,16 @@
-//Backend/middleware/authMiddleware.js
+// Backend/middleware/authMiddleware.js
 const admin = require('../config/firebase'); // ✅ Must import initialized instance
 
 const authenticate = async (req, res, next) => {
-  console.log('🧪 Middleware reached.');
-  console.log('📥 Incoming request:', req.method, req.url);
-  console.log('🧾 Request headers:', req.headers);
+  // Only log minimal info in production, exclude sensitive headers
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('🧪 Auth middleware - Request:', req.method, req.url);
+  }
 
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.warn('⚠️ Token manquant ou mal formaté');
+    console.warn('⚠️ Missing or malformed token');
     return res.status(401).json({ message: 'Token manquant ou invalide' });
   }
 
@@ -17,16 +18,26 @@ const authenticate = async (req, res, next) => {
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
-    console.log('✅ Firebase token verified:', decodedToken.email);
+    
+    // Only log email in dev, never log tokens
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('✅ Token verified for user:', decodedToken.email);
+    }
 
     req.user = {
       uid: decodedToken.uid,
       email: decodedToken.email || '',
+      emailVerified: decodedToken.email_verified || false
     };
 
     next();
   } catch (err) {
-    console.error('❌ Erreur de vérification du token Firebase :', err.message);
+    // Sanitize error messages in production
+    const sanitizedError = process.env.NODE_ENV === 'production' 
+      ? 'Token validation failed' 
+      : err.message;
+    
+    console.error('❌ Token verification error:', sanitizedError);
     return res.status(403).json({ message: 'Token invalide ou expiré' });
   }
 };

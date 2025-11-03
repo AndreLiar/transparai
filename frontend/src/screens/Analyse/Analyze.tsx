@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useSearchParams } from 'react-router-dom';
 import { analyzeCGA } from '@/services/analyze';
 import { fetchDashboardData } from '@/services/InfoService';
+import { exportAnalysisPdf } from '@/services/export';
 import Tesseract from 'tesseract.js';
 import * as pdfjsLib from 'pdfjs-dist';
 import Sidebar from '@/components/Layout/Sidebar';
+import EmailVerificationBanner from '@/components/common/EmailVerificationBanner';
+import { sampleContracts, getSampleContract } from '@/utils/sampleContracts';
 import './Analyze.css';
 
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.mjs';
@@ -16,15 +20,18 @@ type TextContent = { items: Array<TextItem | { type: string }> };
 
 const Analyze: React.FC = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [quota, setQuota] = useState({ used: 0, limit: -1 });
   const [sourceType, setSourceType] = useState<'text' | 'file'>('text');
   const [inputText, setInputText] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<{ summary: string; score: string; clauses: string[] } | null>(null);
+  const [result, setResult] = useState<{ summary: string; score: string; clauses: string[]; analysisId?: string; canExportPdf?: boolean } | null>(null);
   const [loading, setLoading] = useState(false);
   const [ocrStatus, setOcrStatus] = useState('');
   const [error, setError] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showSamples, setShowSamples] = useState(false);
+  const [isFirstTime, setIsFirstTime] = useState(false);
 
   useEffect(() => {
     const loadQuota = async () => {
@@ -32,9 +39,15 @@ const Analyze: React.FC = () => {
       const token = await user.getIdToken(true);
       const infos = await fetchDashboardData(token);
       setQuota(infos.quota);
+      setIsFirstTime(infos.quota.used === 0);
     };
     loadQuota();
-  }, [user]);
+    
+    // Check if coming from dashboard with sample parameter
+    if (searchParams.get('sample') === 'true') {
+      setShowSamples(true);
+    }
+  }, [user, searchParams]);
 
   const extractTextFromPDF = async (pdfFile: File): Promise<string> => {
     setOcrStatus('📄 Extraction du texte natif du PDF...');
@@ -58,6 +71,28 @@ const Analyze: React.FC = () => {
       logger: m => setOcrStatus(`🧠 OCR: ${Math.round(m.progress * 100)}%`),
     });
     return data.text;
+  };
+
+  const handleExportPdf = async () => {
+    if (!user || !result?.analysisId) return;
+    
+    try {
+      const token = await user.getIdToken(true);
+      const response = await exportAnalysisPdf(token, result.analysisId);
+      
+      // Create download link
+      const blob = new Blob([response], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `analyse-cga-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      setError(err.message || 'Erreur lors de l\'export PDF');
+    }
   };
 
   const handleSubmit = async () => {
@@ -124,7 +159,7 @@ const response = await analyzeCGA(token, analysisText, apiSource);
         <p className="analyze-subtitle">Soumettez un document ou un texte pour analyse juridique automatique.</p>
 
         <p className="analyze-quota">
-          📊 <strong>Quota :</strong> {quota.used} / {quota.limit === -1 ? '∞' : quota.limit} analyses utilisées
+          📊 <strong>Quota mensuel :</strong> {quota.used} / {quota.limit === -1 ? '∞' : quota.limit} analyses utilisées
         </p>
 
         <div className="analyze-form">
@@ -183,6 +218,14 @@ const response = await analyzeCGA(token, analysisText, apiSource);
                 ))}
               </ul>
             </div>
+
+            {result.canExportPdf && (
+              <div className="result-section">
+                <button className="btn btn-secondary" onClick={handleExportPdf}>
+                  📄 Exporter en PDF
+                </button>
+              </div>
+            )}
           </div>
         )}
       </main>

@@ -1,11 +1,13 @@
-//src/services/stripeService.js
+// src/services/stripeService.js
 
 const Stripe = require('stripe');
+
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const PRICE_IDS = {
   standard: process.env.STRIPE_PRICE_STANDARD,
   premium: process.env.STRIPE_PRICE_PREMIUM,
+  enterprise: process.env.STRIPE_PRICE_ENTERPRISE,
 };
 
 const createCheckoutSessionService = async ({ uid, email, plan }) => {

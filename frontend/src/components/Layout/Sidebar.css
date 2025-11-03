@@ -1,8 +1,14 @@
+/* === Sidebar Upgrade Section === */
+.sidebar-upgrade {
+  margin: 1rem 0;
+  padding: 0 0.5rem;
+}
+
 /* === Layout & Positioning === */
 .sidebar {
   background-color: #ffffff;
   width: 260px;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
@@ -10,6 +16,9 @@
   box-shadow: 6px 0 24px rgba(0, 0, 0, 0.04);
   transition: transform 0.3s ease-in-out;
   z-index: 1001;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
 }
 
 .sidebar-backdrop {

@@ -7,7 +7,7 @@ import {
   setPersistence,
   browserSessionPersistence,
 } from 'firebase/auth';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { validatePassword } from '@/utils/validatePassword';
 import LoginErrorModal from './LoginErrorModal';
 import './LoginForm.css';
@@ -21,6 +21,10 @@ const LoginForm: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Check for invitation token
+  const invitationToken = searchParams.get('invitation');
 
   useEffect(() => {
     if (password) {
@@ -37,7 +41,13 @@ const LoginForm: React.FC = () => {
     try {
       await setPersistence(auth, browserSessionPersistence);
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      
+      // If there's an invitation token, redirect to accept invitation
+      if (invitationToken) {
+        navigate(`/accept-invitation?token=${invitationToken}`);
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err: any) {
       setErrorMsg('Email ou mot de passe incorrect.');
       setShowError(true);
@@ -48,6 +58,15 @@ const LoginForm: React.FC = () => {
 
   return (
     <>
+      {invitationToken && (
+        <div className="invitation-notice">
+          <div className="invitation-notice-content">
+            <h3>🏢 Invitation à rejoindre une organisation</h3>
+            <p>Vous avez été invité(e) à rejoindre une organisation. Connectez-vous pour accepter l'invitation.</p>
+          </div>
+        </div>
+      )}
+      
       <form className="login-form" onSubmit={handleLogin}>
         <div className="form-group">
           <label htmlFor="email">Adresse email</label>
@@ -97,8 +116,13 @@ const LoginForm: React.FC = () => {
           <Link to="/magic-link" className="highlight-link">lien magique</Link>
         </div>
         <div>
-          <span>Vous n’avez pas encore de compte ? </span>
-          <Link to="/signup" className="highlight-link">Créez-en un</Link>
+          <span>Vous n'avez pas encore de compte ? </span>
+          <Link 
+            to={invitationToken ? `/signup?invitation=${invitationToken}` : "/signup"} 
+            className="highlight-link"
+          >
+            Créez-en un
+          </Link>
         </div>
       </div>
 

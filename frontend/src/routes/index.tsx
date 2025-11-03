@@ -8,12 +8,26 @@ import VerifyEmail from '@/screens/AuthenticationsPages/VerifyEmail';
 import MagicLink from '@/screens/AuthenticationsPages/MagicLink';
 import PrivateRoute from '@/components/guard/PrivateRoute';
 import Dashboard from '@/screens/Dashboard/Dashboard';
-import Infos from '@/screens/Infos/Infos'; // ✅ NEW
-import Analyze from '@/screens/Analyse/Analyze'; // ✅ Added
+import Account from '@/screens/Account/Account'; // ✅ NEW - Merged Profile + Infos
+import AnalyzeEnhanced from '@/screens/Analyse/AnalyzeEnhanced'; // ✅ Enhanced version
 import Upgrade from '@/screens/upgrade/Upgrade'; // ✅ Correct (matches folder casing)
 import UpgradeSuccess from '@/screens/upgrade/UpgradeSuccess';
 import UpgradeCancel from '@/screens/upgrade/UpgradeCancel';
 import History from '@/screens/history/History';
+import PrivacyPolicy from '@/screens/legal/PrivacyPolicy';
+import TermsOfService from '@/screens/legal/TermsOfService';
+import Contact from '@/screens/legal/Contact';
+import CookiePolicy from '@/screens/legal/CookiePolicy';
+import Help from '@/screens/Help/Help';
+import FAQ from '@/screens/FAQ/FAQ';
+import About from '@/screens/About/About';
+import Security from '@/screens/Security/Security';
+import Compare from '@/screens/Compare/Compare';
+import ApiDocs from '@/screens/ApiDocs/ApiDocs';
+import Support from '@/screens/Support/Support';
+import OrganizationDashboard from '@/screens/Organization/OrganizationDashboard';
+import UserManagement from '@/screens/Organization/UserManagement';
+import AcceptInvitation from '@/screens/AcceptInvitation/AcceptInvitation';
 
 const AppRoutes = () => {
   return (
@@ -24,20 +38,40 @@ const AppRoutes = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/magic-link" element={<MagicLink />} />
+      <Route path="/accept-invitation" element={<AcceptInvitation />} />
         {/* Protected */}
     <Route
       path="/dashboard"
       element={
-        <PrivateRoute requireEmailVerified>
+        <PrivateRoute>
           <Dashboard />
         </PrivateRoute>
       }
     />
        <Route
+        path="/account"
+        element={
+          <PrivateRoute>
+            <Account />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Legacy redirects */}
+      <Route
         path="/infos"
         element={
-          <PrivateRoute requireEmailVerified>
-            <Infos />
+          <PrivateRoute>
+            <Account />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Account />
           </PrivateRoute>
         }
       />
@@ -45,11 +79,48 @@ const AppRoutes = () => {
 <Route
         path="/analyze"
         element={
-          <PrivateRoute requireEmailVerified>
-            <Analyze />
+          <PrivateRoute>
+            <AnalyzeEnhanced />
           </PrivateRoute>
         }
       />
+
+      <Route
+        path="/compare"
+        element={
+          <PrivateRoute requireEmailVerified>
+            <Compare />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/support"
+        element={
+          <PrivateRoute requireEmailVerified>
+            <Support />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/organization"
+        element={
+          <PrivateRoute requireEmailVerified>
+            <OrganizationDashboard />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/user-management"
+        element={
+          <PrivateRoute requireEmailVerified>
+            <UserManagement />
+          </PrivateRoute>
+        }
+      />
+
       {/* Future pages: */}
     {/* ✅ Upgrade Page (Protected) */}
       <Route
@@ -71,6 +142,17 @@ const AppRoutes = () => {
     </PrivateRoute>
   }
 />
+
+      {/* Legal Pages (Public) */}
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms-of-service" element={<TermsOfService />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/cookies" element={<CookiePolicy />} />
+      <Route path="/help" element={<Help />} />
+      <Route path="/faq" element={<FAQ />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/security" element={<Security />} />
+      <Route path="/api" element={<ApiDocs />} />
     </Routes>
   );
 };

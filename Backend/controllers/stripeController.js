@@ -1,4 +1,4 @@
-//src/controllers/stripeController.js
+// src/controllers/stripeController.js
 
 const { createCheckoutSessionService } = require('../services/stripeService');
 
@@ -7,7 +7,7 @@ const createCheckoutSession = async (req, res) => {
     const { plan } = req.body;
     const { uid, email } = req.user;
 
-    if (!['standard', 'premium'].includes(plan)) {
+    if (!['standard', 'premium', 'enterprise'].includes(plan)) {
       return res.status(400).json({ message: 'Plan invalide.' });
     }
 

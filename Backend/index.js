@@ -1,4 +1,4 @@
-//Backend/index.js
+// Backend/index.js
 require('dotenv').config();
 const app = require('./app');
 

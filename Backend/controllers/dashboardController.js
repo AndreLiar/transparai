@@ -1,4 +1,4 @@
-//Backend/controllers/dashboardController.js
+// Backend/controllers/dashboardController.js
 
 const { getDashboardData } = require('../services/dashboardService');
 
@@ -14,4 +14,3 @@ const fetchDashboard = async (req, res) => {
 };
 
 module.exports = { fetchDashboard };
-

@@ -1,7 +1,11 @@
 // src/services/dashboardService.ts
 export interface InfoData {
-    quota: { used: number; limit: number };
+    quota: { used: number; limit: number; remaining: number };
     plan: string;
+    planConfig?: any;
+    features?: any;
+    upgradeRecommendation?: any;
+    profileComplete?: boolean;
   }
   
   export const fetchDashboardData = async (token: string): Promise<InfoData> => {
@@ -20,6 +24,9 @@ export interface InfoData {
     return {
       quota: fullData.quota,
       plan: fullData.plan,
+      planConfig: fullData.planConfig,
+      features: fullData.features,
+      upgradeRecommendation: fullData.upgradeRecommendation,
     };
   };
   

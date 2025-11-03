@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { sendEmailVerification } from 'firebase/auth';
 import { useAuth } from '@/context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import logo from '@/assets/logo.png';
 import './auth.css';
 
@@ -12,6 +12,10 @@ const VerifyEmail: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Check for invitation token
+  const invitationToken = searchParams.get('invitation');
 
   const handleResend = async () => {
     setMessage('');
@@ -35,9 +39,14 @@ const VerifyEmail: React.FC = () => {
     try {
       await user.reload();
       if (user.emailVerified) {
-        navigate('/dashboard');
+        // If there's an invitation token, redirect to accept invitation
+        if (invitationToken) {
+          navigate(`/accept-invitation?token=${invitationToken}`);
+        } else {
+          navigate('/dashboard');
+        }
       } else {
-        setError("Votre email n’est pas encore vérifié.");
+        setError("Votre email n'est pas encore vérifié.");
       }
     } catch {
       setError("Échec de la vérification.");
@@ -48,6 +57,15 @@ const VerifyEmail: React.FC = () => {
   return (
     <div className="auth-wrapper">
       <div className="auth-card">
+        {invitationToken && (
+          <div className="invitation-notice">
+            <div className="invitation-notice-content">
+              <h3>🏢 Invitation en attente</h3>
+              <p>Après vérification de votre email, vous pourrez rejoindre votre organisation et accéder aux fonctionnalités Enterprise.</p>
+            </div>
+          </div>
+        )}
+        
         <div className="auth-logo-section">
           <img src={logo} alt="TransparAI Logo" />
           <h2>Vérification email requise</h2>

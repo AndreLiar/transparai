@@ -16,7 +16,7 @@ const Upgrade: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleUpgrade = async (plan: 'standard' | 'premium') => {
+  const handleUpgrade = async (plan: 'standard' | 'premium' | 'enterprise') => {
     if (!user) return;
     setError('');
     setLoading(true);
@@ -73,6 +73,22 @@ const Upgrade: React.FC = () => {
               onClick={() => handleUpgrade('premium')}
             >
               {loading ? t('upgrade.redirecting') : t('upgrade.premium_button')}
+            </button>
+          </div>
+
+          <div className="plan-card">
+            <div className="plan-header">
+              <span className="plan-icon">🏢</span>
+              <h3 className="plan-name">{t('upgrade.enterprise_title')}</h3>
+            </div>
+            <p className="plan-desc">{t('upgrade.enterprise_desc')}</p>
+            <p className="plan-price">{t('upgrade.enterprise_price')}</p>
+            <button
+              disabled={loading}
+              className="plan-btn enterprise"
+              onClick={() => handleUpgrade('enterprise')}
+            >
+              {loading ? t('upgrade.redirecting') : t('upgrade.enterprise_button')}
             </button>
           </div>
         </div>

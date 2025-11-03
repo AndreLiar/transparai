@@ -1,125 +1,429 @@
-/* src/components/Features.css */
-/* Import Google Fonts for Inter and Manrope */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@600;700&display=swap');
+/* src/components/LandingComponents/Features.css */
+@import '../../styles/design-system.css';
 
-/* Base styles for the section */
 .features-section {
-  padding: 80px 24px; /* Generous vertical padding for spacious feel */
-  background-color: #F6F8FC; /* Sky Gray background from brand kit */
-  font-family: 'Inter', sans-serif; /* Primary font for body text */
-  color: #0A1E3F; /* Deep Navy for general text */
-  text-align: center;
+  padding: var(--space-32) var(--space-6);
+  background: linear-gradient(
+    135deg,
+    var(--color-bg-secondary) 0%,
+    rgba(0, 92, 255, 0.02) 50%,
+    var(--color-bg-secondary) 100%
+  );
+  position: relative;
   overflow: hidden;
-  box-sizing: border-box;
 }
 
-/* Container for content alignment */
+.features-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 92, 255, 0.03) 0%,
+    transparent 70%
+  );
+  animation: pulse 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
 .features-container {
-  max-width: 1200px; /* Max width from brand guide */
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 16px; /* Horizontal padding for smaller screens */
+  position: relative;
+  z-index: 2;
 }
 
-/* Section Title - Commanding Presence */
-.features-title {
-  font-family: 'Manrope', sans-serif; /* Secondary font for headings */
-  font-size: 48px; /* Large and impactful title */
-  font-weight: 700;
-  color: #0A1E3F; /* Deep Navy */
-  margin-bottom: 24px; /* Sufficient space below title */
-  letter-spacing: -0.04em; /* Tighter for sophistication */
-  line-height: 1.15;
-}
-
-/* Section Subtitle - Elegant Context */
-.features-subtitle {
-  font-size: 20px; /* Legible and elegant */
-  color: #0A1E3F;
-  max-width: 800px; /* Controlled width for readability */
-  margin: 0 auto 64px auto; /* More space before grid, centered */
-  line-height: 1.6;
-  opacity: 0.8; /* Softer appearance */
-}
-
-/* Features Grid - Balanced & Responsive */
-.features-grid {
-  display: grid; /* Using CSS Grid for more control over layout */
-  grid-template-columns: 1fr; /* Single column by default */
-  gap: 32px; /* Consistent spacing between cards */
-  justify-items: center; /* Center cards in the grid */
-}
-
-/* Feature Card - A Polished Presentation */
-.feature-card {
-  background: #ffffff;
-  border: 1px solid #DDE3EC; /* Soft border */
-  border-radius: 12px; /* Luxurious rounded corners */
-  padding: 40px; /* Generous internal padding */
-  box-shadow: 0 12px 40px rgba(10, 30, 63, 0.06); /* Deep, elegant shadow */
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smooth luxury transition */
-  width: 100%;
-  max-width: 380px; /* Max width for individual cards */
+.features-header {
   text-align: center;
+  margin-bottom: var(--space-20);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.features-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-6);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  background: linear-gradient(
+    135deg,
+    var(--color-text-primary) 0%,
+    var(--color-primary) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.features-subtitle {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  opacity: 0.9;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-8);
+  margin-top: var(--space-16);
+  min-height: min-content;
+}
+
+@media (max-width: 767px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+.feature-card {
+  background: var(--color-bg-primary);
+  border-radius: var(--border-radius-xl);
+  padding: var(--space-8);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-base);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 320px;
+  visibility: visible;
+  opacity: 1;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(0, 92, 255, 0.02) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  pointer-events: none;
 }
 
 .feature-card:hover {
-  transform: translateY(-12px); /* Gentle lift on hover */
-  box-shadow: 0 18px 50px rgba(10, 30, 63, 0.12); /* Enhanced shadow on hover */
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary);
 }
 
-/* Feature Icon Wrapper - Visual Emphasis */
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.feature-card.highlight {
+  border: 2px solid var(--color-primary);
+  background: linear-gradient(
+    135deg,
+    var(--color-bg-primary) 0%,
+    rgba(0, 92, 255, 0.05) 100%
+  );
+  box-shadow: var(--shadow-primary);
+  position: relative;
+}
+
+.feature-card.highlight::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  border-radius: var(--border-radius-xl);
+  z-index: -1;
+  opacity: 0.1;
+}
+
 .feature-icon-wrapper {
-  width: 72px; /* Larger circular background for icons */
-  height: 72px;
-  background-color: rgba(0, 92, 255, 0.08); /* Primary Blue tint background for icon */
-  border-radius: 50%; /* Perfect circle */
+  width: 80px;
+  height: 80px;
+  border-radius: var(--border-radius-full);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-light) 0%,
+    rgba(0, 92, 255, 0.15) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 24px auto; /* Centered, generous margin below */
-  box-shadow: 0 4px 15px rgba(0, 92, 255, 0.1); /* Subtle shadow for icon wrapper */
+  margin: 0 auto var(--space-6) auto;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.feature-card:hover .feature-icon-wrapper {
+  transform: scale(1.1);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-secondary) 100%
+  );
+}
+
+.feature-card.highlight .feature-icon-wrapper {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-secondary) 100%
+  );
+  box-shadow: var(--shadow-primary);
 }
 
 .feature-icon-emoji {
-  font-size: 36px; /* Large emoji size */
-  line-height: 1; /* Ensure emoji is vertically centered */
+  font-size: 36px;
+  transition: all var(--transition-base);
+  filter: grayscale(0.2);
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  line-height: 1;
+  text-align: center;
 }
 
-/* Feature Title - Clear & Concise */
+.feature-card:hover .feature-icon-emoji {
+  transform: scale(1.1);
+  filter: grayscale(0);
+}
+
+.feature-card.highlight .feature-icon-emoji {
+  filter: none !important;
+  color: white;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 .feature-title {
-  font-family: 'Manrope', sans-serif;
-  font-size: 24px; /* Prominent title for each feature */
+  font-family: var(--font-heading), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #0A1E3F;
-  margin-bottom: 12px; /* Space between title and description */
+  color: #0A1E3F !important;
+  margin-bottom: 1rem;
+  line-height: 1.25;
+  transition: color 300ms ease;
+  z-index: 2;
+  position: relative;
+  width: 100%;
+  text-align: center;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 30px;
 }
 
-/* Feature Description - Informative & Legible */
+.feature-card:hover .feature-title {
+  color: var(--color-primary);
+}
+
 .feature-description {
-  font-size: 18px; /* Easy to read */
-  color: #0A1E3F;
-  opacity: 0.85; /* Slightly softer text */
+  font-family: var(--font-primary), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 1rem;
+  color: #64748b !important;
   line-height: 1.6;
+  margin-bottom: 1.5rem;
+  transition: color 300ms ease;
+  z-index: 2;
+  position: relative;
+  width: 100%;
+  flex-grow: 1;
+  text-align: center;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 50px;
 }
 
-/* Responsive Adjustments for a Multi-Column Layout */
-@media (min-width: 768px) {
+.feature-card:hover .feature-description {
+  color: var(--color-text-primary);
+}
+
+.feature-badge {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: linear-gradient(
+    135deg,
+    var(--color-accent-gold) 0%,
+    var(--color-accent-gold-hover) 100%
+  );
+  color: var(--color-text-primary);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--border-radius-full);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  box-shadow: var(--shadow-base);
+  animation: bounce 2s infinite;
+  z-index: 20;
+}
+
+/* Ensure feature cards are visible with clean CSS */
+.features-section .feature-card {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+}
+
+.features-section .feature-title,
+.features-section .feature-description,
+.features-section .feature-icon-emoji {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 767px) {
+  .features-section {
+    padding: var(--space-20) var(--space-4);
+  }
+
+  .features-header {
+    margin-bottom: var(--space-16);
+  }
+
+  .features-title {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .features-subtitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .feature-card {
+    padding: var(--space-6);
+  }
+
+  .feature-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--space-4);
+  }
+
+  .feature-icon-emoji {
+    font-size: 28px;
+  }
+
+  .feature-title {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-3);
+  }
+
+  .feature-description {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+  }
+
+  .feature-badge {
+    top: var(--space-3);
+    right: var(--space-3);
+    font-size: 10px;
+    padding: var(--space-1) var(--space-2);
+  }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 768px) and (max-width: 1023px) {
   .features-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
-    gap: 32px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+
+  .feature-card {
+    padding: var(--space-6);
   }
 }
 
-@media (min-width: 1024px) {
+/* Large Desktop Optimizations */
+@media (min-width: 1280px) {
   .features-grid {
-    grid-template-columns: repeat(3, 1fr); /* 3 columns on desktop */
-    gap: 32px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-10);
+  }
+
+  .feature-card {
+    padding: var(--space-10);
+  }
+
+  .feature-icon-wrapper {
+    width: 96px;
+    height: 96px;
+  }
+
+  .feature-icon-emoji {
+    font-size: 42px;
   }
 }
 
-/* Adjustments for even larger screens if necessary */
-@media (min-width: 1440px) {
-  .features-container {
-    max-width: 1400px; /* Even wider container for very large displays */
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .feature-card,
+  .feature-icon-wrapper,
+  .feature-icon-emoji,
+  .feature-title,
+  .feature-description {
+    transition: none;
   }
+
+  .feature-badge {
+    animation: none;
+  }
+
+  .features-section::before {
+    animation: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .feature-card {
+    border: 2px solid var(--color-text-primary);
+  }
+
+  .feature-card.highlight {
+    border: 3px solid var(--color-primary);
+  }
+}
+
+/* Focus States for Accessibility */
+.feature-card:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
 }

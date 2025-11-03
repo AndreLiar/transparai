@@ -22,21 +22,18 @@ body {
 /* Layout wrapper */
 .dashboard-layout {
   display: flex;
-  min-height: 100dvh;
-  background-color: white;
+  min-height: 100vh;
+  background-color: #f9fafb;
 }
 
 /* Content area */
 .dashboard-main {
-  flex-grow: 1;
+  flex: 1;
   padding: 2rem 3rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  background-color: white;
-  border-top-left-radius: var(--radius);
-  border-bottom-left-radius: var(--radius);
-  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.03);
+  background-color: var(--gray-50);
+  overflow-y: auto;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 /* Mobile layout */

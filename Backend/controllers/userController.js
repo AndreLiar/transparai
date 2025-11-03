@@ -1,4 +1,4 @@
-//backend/controllers/userController.js
+// backend/controllers/userController.js
 const admin = require('../config/firebase');
 const User = require('../models/User');
 
