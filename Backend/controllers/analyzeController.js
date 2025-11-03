@@ -22,7 +22,7 @@ const analyzeText = async (req, res) => {
     }
 
     // Get user plan and quota information
-    const user = await User.findOne({ uid });
+    const user = await User.findOne({ firebaseUid: uid });
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé.' });
     }
