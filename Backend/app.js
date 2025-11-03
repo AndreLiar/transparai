@@ -88,6 +88,16 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/ai-settings', aiSettingsRoutes);
 app.use('/api/contact', contactRoutes);
 
+// ✅ Root route for health checks
+app.get('/', (_req, res) => {
+  res.json({
+    status: 'healthy',
+    message: '✅ TransparAI Backend API',
+    timestamp: new Date().toISOString(),
+    version: process.env.APP_VERSION || '1.0.0',
+  });
+});
+
 // ✅ Basic Health check
 app.get('/health', (_req, res) => {
   logger.info('Basic health check accessed');
