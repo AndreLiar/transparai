@@ -327,7 +327,7 @@ const OrganizationDashboard: React.FC = () => {
             <div className="users-tab">
               <h3>Équipe ({organization?.users?.length || 0} membres)</h3>
               <div className="users-list">
-                {organization.users?.map(user => (
+                {organization?.users?.map(user => (
                   <div key={user.id} className="user-card">
                     <div className="user-info">
                       <strong>{user.name || user.email}</strong>
