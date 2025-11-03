@@ -5,6 +5,7 @@ const User = require('../models/User');
 
 const analyzeText = async (req, res) => {
   try {
+    console.log('📊 Analysis request received from user:', req.user?.uid);
     const {
       text,
       source,
@@ -16,6 +17,14 @@ const analyzeText = async (req, res) => {
       ocrConfidence,
     } = req.body;
     const { uid } = req.user;
+    
+    console.log('📝 Analysis details:', {
+      source,
+      documentName,
+      fileType,
+      textLength: text?.length || 0,
+      hasText: !!text
+    });
 
     if (!text || !source) {
       return res.status(400).json({ message: 'Champ manquant (text ou source).' });
@@ -28,7 +37,7 @@ const analyzeText = async (req, res) => {
     }
 
     const userPlan = user.plan || 'free';
-    const usedAnalyses = user.quota?.used || 0;
+    const usedAnalyses = user.monthlyQuota?.used || 0;
 
     // Check if user can analyze based on their plan
     if (!canAnalyze(userPlan, usedAnalyses)) {
@@ -71,7 +80,13 @@ const analyzeText = async (req, res) => {
 
     return res.json(result);
   } catch (err) {
-    console.error('❌ Erreur analyse :', err.message);
+    console.error('❌ Erreur analyse complète:', {
+      message: err.message,
+      stack: err.stack,
+      uid: req.user?.uid,
+      source: req.body?.source,
+      textLength: req.body?.text?.length || 0
+    });
     res.status(500).json({ message: err.message || 'Erreur serveur' });
   }
 };

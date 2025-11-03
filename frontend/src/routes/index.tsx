@@ -28,6 +28,7 @@ import Support from '@/screens/Support/Support';
 import OrganizationDashboard from '@/screens/Organization/OrganizationDashboard';
 import UserManagement from '@/screens/Organization/UserManagement';
 import AcceptInvitation from '@/screens/AcceptInvitation/AcceptInvitation';
+import AISettings from '@/screens/AISettings/AISettings';
 
 const AppRoutes = () => {
   return (
@@ -53,6 +54,15 @@ const AppRoutes = () => {
         element={
           <PrivateRoute>
             <Account />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/ai-settings"
+        element={
+          <PrivateRoute>
+            <AISettings />
           </PrivateRoute>
         }
       />

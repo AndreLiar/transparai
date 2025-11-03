@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { fetchDashboardData } from '@/services/InfoService';
 import {
-  User, BookOpen, MagnifyingGlass, ArrowCircleUp, SignOut, X, List, ChartBar, Buildings, Users, Headset
+  User, BookOpen, MagnifyingGlass, ArrowCircleUp, SignOut, X, List, ChartBar, Buildings, Users, Headset, Robot
 } from 'phosphor-react';
 import LanguageSwitcher from '@/components/Layout/LanguageSwitcher'; // 👈 Import switcher
 import ThemeSwitcher from '@/components/Layout/ThemeSwitcher'; // adjust path if needed
@@ -50,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     { label: t('sidebar.account'), path: '/account', icon: <User size={20} /> },
     { label: t('sidebar.history'), path: '/history', icon: <BookOpen size={20} /> },
     { label: t('sidebar.analyze'), path: '/analyze', icon: <MagnifyingGlass size={20} /> },
+    { label: 'Paramètres IA', path: '/ai-settings', icon: <Robot size={20} /> },
     { label: 'Support', path: '/support', icon: <Headset size={20} /> },
   ];
 

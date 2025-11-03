@@ -65,8 +65,11 @@ const { PLAN_AI_BUDGETS } = require('../services/aiModelService');
  */
 router.get('/', authenticateUser, async (req, res) => {
   try {
+    console.log('🔍 AI Settings GET request from user:', req.user?.uid);
     const user = await User.findOne({ firebaseUid: req.user.uid });
+    console.log('👤 User found:', !!user, user ? `plan: ${user.plan}` : 'not found');
     if (!user) {
+      console.log('❌ User not found for uid:', req.user.uid);
       return res.status(404).json({
         success: false,
         message: 'Utilisateur introuvable',
@@ -78,7 +81,7 @@ router.get('/', authenticateUser, async (req, res) => {
     const monthlyBudget = aiSettings.monthlyAIBudget || { allocated: 0, used: 0 };
     const remaining = monthlyBudget.allocated - monthlyBudget.used;
 
-    res.json({
+    const responseData = {
       success: true,
       data: {
         aiSettings: {
@@ -96,9 +99,11 @@ router.get('/', authenticateUser, async (req, res) => {
           totalAICost: 0,
         },
         plan: user.plan,
-        planBudget: PLAN_AI_BUDGETS[user.plan] || 0,
+        planBudget: PLAN_AI_BUDGETS[user.plan] || PLAN_AI_BUDGETS['starter'] || 0,
       },
-    });
+    };
+    console.log('✅ Sending AI settings response:', JSON.stringify(responseData, null, 2));
+    res.json(responseData);
   } catch (error) {
     console.error('❌ Error getting AI settings:', error);
     res.status(500).json({

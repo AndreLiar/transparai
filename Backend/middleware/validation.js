@@ -7,7 +7,7 @@ const patterns = {
   uid: /^[a-zA-Z0-9_-]{1,128}$/,
   objectId: /^[0-9a-fA-F]{24}$/,
   planType: /^(free|starter|standard|premium|enterprise)$/,
-  analysisSource: /^(upload|ocr)$/,
+  analysisSource: /^(upload|ocr|text|pdf)$/,
   fileType: /^(pdf|image|text)$/
 };
 
@@ -33,22 +33,34 @@ const sanitizers = {
 // Validation middleware factory
 const validate = (validations) => {
   return async (req, res, next) => {
+    console.log('🔍 Validation middleware - Request body:', JSON.stringify(req.body, null, 2));
+    
     // Run all validations
     await Promise.all(validations.map(validation => validation.run(req)));
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Validation errors:', errors.array());
+      console.log('📊 Request stats:', {
+        textLength: req.body.text?.length || 0,
+        source: req.body.source,
+        hasDocumentName: !!req.body.documentName,
+        hasFileType: !!req.body.fileType
+      });
       return res.status(400).json({
         error: 'Données invalides',
         details: errors.array().map(err => ({
           field: err.path,
           message: err.msg,
-          value: err.value
+          value: typeof err.value === 'string' && err.value.length > 100 ? 
+            `${err.value.substring(0, 100)}... (${err.value.length} chars)` : 
+            err.value
         })),
         code: 'VALIDATION_ERROR'
       });
     }
 
+    console.log('✅ Validation passed');
     next();
   };
 };
@@ -71,8 +83,8 @@ const commonValidations = {
   // Analysis validation
   analysisData: [
     body('text')
-      .isLength({ min: 10, max: 50000 })
-      .withMessage('Le texte doit contenir entre 10 et 50,000 caractères')
+      .isLength({ min: 10, max: 200000 })
+      .withMessage('Le texte doit contenir entre 10 et 200,000 caractères')
       .customSanitizer(sanitizers.cleanText),
     body('source')
       .matches(patterns.analysisSource)

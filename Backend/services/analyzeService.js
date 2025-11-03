@@ -17,9 +17,9 @@ const preprocessText = (text) => {
     throw new Error('Le texte fourni est trop court pour une analyse pertinente (minimum 100 caractères).');
   }
 
-  if (cleaned.length > 50000) {
+  if (cleaned.length > 200000) {
     // Truncate if too long but keep structure
-    cleaned = `${cleaned.substring(0, 50000)}...`;
+    cleaned = `${cleaned.substring(0, 200000)}...`;
   }
 
   return cleaned;

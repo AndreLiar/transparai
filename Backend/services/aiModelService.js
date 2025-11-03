@@ -23,7 +23,8 @@ const MODEL_COSTS = {
 
 // Plan-based AI budget allocation
 const PLAN_AI_BUDGETS = {
-  starter: 0.0,     // Free plan - no GPT budget
+  free: 0.0,        // Free plan - no GPT budget
+  starter: 0.0,     // Starter plan - no GPT budget
   standard: 2.0,    // $2/month GPT budget
   premium: 10.0,    // $10/month GPT budget
   enterprise: 50.0, // $50/month GPT budget
@@ -89,9 +90,9 @@ const selectOptimalModel = async (user, text) => {
     estimatedCost: 0,
   };
 
-  // Force Gemini for starter plan
-  if (user.plan === 'starter') {
-    selection.reason = 'Starter plan - Gemini only';
+  // Force Gemini for free/starter plan
+  if (user.plan === 'free' || user.plan === 'starter') {
+    selection.reason = 'Free/Starter plan - Gemini only';
     return selection;
   }
 
