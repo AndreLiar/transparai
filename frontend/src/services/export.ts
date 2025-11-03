@@ -11,10 +11,10 @@ export const exportAnalysisPdf = async (token: string, analysisId: string) => {
 
   if (!response.ok) {
     if (response.status === 403) {
-      throw new Error('L\'exportation PDF nécessite un abonnement payant. Passez à un plan supérieur pour télécharger vos analyses.');
+      throw new Error('L\'exportation PDF necessite un abonnement payant. Passez a un plan superieur pour telecharger vos analyses.');
     }
     const errorText = await response.text();
-    throw new Error(errorText || 'Échec de l'exportation du PDF');
+    throw new Error(errorText || 'Echec de l\'exportation du PDF');
   }
 
   const blob = await response.blob();

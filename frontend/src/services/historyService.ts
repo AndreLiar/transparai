@@ -17,7 +17,7 @@ export const fetchUserAnalyses = async (token: string): Promise<Analysis[]> => {
 
   if (!res.ok) {
     if (res.status === 403) {
-      throw new Error('Cette fonctionnalité nécessite un abonnement payant. Passez à un plan supérieur pour accéder à l\'historique.');
+      throw new Error('Cette fonctionnalite necessite un abonnement payant. Passez a un plan superieur pour acceder a l\'historique.');
     }
     throw new Error('Erreur chargement historique');
   }
