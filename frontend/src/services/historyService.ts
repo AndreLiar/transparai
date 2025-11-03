@@ -16,9 +16,12 @@ export const fetchUserAnalyses = async (token: string): Promise<Analysis[]> => {
   });
 
   if (!res.ok) {
+    if (res.status === 403) {
+      throw new Error('Cette fonctionnalité nécessite un abonnement payant. Passez à un plan supérieur pour accéder à l\'historique.');
+    }
     throw new Error('Erreur chargement historique');
   }
 
   const data = await res.json();
-  return data.analyses; // ✅ assuming backend returns .analyses in /dashboard
+  return data.analyses || []; // Return empty array if no analyses
 };

@@ -55,6 +55,9 @@ export const sendPrioritySupport = async (token: string, supportRequest: Support
   });
 
   if (!response.ok) {
+    if (response.status === 403) {
+      throw new Error('Le support prioritaire nécessite un abonnement payant. Les utilisateurs gratuits peuvent nous contacter via l\'email de support.');
+    }
     const errorData = await response.json();
     throw new Error(errorData.error || 'Erreur lors de l\'envoi de la demande de support');
   }
