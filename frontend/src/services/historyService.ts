@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/config/api';
 // src/services/historyService.ts
 export interface Analysis {
   _id: string;
@@ -9,7 +10,7 @@ export interface Analysis {
 }
 
 export const fetchUserAnalyses = async (token: string): Promise<Analysis[]> => {
-  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/dashboard`, {
+  const res = await fetch(`${API_BASE_URL/api/dashboard`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

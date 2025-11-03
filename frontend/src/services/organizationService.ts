@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/config/api';
 // src/services/organizationService.ts
 export interface Organization {
   _id: string;
@@ -64,7 +65,7 @@ export const createOrganization = async (
     };
   }
 ): Promise<{ organization: Organization }> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/organization/create`, {
+  const response = await fetch(`${API_BASE_URL/api/organization/create`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -82,7 +83,7 @@ export const createOrganization = async (
 };
 
 export const getMyOrganization = async (token: string): Promise<Organization> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/organization/my-organization`, {
+  const response = await fetch(`${API_BASE_URL/api/organization/my-organization`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -114,7 +115,7 @@ export const updateOrganizationSettings = async (
     };
   }
 ): Promise<{ organization: Organization }> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/organization/${organizationId}/settings`, {
+  const response = await fetch(`${API_BASE_URL/api/organization/${organizationId}/settings`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -135,7 +136,7 @@ export const getOrganizationBilling = async (
   token: string,
   organizationId: string
 ): Promise<OrganizationBilling> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/organization/${organizationId}/billing`, {
+  const response = await fetch(`${API_BASE_URL/api/organization/${organizationId}/billing`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

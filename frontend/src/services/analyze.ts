@@ -1,6 +1,8 @@
 // src/services/analyze.ts
+import { API_BASE_URL } from '@/config/api';
+
 export const analyzeCGA = async (token: string, text: string, source: 'upload' | 'ocr') => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/analyze`, {
+  const response = await fetch(`${API_BASE_URL}/api/analyze`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,

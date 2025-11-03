@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/config/api';
 // src/services/userManagementService.ts
 export interface Invitation {
   id: string;
@@ -46,7 +47,7 @@ export const inviteUser = async (
   email: string,
   role: 'admin' | 'manager' | 'analyst' | 'viewer'
 ): Promise<{ invitation: Invitation }> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/user-management/${organizationId}/invite`, {
+  const response = await fetch(`${API_BASE_URL/api/user-management/${organizationId}/invite`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -67,7 +68,7 @@ export const acceptInvitation = async (
   token: string,
   invitationToken: string
 ): Promise<{ organization: any; role: string }> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/organization/accept-invitation`, {
+  const response = await fetch(`${API_BASE_URL/api/organization/accept-invitation`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -90,7 +91,7 @@ export const changeUserRole = async (
   targetUserId: string,
   newRole: 'admin' | 'manager' | 'analyst' | 'viewer'
 ): Promise<{ userId: string; oldRole: string; newRole: string }> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/user-management/${organizationId}/change-role`, {
+  const response = await fetch(`${API_BASE_URL/api/user-management/${organizationId}/change-role`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -112,7 +113,7 @@ export const removeUser = async (
   organizationId: string,
   targetUserId: string
 ): Promise<{ userId: string; email: string }> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/user-management/${organizationId}/remove-user`, {
+  const response = await fetch(`${API_BASE_URL/api/user-management/${organizationId}/remove-user`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -133,7 +134,7 @@ export const getPendingInvitations = async (
   token: string,
   organizationId: string
 ): Promise<{ invitations: Invitation[] }> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/user-management/${organizationId}/pending-invitations`, {
+  const response = await fetch(`${API_BASE_URL/api/user-management/${organizationId}/pending-invitations`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -153,7 +154,7 @@ export const cancelInvitation = async (
   organizationId: string,
   invitationId: string
 ): Promise<void> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/user-management/${organizationId}/cancel-invitation`, {
+  const response = await fetch(`${API_BASE_URL/api/user-management/${organizationId}/cancel-invitation`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -181,7 +182,7 @@ export const getAuditLogs = async (
     ...(action && { action })
   });
 
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/user-management/${organizationId}/audit-logs?${params}`, {
+  const response = await fetch(`${API_BASE_URL/api/user-management/${organizationId}/audit-logs?${params}`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

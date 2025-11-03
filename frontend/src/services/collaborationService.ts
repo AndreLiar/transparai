@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/config/api';
 // src/services/collaborationService.ts
 
 export interface SharedAnalysis {
@@ -61,7 +62,7 @@ export const shareAnalysis = async (
   token: string,
   shareRequest: ShareAnalysisRequest
 ): Promise<{ message: string; sharedAnalysis: any }> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/collaboration/share`, {
+  const response = await fetch(`${API_BASE_URL/api/collaboration/share`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -101,7 +102,7 @@ export const getSharedAnalyses = async (
   if (options.limit) queryParams.append('limit', options.limit.toString());
 
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/collaboration/shared?${queryParams}`,
+    `${API_BASE_URL/api/collaboration/shared?${queryParams}`,
     {
       method: 'GET',
       headers: {
@@ -125,7 +126,7 @@ export const getSharedAnalysisDetails = async (
   analysisId: string
 ): Promise<SharedAnalysisDetails> => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/collaboration/shared/${analysisId}`,
+    `${API_BASE_URL/api/collaboration/shared/${analysisId}`,
     {
       method: 'GET',
       headers: {
@@ -161,7 +162,7 @@ export const addComment = async (
   };
 }> => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/collaboration/shared/${analysisId}/comments`,
+    `${API_BASE_URL/api/collaboration/shared/${analysisId}/comments`,
     {
       method: 'POST',
       headers: {
