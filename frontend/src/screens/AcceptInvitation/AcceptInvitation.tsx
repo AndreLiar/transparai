@@ -38,7 +38,7 @@ const AcceptInvitation: React.FC = () => {
 
     try {
       const userToken = await user.getIdToken(true);
-      const result = await acceptInvitation(userToken, token);
+      await acceptInvitation(userToken, token);
       
       setSuccess(true);
       

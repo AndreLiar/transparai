@@ -2,15 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useSearchParams } from 'react-router-dom';
 import { analyzeCGA } from '@/services/analyze';
 import { fetchDashboardData } from '@/services/InfoService';
 import { exportAnalysisPdf } from '@/services/export';
 import Tesseract from 'tesseract.js';
 import * as pdfjsLib from 'pdfjs-dist';
 import Sidebar from '@/components/Layout/Sidebar';
-import EmailVerificationBanner from '@/components/common/EmailVerificationBanner';
-import { sampleContracts, getSampleContract } from '@/utils/sampleContracts';
 import './Analyze.css';
 
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.mjs';
@@ -20,7 +17,6 @@ type TextContent = { items: Array<TextItem | { type: string }> };
 
 const Analyze: React.FC = () => {
   const { user } = useAuth();
-  const [searchParams] = useSearchParams();
   const [quota, setQuota] = useState({ used: 0, limit: -1 });
   const [sourceType, setSourceType] = useState<'text' | 'file'>('text');
   const [inputText, setInputText] = useState('');
@@ -30,8 +26,6 @@ const Analyze: React.FC = () => {
   const [ocrStatus, setOcrStatus] = useState('');
   const [error, setError] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showSamples, setShowSamples] = useState(false);
-  const [isFirstTime, setIsFirstTime] = useState(false);
 
   useEffect(() => {
     const loadQuota = async () => {
@@ -39,15 +33,9 @@ const Analyze: React.FC = () => {
       const token = await user.getIdToken(true);
       const infos = await fetchDashboardData(token);
       setQuota(infos.quota);
-      setIsFirstTime(infos.quota.used === 0);
     };
     loadQuota();
-    
-    // Check if coming from dashboard with sample parameter
-    if (searchParams.get('sample') === 'true') {
-      setShowSamples(true);
-    }
-  }, [user, searchParams]);
+  }, [user]);
 
   const extractTextFromPDF = async (pdfFile: File): Promise<string> => {
     setOcrStatus('📄 Extraction du texte natif du PDF...');

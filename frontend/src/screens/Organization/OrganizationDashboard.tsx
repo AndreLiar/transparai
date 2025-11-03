@@ -252,8 +252,8 @@ const OrganizationDashboard: React.FC = () => {
       <main className="org-main">
         <div className="org-header">
           <div className="org-info">
-            <h1 className="org-title">{organization.name}</h1>
-            <span className="org-role">{organization.userRole}</span>
+            <h1 className="org-title">{organization?.name}</h1>
+            <span className="org-role">{organization?.userRole}</span>
           </div>
           <div className="org-tabs">
             <button 
@@ -262,7 +262,7 @@ const OrganizationDashboard: React.FC = () => {
             >
               Vue d'ensemble
             </button>
-            {['admin', 'manager'].includes(organization.userRole || '') && (
+            {['admin', 'manager'].includes(organization?.userRole || '') && (
               <button 
                 className={activeTab === 'users' ? 'active' : ''}
                 onClick={() => setActiveTab('users')}
@@ -270,7 +270,7 @@ const OrganizationDashboard: React.FC = () => {
                 Utilisateurs
               </button>
             )}
-            {['admin', 'manager'].includes(organization.userRole || '') && (
+            {['admin', 'manager'].includes(organization?.userRole || '') && (
               <>
                 <button 
                   className={activeTab === 'invitations' ? 'active' : ''}
@@ -301,22 +301,22 @@ const OrganizationDashboard: React.FC = () => {
               <div className="stats-grid">
                 <div className="stat-card">
                   <h3>Utilisateurs</h3>
-                  <p className="stat-number">{organization.analytics?.totalUsers || 0}</p>
+                  <p className="stat-number">{organization?.analytics?.totalUsers || 0}</p>
                   <span className="stat-label">Total actifs</span>
                 </div>
                 <div className="stat-card">
                   <h3>Analyses totales</h3>
-                  <p className="stat-number">{organization.analytics?.totalAnalyses || 0}</p>
+                  <p className="stat-number">{organization?.analytics?.totalAnalyses || 0}</p>
                   <span className="stat-label">Toutes périodes</span>
                 </div>
                 <div className="stat-card">
                   <h3>Ce mois</h3>
-                  <p className="stat-number">{organization.analytics?.monthlyAnalyses || 0}</p>
+                  <p className="stat-number">{organization?.analytics?.monthlyAnalyses || 0}</p>
                   <span className="stat-label">Analyses réalisées</span>
                 </div>
                 <div className="stat-card">
                   <h3>Moyenne</h3>
-                  <p className="stat-number">{organization.analytics?.averageAnalysesPerUser || 0}</p>
+                  <p className="stat-number">{organization?.analytics?.averageAnalysesPerUser || 0}</p>
                   <span className="stat-label">Par utilisateur</span>
                 </div>
               </div>
@@ -325,7 +325,7 @@ const OrganizationDashboard: React.FC = () => {
 
           {activeTab === 'users' && (
             <div className="users-tab">
-              <h3>Équipe ({organization.users?.length || 0} membres)</h3>
+              <h3>Équipe ({organization?.users?.length || 0} membres)</h3>
               <div className="users-list">
                 {organization.users?.map(user => (
                   <div key={user.id} className="user-card">
