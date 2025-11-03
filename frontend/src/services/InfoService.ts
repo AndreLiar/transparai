@@ -1,6 +1,4 @@
 // src/services/dashboardService.ts
-import { API_BASE_URL } from '@/config/api';
-
 export interface InfoData {
     quota: { used: number; limit: number; remaining: number };
     plan: string;
@@ -11,7 +9,7 @@ export interface InfoData {
   }
   
   export const fetchDashboardData = async (token: string): Promise<InfoData> => {
-    const res = await fetch(`${API_BASE_URL}/api/dashboard`, {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/dashboard`, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',

@@ -1,4 +1,3 @@
-import { API_BASE_URL } from '@/config/api';
 // src/services/comparativeService.ts
 export interface ComparativeDocument {
   text: string;
@@ -50,11 +49,11 @@ export const compareDocuments = async (
   industry: string = 'default'
 ): Promise<ComparativeAnalysisResult> => {
   console.log('🌐 Appel API comparative/compare');
-  console.log('🌐 URL:', `${API_BASE_URL/api/comparative/compare`);
+  console.log('🌐 URL:', `${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/comparative/compare`);
   console.log('🌐 Documents envoyés:', documents.length);
   console.log('🌐 Industry:', industry);
   
-  const response = await fetch(`${API_BASE_URL/api/comparative/compare`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/comparative/compare`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -88,7 +87,7 @@ export const compareDocuments = async (
 export const getIndustryTemplates = async (
   token: string
 ): Promise<{ templates: IndustryTemplate[] }> => {
-  const response = await fetch(`${API_BASE_URL/api/comparative/templates`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/comparative/templates`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
