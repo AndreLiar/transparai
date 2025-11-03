@@ -32,7 +32,12 @@ connectDB();
 
 // ✅ CORS must come first
 app.use(cors({
-  origin: ['https://transparai.vercel.app', 'http://localhost:5173'],
+  origin: [
+    'https://transparai.vercel.app',
+    'https://transparai-bpr4eqsyt-andreliars-projects.vercel.app',
+    /^https:\/\/transparai.*\.vercel\.app$/, // Allow any transparai Vercel deployment
+    'http://localhost:5173'
+  ],
   credentials: true,
 }));
 
