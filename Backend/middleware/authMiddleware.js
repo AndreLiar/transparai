@@ -22,6 +22,8 @@ const authenticate = async (req, res, next) => {
     // Only log email in dev, never log tokens
     if (process.env.NODE_ENV !== 'production') {
       console.log('✅ Token verified for user:', decodedToken.email);
+    } else {
+      console.log('✅ Token verified successfully');
     }
 
     req.user = {

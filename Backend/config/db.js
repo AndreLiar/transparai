@@ -18,11 +18,14 @@ const connectDB = async () => {
     console.log('✅ MongoDB connected');
     
     // Run plan migration on startup to fix any existing users
+    // Temporarily disabled to debug startup issues
+    /*
     if (process.env.NODE_ENV === 'production') {
       console.log('🔄 Running plan migration for production...');
       const { migratePlans } = require('../scripts/migratePlans');
       await migratePlans();
     }
+    */
   } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
   }

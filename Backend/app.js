@@ -95,11 +95,13 @@ app.use('/api/contact', contactRoutes);
 
 // ✅ Root route for health checks
 app.get('/', (_req, res) => {
+  console.log('🏠 Root endpoint accessed');
   res.json({
     status: 'healthy',
     message: '✅ TransparAI Backend API',
     timestamp: new Date().toISOString(),
     version: process.env.APP_VERSION || '1.0.0',
+    nodeEnv: process.env.NODE_ENV,
   });
 });
 
