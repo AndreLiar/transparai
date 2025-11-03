@@ -13,7 +13,7 @@ export interface ProfileData {
 }
 
 export const getProfile = async (token: string): Promise<ProfileData> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/profile`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/profile`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export const getProfile = async (token: string): Promise<ProfileData> => {
 };
 
 export const updateProfile = async (token: string, profileData: Omit<Profile, 'isComplete'>): Promise<{ message: string; profile: Profile }> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/profile`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/profile`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,

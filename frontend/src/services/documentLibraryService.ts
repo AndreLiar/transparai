@@ -55,7 +55,7 @@ export const getDocumentLibrary = async (
   if (options.includeOrgDocs) queryParams.append('includeOrgDocs', 'true');
 
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/api/documents/library?${queryParams}`,
+    `${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/documents/library?${queryParams}`,
     {
       method: 'GET',
       headers: {
@@ -79,7 +79,7 @@ export const getDocumentContent = async (
   documentId: string
 ): Promise<DocumentLibraryDetails> => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/api/documents/library/${documentId}`,
+    `${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/documents/library/${documentId}`,
     {
       method: 'GET',
       headers: {
@@ -103,7 +103,7 @@ export const deleteDocument = async (
   documentId: string
 ): Promise<{ message: string }> => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/api/documents/library/${documentId}`,
+    `${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/documents/library/${documentId}`,
     {
       method: 'DELETE',
       headers: {
@@ -128,7 +128,7 @@ export const toggleDocumentSharing = async (
   share: boolean
 ): Promise<{ message: string }> => {
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/api/documents/library/${documentId}/share`,
+    `${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/documents/library/${documentId}/share`,
     {
       method: 'PUT',
       headers: {

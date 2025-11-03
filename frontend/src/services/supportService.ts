@@ -28,7 +28,7 @@ export interface SupportResponse {
 }
 
 export const getSupportInfo = async (token: string): Promise<SupportInfo> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/support/info`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/support/info`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -45,7 +45,7 @@ export const getSupportInfo = async (token: string): Promise<SupportInfo> => {
 };
 
 export const sendPrioritySupport = async (token: string, supportRequest: SupportRequest): Promise<SupportResponse> => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/support/priority`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/support/priority`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
