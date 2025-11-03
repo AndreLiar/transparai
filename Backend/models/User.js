@@ -64,8 +64,8 @@ const userSchema = new mongoose.Schema({
   },
   plan: {
     type: String,
-    enum: ['starter', 'standard', 'premium', 'enterprise'],
-    default: 'starter',
+    enum: ['free', 'standard', 'premium', 'enterprise'],
+    default: 'free',
   },
   organization: {
     id: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', default: null },

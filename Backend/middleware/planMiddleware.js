@@ -6,8 +6,8 @@ const { hasFeature, hasRouteAccess } = require('../utils/planUtils');
 const requireFeature = (featureName, customMessage) => {
   return async (req, res, next) => {
     try {
-      const { uid } = req.user;
-      const user = await User.findOne({ uid });
+      const { uid: firebaseUid } = req.user;
+      const user = await User.findOne({ firebaseUid });
       
       if (!user) {
         return res.status(404).json({ message: 'Utilisateur non trouvé.' });
@@ -36,8 +36,8 @@ const requireFeature = (featureName, customMessage) => {
 const requireRouteAccess = (route, customMessage) => {
   return async (req, res, next) => {
     try {
-      const { uid } = req.user;
-      const user = await User.findOne({ uid });
+      const { uid: firebaseUid } = req.user;
+      const user = await User.findOne({ firebaseUid });
       
       if (!user) {
         return res.status(404).json({ message: 'Utilisateur non trouvé.' });

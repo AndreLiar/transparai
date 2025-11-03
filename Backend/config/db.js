@@ -16,6 +16,13 @@ const connectDB = async () => {
   try {
     await mongoose.connect(uri);
     console.log('✅ MongoDB connected');
+    
+    // Run plan migration on startup to fix any existing users
+    if (process.env.NODE_ENV === 'production') {
+      console.log('🔄 Running plan migration for production...');
+      const { migratePlans } = require('../scripts/migratePlans');
+      await migratePlans();
+    }
   } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
   }

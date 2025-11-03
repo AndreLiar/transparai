@@ -10,7 +10,7 @@ const getDashboardData = async (firebaseUid, emailFromToken) => {
     user = await User.create({
       firebaseUid,
       email: emailFromToken || '',
-      plan: 'starter',
+      plan: 'free',
       monthlyQuota: { used: 0, limit: 20 },
       lastQuotaReset: new Date(),
       analyses: [],
