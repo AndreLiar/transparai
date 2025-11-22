@@ -1,6 +1,6 @@
 // Backend/controllers/gdprController.js
 const User = require('../models/User');
-const Analysis = require('../models/Analysis');
+const SharedAnalysis = require('../models/SharedAnalysis');
 const Session = require('../models/Session');
 const logger = require('../utils/logger');
 
@@ -20,8 +20,11 @@ const exportUserData = async (req, res) => {
       });
     }
 
-    // Get all user analyses
-    const analyses = await Analysis.find({ userId: uid })
+    // Get user analyses (stored in user document)
+    const analyses = user.analyses || [];
+    
+    // Get shared analyses
+    const sharedAnalyses = await SharedAnalysis.find({ 'collaborators.firebaseUid': uid })
       .select('-__v')
       .sort({ createdAt: -1 });
 
@@ -55,9 +58,16 @@ const exportUserData = async (req, res) => {
         issues: a.issues,
         summary: a.summary,
       })),
+      sharedAnalyses: sharedAnalyses.map((sa) => ({
+        id: sa._id,
+        documentName: sa.documentName,
+        createdAt: sa.createdAt,
+        role: sa.collaborators.find(c => c.firebaseUid === uid)?.role || 'viewer',
+      })),
       activeSessions: sessions,
       statistics: {
         totalAnalyses: analyses.length,
+        totalSharedAnalyses: sharedAnalyses.length,
         averageScore: analyses.length > 0
           ? (analyses.reduce((sum, a) => sum + (a.score || 0), 0) / analyses.length).toFixed(2)
           : 0,
@@ -129,8 +139,11 @@ const deleteUserAccount = async (req, res) => {
 
     // Delete all user data
     await Promise.all([
-      Analysis.deleteMany({ userId: uid }),
       Session.deleteMany({ firebaseUid: uid }),
+      SharedAnalysis.updateMany(
+        { 'collaborators.firebaseUid': uid },
+        { $pull: { collaborators: { firebaseUid: uid } } }
+      ),
       User.deleteOne({ firebaseUid: uid }),
     ]);
 
