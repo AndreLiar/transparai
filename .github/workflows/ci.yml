@@ -282,7 +282,6 @@ jobs:
             "frontend/package.json" 
             "Backend/.env.example"
             "frontend/.env.example"
-            "CLAUDE.md"
           )
           
           for file in "${REQUIRED_FILES[@]}"; do
