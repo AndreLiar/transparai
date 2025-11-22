@@ -8,7 +8,7 @@ on:
   workflow_dispatch: # Allow manual triggers
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 jobs:
   # Backend Tests
@@ -158,8 +158,8 @@ jobs:
 
       - name: Check for secrets in code
         run: |
-          # Check for real secrets (exclude test/mock keys)
-          if grep -r "sk_live_" --exclude-dir=node_modules --exclude-dir=.git --exclude="*.test.*" --exclude="*.spec.*" --exclude="*setup*" .; then
+          # Check for real secrets (exclude test/mock keys and workflow files)
+          if grep -r "sk_live_" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude="*.test.*" --exclude="*.spec.*" --exclude="*setup*" .; then
             echo "❌ Live Stripe keys found in code"
             exit 1
           fi

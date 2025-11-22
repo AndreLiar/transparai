@@ -11,6 +11,16 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
+    logHeapUsage: true,
+    sequence: {
+      concurrent: false,
+    },
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
