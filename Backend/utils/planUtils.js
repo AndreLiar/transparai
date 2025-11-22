@@ -19,8 +19,8 @@ const PLAN_CONFIG = {
       advancedAnalysis: false,
       teamFeatures: false,
       apiAccess: false,
-      premiumAI: false
-    }
+      premiumAI: false,
+    },
   },
   starter: {
     name: 'Starter',
@@ -38,8 +38,8 @@ const PLAN_CONFIG = {
       advancedAnalysis: false,
       teamFeatures: false,
       apiAccess: false,
-      premiumAI: false
-    }
+      premiumAI: false,
+    },
   },
   standard: {
     name: 'Standard',
@@ -57,8 +57,8 @@ const PLAN_CONFIG = {
       advancedAnalysis: false,
       teamFeatures: false,
       apiAccess: false,
-      premiumAI: true
-    }
+      premiumAI: true,
+    },
   },
   premium: {
     name: 'Premium',
@@ -76,8 +76,8 @@ const PLAN_CONFIG = {
       advancedAnalysis: true,
       teamFeatures: false,
       apiAccess: true,
-      premiumAI: true
-    }
+      premiumAI: true,
+    },
   },
   enterprise: {
     name: 'Enterprise',
@@ -95,18 +95,16 @@ const PLAN_CONFIG = {
       advancedAnalysis: true,
       teamFeatures: true,
       apiAccess: true,
-      premiumAI: true
-    }
-  }
+      premiumAI: true,
+    },
+  },
 };
 
 // Check if user is premium (has paid plan)
 const isPremiumUser = (plan) => ['standard', 'premium', 'enterprise'].includes(plan);
 
 // Get plan configuration
-const getPlanConfig = (plan) => {
-  return PLAN_CONFIG[plan] || PLAN_CONFIG.free;
-};
+const getPlanConfig = (plan) => PLAN_CONFIG[plan] || PLAN_CONFIG.free;
 
 // Get monthly analysis limit for a plan
 const getMonthlyLimit = (plan) => {
@@ -141,21 +139,19 @@ const hasRouteAccess = (plan, route) => {
     '/compare': hasFeature(plan, 'advancedAnalysis'),
     '/organization': hasFeature(plan, 'teamFeatures'),
     '/user-management': hasFeature(plan, 'teamFeatures'),
-    '/api': hasFeature(plan, 'apiAccess')
+    '/api': hasFeature(plan, 'apiAccess'),
   };
-  
+
   return routePermissions[route] !== undefined ? routePermissions[route] : true;
 };
 
 // Get AI budget for a plan
-const getAIBudget = (plan) => {
-  return PLAN_AI_BUDGETS[plan] || 0;
-};
+const getAIBudget = (plan) => PLAN_AI_BUDGETS[plan] || 0;
 
 // Sync user AI settings with their current plan
 const syncAIBudgetWithPlan = async (user) => {
   const expectedBudget = getAIBudget(user.plan);
-  
+
   // Initialize aiSettings if it doesn't exist
   if (!user.aiSettings) {
     user.aiSettings = {
@@ -175,17 +171,17 @@ const syncAIBudgetWithPlan = async (user) => {
   if (currentBudget !== expectedBudget) {
     user.aiSettings.monthlyAIBudget = user.aiSettings.monthlyAIBudget || {};
     user.aiSettings.monthlyAIBudget.allocated = expectedBudget;
-    
+
     // If downgrading and used budget exceeds new limit, reset usage
-    if (expectedBudget < currentBudget && 
-        user.aiSettings.monthlyAIBudget.used > expectedBudget) {
+    if (expectedBudget < currentBudget
+        && user.aiSettings.monthlyAIBudget.used > expectedBudget) {
       user.aiSettings.monthlyAIBudget.used = 0;
       user.aiSettings.monthlyAIBudget.lastReset = new Date();
     }
-    
+
     return true; // Indicate changes were made
   }
-  
+
   return false; // No changes needed
 };
 
@@ -193,7 +189,7 @@ const syncAIBudgetWithPlan = async (user) => {
 const hasAIAccess = (plan, aiSettings = {}) => {
   const config = getPlanConfig(plan);
   if (!config.features.premiumAI) return false;
-  
+
   const budget = aiSettings.monthlyAIBudget || { allocated: 0, used: 0 };
   return budget.allocated > budget.used;
 };
@@ -201,25 +197,25 @@ const hasAIAccess = (plan, aiSettings = {}) => {
 // Get AI-specific upgrade recommendation
 const getAIUpgradeRecommendation = (plan, aiUsage = {}) => {
   const config = getPlanConfig(plan);
-  
+
   if (!config.features.premiumAI && aiUsage.totalAnalyses > 5) {
     return {
       suggested: 'standard',
       reason: 'premium_ai_needed',
-      message: 'Débloquez l\'IA premium pour une analyse plus précise avec le plan Standard.'
+      message: 'Débloquez l\'IA premium pour une analyse plus précise avec le plan Standard.',
     };
   }
-  
+
   const budget = aiUsage.monthlyAIBudget || { allocated: 0, used: 0 };
   if (budget.allocated > 0 && budget.used >= budget.allocated * 0.8) {
     const nextPlan = plan === 'standard' ? 'premium' : 'enterprise';
     return {
       suggested: nextPlan,
       reason: 'ai_budget_exhausted',
-      message: `Budget IA bientôt épuisé. Passez à ${getPlanConfig(nextPlan).name} pour plus d'analyses premium.`
+      message: `Budget IA bientôt épuisé. Passez à ${getPlanConfig(nextPlan).name} pour plus d'analyses premium.`,
     };
   }
-  
+
   return null;
 };
 
@@ -227,32 +223,32 @@ const getAIUpgradeRecommendation = (plan, aiUsage = {}) => {
 const getUpgradeRecommendation = (plan, usedAnalyses) => {
   const config = getPlanConfig(plan);
   const limit = config.monthlyAnalyses;
-  
+
   if (plan === 'free' || plan === 'starter') {
     if (limit !== -1 && usedAnalyses >= limit * 0.8) {
       return {
         suggested: 'standard',
         reason: 'quota_nearly_reached',
-        message: 'Vous approchez de votre limite mensuelle. Passez à Standard pour 40 analyses + historique.'
+        message: 'Vous approchez de votre limite mensuelle. Passez à Standard pour 40 analyses + historique.',
       };
     }
     if (usedAnalyses >= 5) {
       return {
         suggested: 'standard',
         reason: 'active_user',
-        message: 'Vous utilisez régulièrement TransparAI. Débloquez plus d\'analyses et l\'historique avec Standard.'
+        message: 'Vous utilisez régulièrement TransparAI. Débloquez plus d\'analyses et l\'historique avec Standard.',
       };
     }
   }
-  
+
   if (plan === 'standard' && limit !== -1 && usedAnalyses >= limit * 0.9) {
     return {
       suggested: 'premium',
       reason: 'heavy_usage',
-      message: 'Analyses illimitées + support prioritaire avec Premium.'
+      message: 'Analyses illimitées + support prioritaire avec Premium.',
     };
   }
-  
+
   return null;
 };
 
@@ -270,5 +266,5 @@ module.exports = {
   getAIBudget,
   syncAIBudgetWithPlan,
   hasAIAccess,
-  getAIUpgradeRecommendation
+  getAIUpgradeRecommendation,
 };

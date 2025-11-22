@@ -1,4 +1,4 @@
-//Backend/config/db.js
+// Backend/config/db.js
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
@@ -16,7 +16,7 @@ const connectDB = async () => {
   try {
     await mongoose.connect(uri);
     console.log('✅ MongoDB connected');
-    
+
     // Run plan migration on startup to fix any existing users
     // Temporarily disabled to debug startup issues
     /*

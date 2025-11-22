@@ -10,19 +10,19 @@ const { GEMINI_API_KEY } = process.env;
 const parseForComparative = (rawParsed) => {
   console.log('📊 Comparative parsing: conversion vers format tableaux BDD');
   console.log('📊 Raw parsed structure:', Object.keys(rawParsed));
-  
+
   // Helper pour convertir strings JSON en arrays (version très robuste)
   const ensureArray = (field, name) => {
     console.log(`🔍 ensureArray(${name}):`, typeof field, Array.isArray(field));
-    console.log(`🔍 Field value preview:`, typeof field === 'string' ? field.substring(0, 100) : field);
-    
+    console.log('🔍 Field value preview:', typeof field === 'string' ? field.substring(0, 100) : field);
+
     if (Array.isArray(field)) {
       console.log(`✅ ${name} est déjà un array avec ${field.length} éléments`);
-      
+
       // Special handling for recommendations - extract strings if objects were returned
       if (name === 'recommendations' && field.length > 0 && typeof field[0] === 'object') {
         console.log(`🔧 ${name} array contient des objets, extraction des valeurs...`);
-        const extractedStrings = field.map(item => {
+        const extractedStrings = field.map((item) => {
           if (item && item.value) {
             return `${item.name || 'Document'}: ${item.value}`;
           }
@@ -31,26 +31,26 @@ const parseForComparative = (rawParsed) => {
         console.log(`🔧 ${name} objets array convertis en strings:`, extractedStrings);
         return extractedStrings;
       }
-      
+
       return field;
     }
-    
+
     // Special handling for compliance_analysis - convert object to array
     if (name === 'compliance_analysis' && typeof field === 'object' && field !== null && !Array.isArray(field)) {
       console.log(`🔧 ${name} est un objet d'input, conversion en array...`);
-      const complianceArray = Object.keys(field).map(framework => ({
+      const complianceArray = Object.keys(field).map((framework) => ({
         framework,
         status: 'À vérifier',
-        details: field[framework] || 'Aucun détail disponible'
+        details: field[framework] || 'Aucun détail disponible',
       }));
       console.log(`🔧 ${name} objet d'input converti en array:`, complianceArray);
       return complianceArray;
     }
-    
+
     if (typeof field === 'string') {
       console.log(`🔧 String détectée pour ${name}, longueur:`, field.length);
-      console.log(`🔧 Contenu original:`, field.substring(0, 300));
-      
+      console.log('🔧 Contenu original:', field.substring(0, 300));
+
       try {
         // Étape 1: Nettoyer les caractères problématiques
         let cleanedField = field
@@ -62,12 +62,12 @@ const parseForComparative = (rawParsed) => {
           .replace(/"/g, '"') // Idem pour l'autre type
           .replace(/\s+/g, ' ') // Remplacer les espaces multiples par un seul
           .trim();
-          
+
         console.log(`🧹 ${name} après nettoyage de base:`, cleanedField.substring(0, 200));
-        
+
         // Étape 2: Chercher un pattern d'array JSON
         let arrayMatch = null;
-        
+
         // Pattern 1: Array complet [...]
         arrayMatch = cleanedField.match(/\[[\s\S]*\]/);
         if (arrayMatch) {
@@ -78,36 +78,36 @@ const parseForComparative = (rawParsed) => {
           console.log(`🔍 Pas d'array trouvé, tentative de création d'array pour ${name}`);
           if (cleanedField.includes(',')) {
             // Séparer par virgule et nettoyer chaque élément
-            const items = cleanedField.split(',').map(item => 
-              item.trim().replace(/^["']|["']$/g, '') // Supprimer les guillemets en début/fin
-            ).filter(item => item.length > 0);
-            
+            const items = cleanedField.split(',').map((item) =>
+              item.trim().replace(/^["']|["']$/g, ''), // Supprimer les guillemets en début/fin
+            ).filter((item) => item.length > 0);
+
             if (items.length > 0) {
-              console.log(`🔨 Array créé à partir d'éléments séparés:`, items);
+              console.log('🔨 Array créé à partir d\'éléments séparés:', items);
               return items;
             }
           } else {
             // Un seul élément, créer un array avec cet élément
             const singleItem = cleanedField.replace(/^["']|["']$/g, '').trim();
             if (singleItem.length > 0) {
-              console.log(`🔨 Array créé avec un seul élément:`, [singleItem]);
+              console.log('🔨 Array créé avec un seul élément:', [singleItem]);
               return [singleItem];
             }
           }
         }
-        
+
         // Étape 3: Parser le JSON
         console.log(`🎯 Tentative de JSON.parse pour ${name}:`, cleanedField.substring(0, 200));
         const parsedField = JSON.parse(cleanedField);
-        
+
         if (Array.isArray(parsedField)) {
           console.log(`✅ ${name} converti avec succès, ${parsedField.length} éléments`);
-          console.log(`✅ Premiers éléments:`, parsedField.slice(0, 3));
-          
+          console.log('✅ Premiers éléments:', parsedField.slice(0, 3));
+
           // Special handling for recommendations - extract strings if objects were returned
           if (name === 'recommendations' && parsedField.length > 0 && typeof parsedField[0] === 'object') {
             console.log(`🔧 ${name} contient des objets, extraction des valeurs...`);
-            const extractedStrings = parsedField.map(item => {
+            const extractedStrings = parsedField.map((item) => {
               if (item && item.value) {
                 return `${item.name || 'Document'}: ${item.value}`;
               }
@@ -116,47 +116,46 @@ const parseForComparative = (rawParsed) => {
             console.log(`🔧 ${name} objets convertis en strings:`, extractedStrings);
             return extractedStrings;
           }
-          
+
           return parsedField;
-        } else {
-          console.warn(`⚠️ ${name} parsé mais pas un array:`, typeof parsedField);
-          console.warn(`⚠️ Contenu parsé:`, parsedField);
-          
-          // Special handling for compliance_analysis - convert object to array
-          if (name === 'compliance_analysis' && typeof parsedField === 'object' && parsedField !== null) {
-            console.log(`🔧 ${name} est un objet, conversion en array...`);
-            const complianceArray = Object.keys(parsedField).map(framework => ({
-              framework,
-              status: 'À vérifier',
-              details: parsedField[framework] || 'Aucun détail disponible'
-            }));
-            console.log(`🔧 ${name} objet converti en array:`, complianceArray);
-            return complianceArray;
-          }
+        }
+        console.warn(`⚠️ ${name} parsé mais pas un array:`, typeof parsedField);
+        console.warn('⚠️ Contenu parsé:', parsedField);
+
+        // Special handling for compliance_analysis - convert object to array
+        if (name === 'compliance_analysis' && typeof parsedField === 'object' && parsedField !== null) {
+          console.log(`🔧 ${name} est un objet, conversion en array...`);
+          const complianceArray = Object.keys(parsedField).map((framework) => ({
+            framework,
+            status: 'À vérifier',
+            details: parsedField[framework] || 'Aucun détail disponible',
+          }));
+          console.log(`🔧 ${name} objet converti en array:`, complianceArray);
+          return complianceArray;
         }
       } catch (e) {
         console.error(`❌ JSON.parse échoué pour ${name}:`, e.message);
-        console.error(`❌ String problématique:`, field.substring(0, 500));
-        
+        console.error('❌ String problématique:', field.substring(0, 500));
+
         // Étape 4: Fallback - essayer de créer un array manuellement
         console.log(`🔄 Tentative de fallback pour ${name}`);
         try {
           // Chercher des éléments entre guillemets
           const quotedItems = field.match(/"([^"]+)"/g);
           if (quotedItems && quotedItems.length > 0) {
-            const items = quotedItems.map(item => item.replace(/"/g, ''));
-            console.log(`🔄 Fallback réussi avec éléments quotés:`, items);
+            const items = quotedItems.map((item) => item.replace(/"/g, ''));
+            console.log('🔄 Fallback réussi avec éléments quotés:', items);
             return items;
           }
-          
+
           // Diviser par des séparateurs communs
           const separators = [',', ';', '\n', '|'];
           for (const sep of separators) {
             if (field.includes(sep)) {
               const items = field.split(sep)
-                .map(item => item.trim().replace(/^["']|["']$/g, ''))
-                .filter(item => item.length > 10); // Filtrer les éléments trop courts
-              
+                .map((item) => item.trim().replace(/^["']|["']$/g, ''))
+                .filter((item) => item.length > 10); // Filtrer les éléments trop courts
+
               if (items.length > 0) {
                 console.log(`🔄 Fallback réussi avec séparateur '${sep}':`, items);
                 return items;
@@ -168,7 +167,7 @@ const parseForComparative = (rawParsed) => {
         }
       }
     }
-    
+
     console.warn(`⚠️ ${name} devient un array vide - impossible de parser`);
     return [];
   };
@@ -181,7 +180,7 @@ const parseForComparative = (rawParsed) => {
     recommendations: ensureArray(rawParsed.recommendations, 'recommendations'),
     overall_ranking: ensureArray(rawParsed.overall_ranking, 'overall_ranking'),
     compliance_analysis: ensureArray(rawParsed.compliance_analysis, 'compliance_analysis'),
-    industry_insights: ensureArray(rawParsed.industry_insights, 'industry_insights')
+    industry_insights: ensureArray(rawParsed.industry_insights, 'industry_insights'),
   };
 };
 
@@ -254,9 +253,9 @@ const processComparativeAnalysis = async ({ uid, documents, industry = 'default'
   await user.save();
 
   // Validate documents
-  console.log('📊 Documents avant validation:', documents.map(d => ({ name: d.name, textLength: d.text?.length })));
+  console.log('📊 Documents avant validation:', documents.map((d) => ({ name: d.name, textLength: d.text?.length })));
   const validationErrors = validateDocuments(documents);
-  console.log('📊 Documents après validation:', documents.map(d => ({ name: d.name, textLength: d.text?.length })));
+  console.log('📊 Documents après validation:', documents.map((d) => ({ name: d.name, textLength: d.text?.length })));
   console.log('📊 Erreurs de validation:', validationErrors);
   if (validationErrors.length > 0) {
     throw new Error(`Erreurs de validation: ${validationErrors.join(', ')}`);
@@ -339,7 +338,7 @@ const processComparativeAnalysis = async ({ uid, documents, industry = 'default'
 
   // Parse pour ANALYSE COMPARATIVE = toujours format structuré (tableaux)
   console.log('📊 Analyse Comparative: parsing structuré pour tableaux BDD');
-  let finalParsed = parseForComparative(parsed);
+  const finalParsed = parseForComparative(parsed);
 
   // Validation finale
   if (!finalParsed || typeof finalParsed.summary !== 'string') {

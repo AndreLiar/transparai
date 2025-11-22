@@ -5,7 +5,9 @@ const AuditLog = require('../models/AuditLog');
 const { sendInvitationEmail } = require('./emailService');
 const crypto = require('crypto');
 
-const inviteUser = async ({ invitedByUserId, organizationId, email, role, metadata }) => {
+const inviteUser = async ({
+  invitedByUserId, organizationId, email, role, metadata,
+}) => {
   const inviter = await User.findOne({ firebaseUid: invitedByUserId });
   if (!inviter) throw new Error('Inviteur non trouvé');
 
@@ -102,7 +104,9 @@ const acceptInvitation = async ({ token, userId }) => {
   return { organization: { name: organization.name, id: organization._id }, role: invitation.role };
 };
 
-const updateUserRole = async ({ currentUserId, targetUserId, newRole, organizationId, metadata }) => {
+const updateUserRole = async ({
+  currentUserId, targetUserId, newRole, organizationId, metadata,
+}) => {
   const currentUser = await User.findOne({ firebaseUid: currentUserId });
   const targetUser = await User.findOne({ firebaseUid: targetUserId });
 
@@ -139,7 +143,9 @@ const updateUserRole = async ({ currentUserId, targetUserId, newRole, organizati
   return { userId: targetUserId, oldRole, newRole };
 };
 
-const removeUser = async ({ currentUserId, targetUserId, organizationId, metadata }) => {
+const removeUser = async ({
+  currentUserId, targetUserId, organizationId, metadata,
+}) => {
   const currentUser = await User.findOne({ firebaseUid: currentUserId });
   const targetUser = await User.findOne({ firebaseUid: targetUserId });
 
@@ -180,7 +186,9 @@ const removeUser = async ({ currentUserId, targetUserId, organizationId, metadat
   return { userId: targetUserId, email: removedEmail };
 };
 
-const getAuditLogs = async ({ userId, organizationId, page = 1, limit = 50, action }) => {
+const getAuditLogs = async ({
+  userId, organizationId, page = 1, limit = 50, action,
+}) => {
   const user = await User.findOne({ firebaseUid: userId });
   if (!user || user.organization.id.toString() !== organizationId || user.organization.role !== 'admin') {
     throw new Error('Action non autorisée.');

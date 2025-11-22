@@ -1,6 +1,8 @@
 // Backend/services/dashboardService.js
 const User = require('../models/User');
-const { getMonthlyLimit, getPlanConfig, getUpgradeRecommendation, getRemainingAnalyses } = require('../utils/planUtils');
+const {
+  getMonthlyLimit, getPlanConfig, getUpgradeRecommendation, getRemainingAnalyses,
+} = require('../utils/planUtils');
 
 const getDashboardData = async (firebaseUid, emailFromToken) => {
   let user = await User.findOne({ firebaseUid });
@@ -52,11 +54,11 @@ const getDashboardData = async (firebaseUid, emailFromToken) => {
     quota: {
       used: user.monthlyQuota.used,
       limit: user.monthlyQuota.limit,
-      remaining: remainingAnalyses
+      remaining: remainingAnalyses,
     },
     analyses: user.analyses,
     upgradeRecommendation,
-    features: planConfig.features
+    features: planConfig.features,
   };
 };
 

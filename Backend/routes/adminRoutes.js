@@ -1,7 +1,8 @@
 // Backend/routes/adminRoutes.js
 const express = require('express');
-const { getQuotaAnalytics, getSystemMetrics } = require('../controllers/adminController');
+const { getQuotaAnalytics, getSystemMetrics, getSecurityMetrics } = require('../controllers/adminController');
 const authenticateToken = require('../middleware/authMiddleware');
+const { requireAdmin } = require('../middleware/adminMiddleware');
 const { strictLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
@@ -181,7 +182,7 @@ const router = express.Router();
  *       500:
  *         $ref: '#/components/responses/ServerError'
  */
-router.get('/quota-analytics', authenticateToken, strictLimiter, getQuotaAnalytics);
+router.get('/quota-analytics', authenticateToken, requireAdmin, strictLimiter, getQuotaAnalytics);
 
 /**
  * @swagger
@@ -309,6 +310,85 @@ router.get('/quota-analytics', authenticateToken, strictLimiter, getQuotaAnalyti
  *       500:
  *         $ref: '#/components/responses/ServerError'
  */
-router.get('/system-metrics', authenticateToken, strictLimiter, getSystemMetrics);
+router.get('/system-metrics', authenticateToken, requireAdmin, strictLimiter, getSystemMetrics);
+
+/**
+ * @swagger
+ * /api/admin/security-metrics:
+ *   get:
+ *     summary: Get security monitoring metrics
+ *     description: |
+ *       Retrieves security-related metrics including failed authentication attempts,
+ *       locked accounts, and potential security threats.
+ *
+ *       **Admin Only**: Requires administrative privileges to access.
+ *
+ *       **Metrics Include:**
+ *       - Failed authentication attempts
+ *       - Locked accounts
+ *       - Top IPs with failed attempts
+ *       - Attempt breakdown by type
+ *     tags: [Admin]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Security metrics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 metrics:
+ *                   type: object
+ *                   properties:
+ *                     timestamp:
+ *                       type: string
+ *                       format: date-time
+ *                     recentAttempts:
+ *                       type: object
+ *                       properties:
+ *                         last15Minutes:
+ *                           type: number
+ *                         last24Hours:
+ *                           type: number
+ *                     attemptsByType:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                           count:
+ *                             type: number
+ *                     topFailedIPs:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                           count:
+ *                             type: number
+ *                           lastAttempt:
+ *                             type: string
+ *                             format: date-time
+ *                     lockedAccounts:
+ *                       type: object
+ *                       properties:
+ *                         count:
+ *                           type: number
+ *                         accounts:
+ *                           type: array
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         description: Administrative privileges required
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
+router.get('/security-metrics', authenticateToken, requireAdmin, strictLimiter, getSecurityMetrics);
 
 module.exports = router;

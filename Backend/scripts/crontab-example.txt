@@ -1,0 +1,19 @@
+# Example crontab configuration for TransparAI Database Backups
+# Add these lines to your crontab (run: crontab -e)
+
+# Daily backup at 2 AM
+0 2 * * * /usr/bin/node /path/to/your/project/Backend/scripts/backup-database.js >> /var/log/transparai-backup.log 2>&1
+
+# Weekly backup on Sunday at 3 AM (with longer retention)
+0 3 * * 0 BACKUP_RETENTION_DAYS=30 /usr/bin/node /path/to/your/project/Backend/scripts/backup-database.js >> /var/log/transparai-weekly-backup.log 2>&1
+
+# Alternative: Backup every 6 hours
+# 0 */6 * * * /usr/bin/node /path/to/your/project/Backend/scripts/backup-database.js >> /var/log/transparai-backup.log 2>&1
+
+# Instructions:
+# 1. Replace "/path/to/your/project" with the actual path to your project
+# 2. Make sure the scripts are executable: chmod +x Backend/scripts/*.js
+# 3. Ensure the log directory exists: mkdir -p /var/log
+# 4. Test the backup script manually first: node Backend/scripts/backup-database.js
+# 5. Add to crontab: crontab -e
+# 6. Verify crontab: crontab -l

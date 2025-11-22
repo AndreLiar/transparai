@@ -55,6 +55,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: '',
   },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+    index: true,
+  },
   profile: {
     firstName: { type: String, default: '' },
     lastName: { type: String, default: '' },
@@ -64,7 +69,7 @@ const userSchema = new mongoose.Schema({
   },
   plan: {
     type: String,
-    enum: ['free', 'standard', 'premium', 'enterprise'],
+    enum: ['free', 'starter', 'standard', 'premium', 'enterprise'],
     default: 'free',
   },
   organization: {
@@ -111,6 +116,17 @@ const userSchema = new mongoose.Schema({
     geminiAnalyses: { type: Number, default: 0 },
     totalAICost: { type: Number, default: 0 },
     lastUpdated: { type: Date, default: new Date() },
+  },
+  // GDPR compliance fields
+  consent: {
+    analytics: { type: Boolean, default: false },
+    marketing: { type: Boolean, default: false },
+    dataProcessing: { type: Boolean, default: true }, // Required for service
+    lastUpdated: { type: Date, default: Date.now },
+  },
+  dataRetention: {
+    analysesDeleteAfter: { type: Number, default: 730 }, // Days (2 years)
+    accountCreated: { type: Date, default: Date.now },
   },
   analyses: [analysisSchema],
   comparativeAnalyses: [comparativeAnalysisSchema],

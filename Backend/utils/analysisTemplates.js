@@ -211,48 +211,48 @@ const PLAN_ANALYSIS_TEMPLATES = {
     criteria: [
       'Clarté des conditions',
       'Facilité de résiliation',
-      'Frais cachés'
+      'Frais cachés',
     ],
     fields: 3,
     complexity: 'simple',
-    description: 'Analyse basique des points essentiels'
+    description: 'Analyse basique des points essentiels',
   },
-  
+
   standard: {
     name: 'Analyse Standard',
     criteria: [
       'Transparence des conditions',
-      'Facilité de résiliation', 
+      'Facilité de résiliation',
       'Frais cachés',
       'Protection des données',
       'Garanties offertes',
-      'Modalités de recours'
+      'Modalités de recours',
     ],
     fields: 6,
     complexity: 'standard',
-    description: 'Analyse complète des critères principaux'
+    description: 'Analyse complète des critères principaux',
   },
-  
+
   premium: {
     name: 'Analyse Premium',
     criteria: [
       'Transparence des conditions',
       'Facilité de résiliation',
-      'Frais cachés', 
+      'Frais cachés',
       'Protection des données',
       'Garanties offertes',
       'Modalités de recours',
       'Équilibre contractuel',
       'Respect du droit de la consommation',
       'Sécurité juridique',
-      'Flexibilité commerciale'
+      'Flexibilité commerciale',
     ],
     fields: 10,
     complexity: 'avancée',
     description: 'Analyse approfondie avec insights sectoriels',
-    includeInsights: true
+    includeInsights: true,
   },
-  
+
   enterprise: {
     name: 'Analyse Enterprise',
     criteria: [
@@ -260,7 +260,7 @@ const PLAN_ANALYSIS_TEMPLATES = {
       'Facilité de résiliation',
       'Frais cachés',
       'Protection des données',
-      'Garanties offertes', 
+      'Garanties offertes',
       'Modalités de recours',
       'Équilibre contractuel',
       'Respect du droit de la consommation',
@@ -269,21 +269,21 @@ const PLAN_ANALYSIS_TEMPLATES = {
       'Conformité réglementaire',
       'Gestion des risques',
       'Impact business',
-      'Compétitivité marché'
+      'Compétitivité marché',
     ],
     fields: 14,
     complexity: 'experte',
     description: 'Analyse experte avec conformité et insights business',
     includeInsights: true,
     includeCompliance: true,
-    includeBusiness: true
-  }
+    includeBusiness: true,
+  },
 };
 
 const generateAnalysisPrompt = (plan = 'standard', documentText) => {
   const template = PLAN_ANALYSIS_TEMPLATES[plan] || PLAN_ANALYSIS_TEMPLATES.standard;
-  const criteriaList = template.criteria.map(c => `- ${c}`).join('\n');
-  
+  const criteriaList = template.criteria.map((c) => `- ${c}`).join('\n');
+
   let prompt = `
 Tu es un expert juridique spécialisé dans l'analyse de Conditions Générales d'Abonnement (CGA) et documents contractuels.
 
@@ -313,15 +313,15 @@ Réponds **UNIQUEMENT** avec un objet JSON valide contenant exactement ces champ
 
   // Ajouts spécifiques selon le plan
   if (template.includeInsights) {
-    prompt += `\n   - Inclure des insights sectoriels pertinents`;
+    prompt += '\n   - Inclure des insights sectoriels pertinents';
   }
-  
+
   if (template.includeCompliance) {
-    prompt += `\n   - Mentionner la conformité réglementaire (GDPR, Code consommation, etc.)`;
+    prompt += '\n   - Mentionner la conformité réglementaire (GDPR, Code consommation, etc.)';
   }
-  
+
   if (template.includeBusiness) {
-    prompt += `\n   - Ajouter l'impact business et la compétitivité`;
+    prompt += '\n   - Ajouter l\'impact business et la compétitivité';
   }
 
   prompt += `

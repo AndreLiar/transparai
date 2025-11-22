@@ -3,25 +3,25 @@ const nodemailer = require('nodemailer');
 const logger = require('../utils/logger');
 
 // Create Gmail transporter with App Password
-const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'ktaylconsult@gmail.com',
-      pass: 'kqmhmgpcjsmqkntr' // App Password for TransparAI
-    },
-    secure: true,
-    port: 465,
-  });
-};
+const createTransporter = () => nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'ktaylconsult@gmail.com',
+    pass: 'kqmhmgpcjsmqkntr', // App Password for TransparAI
+  },
+  secure: true,
+  port: 465,
+});
 
 // Send contact form email
 const sendContactEmail = async (formData) => {
-  const { name, email, subject, message } = formData;
-  
+  const {
+    name, email, subject, message,
+  } = formData;
+
   try {
     const transporter = createTransporter();
-    
+
     // Email to you (the business owner)
     const businessEmailOptions = {
       from: 'ktaylconsult@gmail.com',
@@ -51,9 +51,9 @@ const sendContactEmail = async (formData) => {
           </div>
         </div>
       `,
-      replyTo: email // This allows you to reply directly to the sender
+      replyTo: email, // This allows you to reply directly to the sender
     };
-    
+
     // Auto-reply to the user
     const userAutoReplyOptions = {
       from: 'ktaylconsult@gmail.com',
@@ -97,33 +97,32 @@ const sendContactEmail = async (formData) => {
             </p>
           </div>
         </div>
-      `
+      `,
     };
-    
+
     // Send both emails
     await Promise.all([
       transporter.sendMail(businessEmailOptions),
-      transporter.sendMail(userAutoReplyOptions)
+      transporter.sendMail(userAutoReplyOptions),
     ]);
-    
+
     logger.info('Contact form emails sent successfully', {
       to: email,
-      subject: subject,
-      from: name
+      subject,
+      from: name,
     });
-    
+
     return {
       success: true,
-      message: 'Emails sent successfully'
+      message: 'Emails sent successfully',
     };
-    
   } catch (error) {
     logger.error('Failed to send contact form email', {
       error: error.message,
       stack: error.stack,
-      formData: { name, email, subject }
+      formData: { name, email, subject },
     });
-    
+
     throw new Error('Failed to send email');
   }
 };
@@ -143,5 +142,5 @@ const testEmailConnection = async () => {
 
 module.exports = {
   sendContactEmail,
-  testEmailConnection
+  testEmailConnection,
 };

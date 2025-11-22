@@ -66,7 +66,9 @@ describe('Collaboration Routes', () => {
 
   describe('GET /api/collaboration/shared/:analysisId', () => {
     it('should get shared analysis details', async () => {
-      const sharedAnalysis = new SharedAnalysis({ ...analysis, organizationId: organization._id, sharedBy: user._id, permissions: { canView: [user._id] } });
+      const sharedAnalysis = new SharedAnalysis({
+        ...analysis, organizationId: organization._id, sharedBy: user._id, permissions: { canView: [user._id] },
+      });
       await sharedAnalysis.save();
 
       const res = await request(app)
@@ -80,7 +82,9 @@ describe('Collaboration Routes', () => {
 
   describe('POST /api/collaboration/shared/:analysisId/comments', () => {
     it('should add a comment to a shared analysis', async () => {
-      const sharedAnalysis = new SharedAnalysis({ ...analysis, organizationId: organization._id, sharedBy: user._id, permissions: { canComment: [user._id] }, allowComments: true });
+      const sharedAnalysis = new SharedAnalysis({
+        ...analysis, organizationId: organization._id, sharedBy: user._id, permissions: { canComment: [user._id] }, allowComments: true,
+      });
       await sharedAnalysis.save();
 
       const res = await request(app)

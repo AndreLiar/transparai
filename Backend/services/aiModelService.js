@@ -16,17 +16,17 @@ if (OPENAI_API_KEY) {
 
 // AI Model costs per 1K tokens (input + output combined estimate)
 const MODEL_COSTS = {
-  'gpt-4-turbo': 0.015,      // $0.015 per 1K tokens
-  'gpt-3.5-turbo': 0.003,   // $0.003 per 1K tokens  
-  'gemini': 0.0,            // Free
+  'gpt-4-turbo': 0.015, // $0.015 per 1K tokens
+  'gpt-3.5-turbo': 0.003, // $0.003 per 1K tokens
+  gemini: 0.0, // Free
 };
 
 // Plan-based AI budget allocation
 const PLAN_AI_BUDGETS = {
-  free: 0.0,        // Free plan - no GPT budget
-  starter: 0.0,     // Starter plan - no GPT budget
-  standard: 2.0,    // $2/month GPT budget
-  premium: 10.0,    // $10/month GPT budget
+  free: 0.0, // Free plan - no GPT budget
+  starter: 0.0, // Starter plan - no GPT budget
+  standard: 2.0, // $2/month GPT budget
+  premium: 10.0, // $10/month GPT budget
   enterprise: 50.0, // $50/month GPT budget
 };
 
@@ -46,7 +46,7 @@ const analyzeDocumentComplexity = (text) => {
   let score = 0;
   score += Math.min(indicators.length / 10000, 0.3); // Length factor
   score += Math.min(indicators.legalTerms / 20, 0.3); // Legal complexity
-  score += Math.min(indicators.sections / 10, 0.2);   // Structure complexity
+  score += Math.min(indicators.sections / 10, 0.2); // Structure complexity
   score += Math.min(indicators.definitions / 10, 0.1); // Definition complexity
   score += Math.min(indicators.conditionals / 15, 0.1); // Conditional complexity
 
@@ -80,7 +80,7 @@ const selectOptimalModel = async (user, text) => {
   const aiSettings = user.aiSettings || {};
   const budget = aiSettings.monthlyAIBudget || { allocated: 0, used: 0 };
   const remainingBudget = budget.allocated - budget.used;
-  
+
   // Selection logic
   const selection = {
     model: 'gemini',
@@ -101,7 +101,7 @@ const selectOptimalModel = async (user, text) => {
     const preferredCost = MODEL_COSTS[aiSettings.preferredModel] || 0;
     const estimatedTokens = Math.ceil(text.length / 3); // Rough estimate
     const estimatedCost = (estimatedTokens / 1000) * preferredCost;
-    
+
     if (aiSettings.preferredModel === 'gemini' || estimatedCost <= remainingBudget) {
       selection.model = aiSettings.preferredModel;
       selection.reason = 'User preference';
@@ -112,7 +112,7 @@ const selectOptimalModel = async (user, text) => {
 
   // Auto-selection based on complexity and budget
   const estimatedTokens = Math.ceil(text.length / 3);
-  
+
   // Try GPT-4 for high complexity and premium users
   if (complexity > 0.7 && user.plan === 'premium') {
     const gpt4Cost = (estimatedTokens / 1000) * MODEL_COSTS['gpt-4-turbo'];
@@ -151,10 +151,10 @@ const callGPTModel = async (model, prompt, maxTokens = 2048) => {
       model,
     };
   }
-  
+
   try {
     const completion = await openai.chat.completions.create({
-      model: model,
+      model,
       messages: [
         {
           role: 'system',
@@ -232,7 +232,7 @@ const callGeminiModel = async (prompt) => {
 const performSmartAnalysis = async (user, text, prompt) => {
   const selection = await selectOptimalModel(user, text);
   const fallbackChain = [];
-  
+
   console.log(`🤖 Selected Model: ${selection.model} (${selection.reason})`);
   console.log(`📊 Complexity: ${(selection.complexity * 100).toFixed(1)}%`);
   console.log(`💰 Estimated Cost: $${selection.estimatedCost.toFixed(4)}`);
@@ -250,14 +250,14 @@ const performSmartAnalysis = async (user, text, prompt) => {
   // Fallback chain if primary fails
   if (!result.success) {
     console.log(`⚠️ ${selection.model} failed, trying fallbacks...`);
-    
+
     // Try GPT-3.5 if we haven't tried it and budget allows
     if (selection.model !== 'gpt-3.5-turbo' && selection.remainingBudget > 0.01) {
       console.log('🔄 Fallback: GPT-3.5 Turbo');
       result = await callGPTModel('gpt-3.5-turbo', prompt);
       fallbackChain.push({ model: 'gpt-3.5-turbo', success: result.success });
     }
-    
+
     // Final fallback to Gemini
     if (!result.success && selection.model !== 'gemini') {
       console.log('🔄 Final Fallback: Gemini');
@@ -271,7 +271,7 @@ const performSmartAnalysis = async (user, text, prompt) => {
   }
 
   // Update usage statistics
-  const actualCost = result.usage 
+  const actualCost = result.usage
     ? ((result.usage.prompt_tokens + result.usage.completion_tokens) / 1000) * (MODEL_COSTS[result.model] || 0)
     : selection.estimatedCost;
 

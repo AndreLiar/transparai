@@ -17,13 +17,13 @@ const analyzeText = async (req, res) => {
       ocrConfidence,
     } = req.body;
     const { uid } = req.user;
-    
+
     console.log('📝 Analysis details:', {
       source,
       documentName,
       fileType,
       textLength: text?.length || 0,
-      hasText: !!text
+      hasText: !!text,
     });
 
     if (!text || !source) {
@@ -42,13 +42,13 @@ const analyzeText = async (req, res) => {
     // Check if user can analyze based on their plan
     if (!canAnalyze(userPlan, usedAnalyses)) {
       const limit = getMonthlyLimit(userPlan);
-      return res.status(429).json({ 
+      return res.status(429).json({
         quotaReached: true,
         message: `Quota mensuel atteint (${usedAnalyses}/${limit}). Passez à un plan supérieur pour continuer.`,
         currentPlan: userPlan,
         usedAnalyses,
         limit,
-        upgradeRequired: true
+        upgradeRequired: true,
       });
     }
 
@@ -58,7 +58,7 @@ const analyzeText = async (req, res) => {
         message: 'L\'analyse OCR nécessite un plan Standard ou supérieur.',
         featureRequired: 'ocrProcessing',
         currentPlan: userPlan,
-        upgradeRequired: true
+        upgradeRequired: true,
       });
     }
 
@@ -85,7 +85,7 @@ const analyzeText = async (req, res) => {
       stack: err.stack,
       uid: req.user?.uid,
       source: req.body?.source,
-      textLength: req.body?.text?.length || 0
+      textLength: req.body?.text?.length || 0,
     });
     res.status(500).json({ message: err.message || 'Erreur serveur' });
   }

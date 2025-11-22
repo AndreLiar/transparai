@@ -1,6 +1,7 @@
 // Backend/controllers/adminController.js
 const User = require('../models/User');
 const ErrorLog = require('../models/ErrorLog');
+const FailedAttempt = require('../models/FailedAttempt');
 const logger = require('../utils/logger');
 
 const getQuotaAnalytics = async (req, res) => {
@@ -370,7 +371,120 @@ const getSystemMetrics = async (req, res) => {
   }
 };
 
+/**
+ * Get security monitoring data (failed attempts, locked accounts)
+ */
+const getSecurityMetrics = async (req, res) => {
+  try {
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    // Get failed attempts in last 15 minutes
+    const recentAttempts = await FailedAttempt.countDocuments({
+      timestamp: { $gte: fifteenMinutesAgo },
+    });
+
+    // Get failed attempts in last 24 hours by type
+    const attemptsByType = await FailedAttempt.aggregate([
+      {
+        $match: {
+          timestamp: { $gte: oneDayAgo },
+        },
+      },
+      {
+        $group: {
+          _id: '$type',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Get top IPs with failed attempts
+    const topFailedIPs = await FailedAttempt.aggregate([
+      {
+        $match: {
+          timestamp: { $gte: oneDayAgo },
+        },
+      },
+      {
+        $group: {
+          _id: '$ip',
+          count: { $sum: 1 },
+          lastAttempt: { $max: '$timestamp' },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+      {
+        $limit: 10,
+      },
+    ]);
+
+    // Get accounts with multiple failed attempts
+    const lockedAccounts = await FailedAttempt.aggregate([
+      {
+        $match: {
+          timestamp: { $gte: fifteenMinutesAgo },
+        },
+      },
+      {
+        $group: {
+          _id: '$identifier',
+          count: { $sum: 1 },
+          lastAttempt: { $max: '$timestamp' },
+        },
+      },
+      {
+        $match: {
+          count: { $gte: 5 },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+    ]);
+
+    logger.info('Security metrics retrieved', {
+      adminUserId: req.user.uid,
+      recentAttempts,
+    });
+
+    res.json({
+      success: true,
+      metrics: {
+        timestamp: new Date().toISOString(),
+        recentAttempts: {
+          last15Minutes: recentAttempts,
+          last24Hours: attemptsByType.reduce((sum, item) => sum + item.count, 0),
+        },
+        attemptsByType,
+        topFailedIPs,
+        lockedAccounts: {
+          count: lockedAccounts.length,
+          accounts: lockedAccounts,
+        },
+      },
+    });
+  } catch (error) {
+    logger.error('Failed to get security metrics', {
+      error: error.message,
+      adminUserId: req.user?.uid,
+    });
+
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Failed to retrieve security metrics',
+        code: 'SECURITY_METRICS_ERROR',
+        timestamp: new Date().toISOString(),
+      },
+    });
+  }
+};
+
 module.exports = {
   getQuotaAnalytics,
   getSystemMetrics,
+  getSecurityMetrics,
 };

@@ -99,7 +99,7 @@ const processAnalysis = async ({
 
   // === Smart AI Analysis ===
   const prompt = generateAnalysisPrompt(user.plan || 'standard', processedText);
-  
+
   let aiResult;
   try {
     aiResult = await performSmartAnalysis(user, processedText, prompt);

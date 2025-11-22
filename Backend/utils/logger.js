@@ -2,6 +2,7 @@
 const winston = require('winston');
 const path = require('path');
 const ErrorTrackingTransport = require('./ErrorTrackingTransport');
+const { scrubLog } = require('./logScrubber');
 
 // Define log levels
 const levels = {
@@ -23,8 +24,21 @@ const colors = {
 
 winston.addColors(colors);
 
-// Define log format
+// Custom format to scrub sensitive data
+const scrubFormat = winston.format((info) => {
+  // Scrub the entire info object
+  const scrubbed = scrubLog(info, {
+    redactEmails: true,
+    redactIPs: process.env.NODE_ENV === 'production',
+    hashSensitiveFields: true,
+  });
+
+  return scrubbed;
+});
+
+// Define log format with scrubbing
 const logFormat = winston.format.combine(
+  scrubFormat(),
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
   winston.format.errors({ stack: true }),
   winston.format.json(),
@@ -233,6 +247,85 @@ logger.logExternalService = (service, operation, success, duration, error = null
   } else {
     logger.warn('External Service Warning', logData);
   }
+};
+
+/**
+ * Log security events with structured format
+ */
+logger.logSecurityEvent = (eventType, details = {}) => {
+  const securityEvent = {
+    eventType,
+    timestamp: new Date().toISOString(),
+    severity: details.severity || 'info',
+    ...details,
+  };
+
+  // Remove sensitive data
+  if (securityEvent.token) delete securityEvent.token;
+  if (securityEvent.password) delete securityEvent.password;
+
+  switch (details.severity) {
+    case 'critical':
+    case 'high':
+      logger.error(`Security Event: ${eventType}`, securityEvent);
+      break;
+    case 'medium':
+      logger.warn(`Security Event: ${eventType}`, securityEvent);
+      break;
+    default:
+      logger.info(`Security Event: ${eventType}`, securityEvent);
+  }
+};
+
+/**
+ * Log admin access attempts
+ */
+logger.logAdminAccess = (details) => {
+  logger.logSecurityEvent('ADMIN_ACCESS', {
+    ...details,
+    severity: 'high',
+  });
+};
+
+/**
+ * Log data export events
+ */
+logger.logDataExport = (details) => {
+  logger.logSecurityEvent('DATA_EXPORT', {
+    ...details,
+    severity: 'medium',
+  });
+};
+
+/**
+ * Log authentication events
+ */
+logger.logAuthEvent = (eventType, details) => {
+  logger.logSecurityEvent(`AUTH_${eventType.toUpperCase()}`, {
+    ...details,
+    severity: eventType === 'failed' ? 'medium' : 'info',
+  });
+};
+
+/**
+ * Log permission changes
+ */
+logger.logPermissionChange = (details) => {
+  logger.logSecurityEvent('PERMISSION_CHANGE', {
+    ...details,
+    severity: 'high',
+  });
+};
+
+/**
+ * Log suspicious activity
+ */
+logger.logSuspiciousActivity = (activityType, details) => {
+  logger.logSecurityEvent('SUSPICIOUS_ACTIVITY', {
+    activityType,
+    ...details,
+    severity: 'high',
+  });
 };
 
 // Handle uncaught exceptions and unhandled rejections

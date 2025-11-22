@@ -1,5 +1,6 @@
 // Backend/routes/aiSettingsRoutes.js
 const express = require('express');
+
 const router = express.Router();
 const authenticateUser = require('../middleware/authMiddleware');
 const User = require('../models/User');
@@ -99,7 +100,7 @@ router.get('/', authenticateUser, async (req, res) => {
           totalAICost: 0,
         },
         plan: user.plan,
-        planBudget: PLAN_AI_BUDGETS[user.plan] || PLAN_AI_BUDGETS['starter'] || 0,
+        planBudget: PLAN_AI_BUDGETS[user.plan] || PLAN_AI_BUDGETS.starter || 0,
       },
     };
     console.log('✅ Sending AI settings response:', JSON.stringify(responseData, null, 2));
@@ -140,7 +141,7 @@ router.get('/', authenticateUser, async (req, res) => {
 router.put('/', authenticateUser, async (req, res) => {
   try {
     const { preferredModel, allowPremiumAI } = req.body;
-    
+
     const user = await User.findOne({ firebaseUid: req.user.uid });
     if (!user) {
       return res.status(404).json({
@@ -222,12 +223,12 @@ router.get('/usage', authenticateUser, async (req, res) => {
 
     const stats = user.aiUsageStats || {};
     const budget = user.aiSettings?.monthlyAIBudget || { allocated: 0, used: 0 };
-    
+
     // Calculate usage percentages
-    const gptPercentage = stats.totalAnalyses > 0 
+    const gptPercentage = stats.totalAnalyses > 0
       ? ((stats.gptAnalyses || 0) / stats.totalAnalyses * 100).toFixed(1)
       : 0;
-    
+
     const budgetPercentage = budget.allocated > 0
       ? ((budget.used / budget.allocated) * 100).toFixed(1)
       : 0;
@@ -249,7 +250,7 @@ router.get('/usage', authenticateUser, async (req, res) => {
         },
         costs: {
           totalAICost: stats.totalAICost || 0,
-          averageCostPerAnalysis: stats.totalAnalyses > 0 
+          averageCostPerAnalysis: stats.totalAnalyses > 0
             ? ((stats.totalAICost || 0) / stats.totalAnalyses).toFixed(4)
             : 0,
         },

@@ -5,11 +5,12 @@ const router = express.Router();
 const authenticate = require('../middleware/authMiddleware');
 const { analyzeText } = require('../controllers/analyzeController');
 const { routeValidations } = require('../middleware/validation');
-const { 
-  sanitizeInput, 
-  noSQLInjectionProtection, 
+const { validateContentQuality } = require('../middleware/contentQualityValidator');
+const {
+  sanitizeInput,
+  noSQLInjectionProtection,
   requestSizeLimiter,
-  securityLogger 
+  securityLogger,
 } = require('../middleware/security');
 
 /**
@@ -120,14 +121,16 @@ const {
  *       500:
  *         $ref: '#/components/responses/ServerError'
  */
-router.post('/', 
+router.post(
+  '/',
   securityLogger,
   requestSizeLimiter,
   sanitizeInput,
   noSQLInjectionProtection,
   authenticate,
   routeValidations.analyzeContract,
-  analyzeText
+  validateContentQuality, // Add content quality validation
+  analyzeText,
 );
 
 module.exports = router;

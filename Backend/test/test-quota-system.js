@@ -27,9 +27,9 @@ async function testCORS() {
   try {
     const response = await axios.get(`${API_BASE}/dashboard`, {
       headers: {
-        'Origin': 'http://localhost:5173',
-        'Authorization': `Bearer ${TEST_TOKEN}`
-      }
+        Origin: 'http://localhost:5173',
+        Authorization: `Bearer ${TEST_TOKEN}`,
+      },
     });
     console.log('✅ CORS allows localhost:5173');
     return true;
@@ -59,13 +59,13 @@ async function testEndpoints() {
     '/api/analyze',
     '/api/stripe',
     '/api/export',
-    '/api/user'
+    '/api/user',
   ];
 
   for (const endpoint of endpoints) {
     try {
       await axios.get(`http://localhost:5001${endpoint}`, {
-        headers: { 'Authorization': `Bearer ${TEST_TOKEN}` }
+        headers: { Authorization: `Bearer ${TEST_TOKEN}` },
       });
       console.log(`✅ ${endpoint} - accessible`);
     } catch (error) {

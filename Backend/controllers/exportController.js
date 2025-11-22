@@ -27,11 +27,11 @@ const exportAnalysisPDF = async (req, res) => {
     // Check if user has PDF export feature
     const userPlan = user.plan || 'free';
     if (!hasFeature(userPlan, 'pdfExport')) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: 'L\'export PDF nécessite un plan Standard ou supérieur.',
         featureRequired: 'pdfExport',
         currentPlan: userPlan,
-        upgradeRequired: true
+        upgradeRequired: true,
       });
     }
 

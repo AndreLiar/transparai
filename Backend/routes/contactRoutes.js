@@ -1,5 +1,6 @@
 // Backend/routes/contactRoutes.js
 const express = require('express');
+
 const router = express.Router();
 const { sendContactEmail, testEmailConnection } = require('../services/contactEmailService');
 const logger = require('../utils/logger');
@@ -84,64 +85,65 @@ const logger = require('../utils/logger');
  */
 router.post('/send', async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
-    
+    const {
+      name, email, subject, message,
+    } = req.body;
+
     // Validation
     if (!name || !email || !subject || !message) {
       return res.status(400).json({
         success: false,
-        message: 'Tous les champs sont requis'
+        message: 'Tous les champs sont requis',
       });
     }
-    
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
-        message: 'Adresse email invalide'
+        message: 'Adresse email invalide',
       });
     }
-    
+
     // Length validation
     if (name.length > 100 || subject.length > 200 || message.length > 2000) {
       return res.status(400).json({
         success: false,
-        message: 'Un ou plusieurs champs dépassent la taille autorisée'
+        message: 'Un ou plusieurs champs dépassent la taille autorisée',
       });
     }
-    
+
     // Sanitize inputs (basic protection)
     const sanitizedData = {
       name: name.trim().replace(/<[^>]*>/g, ''), // Remove HTML tags
       email: email.trim().toLowerCase(),
       subject: subject.trim().replace(/<[^>]*>/g, ''),
-      message: message.trim().replace(/<[^>]*>/g, '')
+      message: message.trim().replace(/<[^>]*>/g, ''),
     };
-    
+
     // Send email
     await sendContactEmail(sanitizedData);
-    
+
     logger.info('Contact form submitted successfully', {
       name: sanitizedData.name,
       email: sanitizedData.email,
-      subject: sanitizedData.subject
+      subject: sanitizedData.subject,
     });
-    
+
     res.json({
       success: true,
-      message: 'Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.'
+      message: 'Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.',
     });
-    
   } catch (error) {
     logger.error('Contact form submission failed', {
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
-    
+
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de l\'envoi du message. Veuillez réessayer ou nous contacter directement.'
+      message: 'Erreur lors de l\'envoi du message. Veuillez réessayer ou nous contacter directement.',
     });
   }
 });
@@ -188,7 +190,7 @@ router.get('/test', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 });

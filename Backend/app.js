@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser'); // ✅ Import this
+const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
 const connectDB = require('./config/db');
@@ -8,7 +8,24 @@ const performanceMonitor = require('./middleware/performanceMonitor');
 const { runAllHealthChecks } = require('./middleware/healthChecks');
 const logger = require('./utils/logger');
 const { errorTracker, requestTimer, globalErrorHandler } = require('./middleware/errorTracker');
+
+// Initialize Sentry for error monitoring
+const {
+  initSentry,
+  requestHandler: sentryRequestHandler,
+  tracingHandler: sentryTracingHandler,
+  errorHandler: sentryErrorHandler,
+} = require('./config/sentry');
 const { apiLimiter, analysisLimiter } = require('./middleware/rateLimiter');
+const { corsOptions } = require('./middleware/corsConfig');
+const { apiVersionMiddleware, versionInfoHandler } = require('./middleware/apiVersioning');
+const {
+  securityHeaders,
+  environmentSecurity,
+  sanitizeInput,
+  noSQLInjectionProtection,
+  securityLogger,
+} = require('./middleware/security');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const analyzeRoutes = require('./routes/analyzeRoutes');
 const stripeRoutes = require('./routes/stripeRoutes');
@@ -26,33 +43,53 @@ const documentLibraryRoutes = require('./routes/documentLibraryRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const aiSettingsRoutes = require('./routes/aiSettingsRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const sessionRoutes = require('./routes/sessionRoutes');
+const gdprRoutes = require('./routes/gdprRoutes');
 
 const app = express();
 connectDB();
 
-// ✅ CORS must come first
-app.use(cors({
-  origin: [
-    'https://transparai.vercel.app',
-    'https://transparai-bpr4eqsyt-andreliars-projects.vercel.app',
-    /^https:\/\/transparai.*\.vercel\.app$/, // Allow any transparai Vercel deployment
-    'http://localhost:5173'
-  ],
-  credentials: true,
-}));
+// ✅ Initialize Sentry error monitoring
+initSentry(app);
 
-// ✅ Request timing middleware (must be early)
+// ✅ Sentry request handler (must be first middleware)
+app.use(sentryRequestHandler());
+app.use(sentryTracingHandler());
+
+// ✅ SECURITY: HTTPS enforcement must come FIRST (before CORS)
+app.use(environmentSecurity);
+
+// ✅ SECURITY: Apply security headers globally
+app.use(securityHeaders);
+
+// ✅ CORS configuration with strict whitelist validation
+app.use(cors(corsOptions));
+
+// ✅ Request timing middleware
 app.use(requestTimer);
 
-// ✅ Mount webhook FIRST with raw body parser
+// ✅ SECURITY: Input sanitization and NoSQL injection protection
+app.use(sanitizeInput);
+app.use(noSQLInjectionProtection);
+
+// ✅ SECURITY: Security event logging
+app.use(securityLogger);
+
+// ✅ Mount webhook FIRST with raw body parser (before JSON parser)
 app.use('/api/webhook', bodyParser.raw({ type: 'application/json' }), webhookRoutes);
 
-// ✅ Then mount JSON parser for the rest with increased limit for comparative analysis
+// ✅ Then mount JSON parser for the rest
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // ✅ Performance monitoring middleware
 app.use(performanceMonitor);
+
+// ✅ API Versioning middleware
+app.use('/api', apiVersionMiddleware);
+
+// ✅ API Version info endpoint
+app.get('/api/version', versionInfoHandler);
 
 // ✅ Rate limiting for all API routes
 app.use('/api', apiLimiter);
@@ -92,6 +129,8 @@ app.use('/api/documents', documentLibraryRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai-settings', aiSettingsRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/session', sessionRoutes);
+app.use('/api/gdpr', gdprRoutes);
 
 // ✅ Root route for health checks
 app.get('/', (_req, res) => {
@@ -138,6 +177,9 @@ app.get('/health/detailed', async (_req, res) => {
 
 // ✅ Error tracking middleware
 app.use(errorTracker);
+
+// ✅ Sentry error handler (must be before global error handler)
+app.use(sentryErrorHandler());
 
 // ✅ Global error handler (must be last)
 app.use(globalErrorHandler);
