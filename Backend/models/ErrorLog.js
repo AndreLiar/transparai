@@ -62,13 +62,13 @@ const errorLogSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Indexes for efficient querying
-errorLogSchema.index({ timestamp: -1 });
-errorLogSchema.index({ level: 1, timestamp: -1 });
-errorLogSchema.index({ 'request.userId': 1, timestamp: -1 });
+// Indexes for efficient querying (use createdAt from timestamps instead of timestamp)
+errorLogSchema.index({ createdAt: -1 });
+errorLogSchema.index({ level: 1, createdAt: -1 });
+errorLogSchema.index({ 'request.userId': 1, createdAt: -1 });
 errorLogSchema.index({ resolved: 1, level: 1 });
 
 // TTL index - auto-delete logs older than 90 days
-errorLogSchema.index({ timestamp: 1 }, { expireAfterSeconds: 7776000 }); // 90 days
+errorLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 7776000 }); // 90 days
 
 module.exports = mongoose.model('ErrorLog', errorLogSchema);

@@ -48,13 +48,23 @@ const gdprRoutes = require('./routes/gdprRoutes');
 
 const app = express();
 
-// Initialize database connection
-(async () => {
-  await connectDB();
-})().catch(err => {
-  console.error('❌ Failed to initialize database:', err.message);
-  process.exit(1);
-});
+// Initialize database connection immediately and synchronously
+const initializeDatabase = async () => {
+  try {
+    await connectDB();
+    console.log('✅ Database initialization completed');
+  } catch (err) {
+    console.error('❌ Failed to initialize database:', err.message);
+    if (process.env.NODE_ENV === 'production') {
+      console.error('❌ Exiting due to database connection failure');
+      process.exit(1);
+    }
+    throw err;
+  }
+};
+
+// Call database initialization
+initializeDatabase();
 
 // ✅ Initialize Sentry error monitoring
 initSentry(app);

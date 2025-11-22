@@ -25,7 +25,6 @@ const failedAttemptSchema = new mongoose.Schema({
   timestamp: {
     type: Date,
     default: Date.now,
-    index: true,
   },
   metadata: {
     endpoint: String,
