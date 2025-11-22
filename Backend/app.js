@@ -161,14 +161,24 @@ app.get('/', (_req, res) => {
   });
 });
 
-// ✅ Basic Health check
+// ✅ Basic Health check with uptime
 app.get('/health', (_req, res) => {
   logger.info('Basic health check accessed');
+  
+  const uptimeSeconds = process.uptime();
+  const uptimeFormatted = `${Math.floor(uptimeSeconds / 3600)}h ${Math.floor((uptimeSeconds % 3600) / 60)}m ${Math.floor(uptimeSeconds % 60)}s`;
+  
   res.json({
     status: 'healthy',
-    message: '✅ Backend is working',
+    message: '✅ TransparAI Backend API is running',
     timestamp: new Date().toISOString(),
     version: process.env.APP_VERSION || '1.0.0',
+    environment: process.env.NODE_ENV,
+    uptime: uptimeFormatted,
+    monitoring: {
+      sentry: process.env.SENTRY_DSN ? 'enabled' : 'disabled',
+      newrelic: process.env.NEW_RELIC_LICENSE_KEY ? 'enabled' : 'disabled',
+    },
   });
 });
 
