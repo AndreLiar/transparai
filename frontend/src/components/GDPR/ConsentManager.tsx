@@ -1,6 +1,6 @@
 // frontend/src/components/GDPR/ConsentManager.tsx
 import React, { useState, useEffect } from 'react';
-import { gdprService, ConsentStatus } from '@/services/gdprService';
+import { gdprService } from '@/services/gdprService';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslation } from 'react-i18next';
 

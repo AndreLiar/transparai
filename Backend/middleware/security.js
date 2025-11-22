@@ -73,27 +73,29 @@ const securityHeaders = (req, res, next) => {
 
 // Input sanitization middleware
 const sanitizeInput = (req, res, next) => {
-  // Remove potentially dangerous characters from all string inputs
-  const sanitize = (obj) => {
-    if (typeof obj === 'string') {
-      return obj
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
-        .replace(/javascript:/gi, '') // Remove javascript: protocols
-        .replace(/on\w+=/gi, '') // Remove event handlers
-        .trim();
+  const sanitize = (value) => {
+    if (typeof value === 'string') {
+      return value.replace(/<script.*?>.*?<\/script>/gi, '').trim();
     }
-    if (typeof obj === 'object' && obj !== null) {
-      for (const key in obj) {
-        obj[key] = sanitize(obj[key]);
+    if (Array.isArray(value)) {
+      return value.map(sanitize);
+    }
+    if (typeof value === 'object' && value !== null) {
+      const sanitizedObj = {};
+      for (const key in value) {
+        if (Object.prototype.hasOwnProperty.call(value, key)) {
+          sanitizedObj[key] = sanitize(value[key]);
+        }
       }
+      return sanitizedObj;
     }
-    return obj;
+    return value;
   };
 
   req.body = sanitize(req.body);
   req.query = sanitize(req.query);
   req.params = sanitize(req.params);
-
+  
   next();
 };
 

@@ -11,14 +11,10 @@ const AdminDashboard: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'security' | 'system' | 'quotas'>('security');
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       {/* Main Content */}
       <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'} p-4 md:p-8`}>
@@ -55,8 +51,7 @@ const AdminDashboard: React.FC = () => {
           <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto">
             <button
               onClick={() => setActiveTab('security')}
-              className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
-                activeTab === 'security'
+              className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${activeTab === 'security'
                   ? 'border-b-2 border-blue-600 text-blue-600'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
@@ -65,8 +60,7 @@ const AdminDashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('system')}
-              className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
-                activeTab === 'system'
+              className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${activeTab === 'system'
                   ? 'border-b-2 border-blue-600 text-blue-600'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
@@ -75,8 +69,7 @@ const AdminDashboard: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('quotas')}
-              className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
-                activeTab === 'quotas'
+              className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${activeTab === 'quotas'
                   ? 'border-b-2 border-blue-600 text-blue-600'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}

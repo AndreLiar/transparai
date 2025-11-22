@@ -12,14 +12,10 @@ const PrivacySettings: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'privacy' | 'sessions'>('privacy');
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       {/* Main Content */}
       <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'} p-4 md:p-8`}>
@@ -38,8 +34,7 @@ const PrivacySettings: React.FC = () => {
           <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
             <button
               onClick={() => setActiveTab('privacy')}
-              className={`px-6 py-3 font-medium transition-colors ${
-                activeTab === 'privacy'
+              className={`px-6 py-3 font-medium transition-colors ${activeTab === 'privacy'
                   ? 'border-b-2 border-blue-600 text-blue-600'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
@@ -48,8 +43,7 @@ const PrivacySettings: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('sessions')}
-              className={`px-6 py-3 font-medium transition-colors ${
-                activeTab === 'sessions'
+              className={`px-6 py-3 font-medium transition-colors ${activeTab === 'sessions'
                   ? 'border-b-2 border-blue-600 text-blue-600'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}

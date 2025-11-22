@@ -1,7 +1,9 @@
-// Backend/config/db.js
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
   if (mongoose.connection.readyState >= 1) {
     console.log('✅ MongoDB already connected');
     return;
