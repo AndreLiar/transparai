@@ -109,34 +109,61 @@ const initSentry = (app) => {
 /**
  * Sentry request handler middleware (must be first)
  */
-const requestHandler = () => Sentry.Handlers.requestHandler({
-  ip: false, // Don't capture IP addresses
-  request: ['method', 'url', 'headers.user-agent'],
-  serverName: process.env.SERVER_NAME || 'transparai-api',
-});
+const requestHandler = () => {
+  if (!Sentry || !Sentry.Handlers) {
+    // Return no-op middleware if Sentry is not available
+    return (req, res, next) => next();
+  }
+  
+  return Sentry.Handlers.requestHandler({
+    ip: false, // Don't capture IP addresses
+    request: ['method', 'url', 'headers.user-agent'],
+    serverName: process.env.SERVER_NAME || 'transparai-api',
+  });
+};
 
 /**
  * Sentry tracing handler middleware
  */
-const tracingHandler = () => Sentry.Handlers.tracingHandler();
+const tracingHandler = () => {
+  if (!Sentry || !Sentry.Handlers) {
+    // Return no-op middleware if Sentry is not available
+    return (req, res, next) => next();
+  }
+  
+  return Sentry.Handlers.tracingHandler();
+};
 
 /**
  * Sentry error handler middleware (must be after routes)
  */
-const errorHandler = () => Sentry.Handlers.errorHandler({
-  shouldHandleError: (error) => {
-    // Only send 4xx and 5xx errors to Sentry
-    if (error.status) {
-      return error.status >= 400;
-    }
-    return true;
-  },
-});
+const errorHandler = () => {
+  if (!Sentry || !Sentry.Handlers) {
+    // Return no-op middleware if Sentry is not available
+    return (err, req, res, next) => next(err);
+  }
+  
+  return Sentry.Handlers.errorHandler({
+    shouldHandleError: (error) => {
+      // Only send 4xx and 5xx errors to Sentry
+      if (error.status) {
+        return error.status >= 400;
+      }
+      return true;
+    },
+  });
+};
 
 /**
  * Custom error capture with additional context
  */
 const captureError = (error, req = null, additionalContext = {}) => {
+  if (!Sentry || !Sentry.withScope) {
+    // Log error locally if Sentry is not available
+    console.error('Error (Sentry unavailable):', error.message);
+    return;
+  }
+  
   Sentry.withScope((scope) => {
     // Add user context if available
     if (req && req.user) {
@@ -176,6 +203,11 @@ const captureError = (error, req = null, additionalContext = {}) => {
  * Capture custom message with context
  */
 const captureMessage = (message, level = 'info', context = {}) => {
+  if (!Sentry || !Sentry.withScope) {
+    console.log(`Message (Sentry unavailable) [${level}]:`, message);
+    return;
+  }
+  
   Sentry.withScope((scope) => {
     scope.setLevel(level);
     Object.keys(context).forEach((key) => {
@@ -188,15 +220,25 @@ const captureMessage = (message, level = 'info', context = {}) => {
 /**
  * Add performance transaction
  */
-const startTransaction = (name, op = 'http') => Sentry.startTransaction({
-  name,
-  op,
-});
+const startTransaction = (name, op = 'http') => {
+  if (!Sentry || !Sentry.startTransaction) {
+    return null;
+  }
+  
+  return Sentry.startTransaction({
+    name,
+    op,
+  });
+};
 
 /**
  * Set user context for current scope
  */
 const setUserContext = (user) => {
+  if (!Sentry || !Sentry.setUser) {
+    return;
+  }
+  
   Sentry.setUser({
     id: user.uid || user.id,
     email: user.email,
@@ -208,6 +250,10 @@ const setUserContext = (user) => {
  * Test Sentry configuration
  */
 const testSentry = () => {
+  if (!Sentry || !Sentry.getCurrentHub) {
+    throw new Error('Sentry is not available');
+  }
+  
   if (!Sentry.getCurrentHub().getClient()) {
     throw new Error('Sentry is not initialized');
   }
