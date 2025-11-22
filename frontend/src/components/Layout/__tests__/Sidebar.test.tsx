@@ -80,7 +80,11 @@ describe('Sidebar', () => {
 
     expect(screen.getByText('🧠 TransparAI')).toBeInTheDocument();
     expect(screen.getByText(/Compte/i)).toBeInTheDocument();
-    expect(screen.getByText(/Historique/i)).toBeInTheDocument();
+    
+    // Look for Historique specifically in navigation buttons, not in upgrade prompt
+    const historiqueButton = screen.getByRole('button', { name: /Historique/i });
+    expect(historiqueButton).toBeInTheDocument();
+    
     expect(screen.getByText(/Analyser/i)).toBeInTheDocument();
     expect(screen.getByText(/Support/)).toBeInTheDocument();
     expect(screen.getByText(/Mettre à niveau/i)).toBeInTheDocument();

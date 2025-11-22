@@ -61,14 +61,19 @@ describe('AnalyzeForm', () => {
     );
 
     await user.selectOptions(screen.getByLabelText('Source'), 'OCR');
-    expect(screen.queryByLabelText('Paste text')).not.toBeInTheDocument();
+    
+    // Wait for the text area to disappear after mode switch
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Paste text')).not.toBeInTheDocument();
+    });
 
     const fileField = await screen.findByLabelText('Upload file');
     const file = new File(['content'], 'cga.pdf', { type: 'application/pdf' });
     await user.upload(fileField, file);
-    const submitButton = screen.getByRole('button', { name: 'Analyze' });
-    await user.click(submitButton);
-    fireEvent.submit(submitButton.closest('form')!);
+    const submitButtons = screen.getAllByRole('button', { name: 'Analyze' });
+    const activeSubmitButton = submitButtons.find(button => !(button as HTMLButtonElement).disabled) || submitButtons[0];
+    await user.click(activeSubmitButton);
+    fireEvent.submit(activeSubmitButton.closest('form')!);
 
     await waitFor(() => {
       expect(onSubmitMock).toHaveBeenCalledWith('', 'ocr', file);

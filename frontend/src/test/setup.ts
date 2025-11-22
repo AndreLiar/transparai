@@ -1,5 +1,18 @@
 // Frontend/src/test/setup.ts
 import '@testing-library/jest-dom';
+import { cleanup } from '@testing-library/react';
+
+// Clean up DOM between tests
+afterEach(() => {
+  cleanup();
+  document.body.innerHTML = '';
+  document.head.innerHTML = '';
+});
+
+// Reset all mocks between tests
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 // Mock Firebase
 Object.defineProperty(window, 'matchMedia', {
@@ -33,6 +46,9 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
 // Mock URL.createObjectURL
 global.URL.createObjectURL = vi.fn(() => 'mocked-url');
 global.URL.revokeObjectURL = vi.fn();
+
+// Mock window.scrollTo
+window.scrollTo = vi.fn();
 
 // Mock console.warn for cleaner test output
 const originalWarn = console.warn;
