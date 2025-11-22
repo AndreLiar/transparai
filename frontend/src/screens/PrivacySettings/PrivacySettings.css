@@ -1,0 +1,97 @@
+/* frontend/src/screens/PrivacySettings/PrivacySettings.css */
+
+.privacy-settings-container {
+  min-height: 100vh;
+  background-color: var(--bg-color, #f9fafb);
+}
+
+.privacy-content {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.privacy-header {
+  margin-bottom: 2rem;
+}
+
+.privacy-header h1 {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.privacy-header p {
+  color: var(--text-secondary);
+}
+
+.privacy-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.privacy-tab {
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.privacy-tab:hover {
+  color: var(--primary-color);
+}
+
+.privacy-tab.active {
+  border-bottom-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.privacy-section {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.privacy-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.danger-zone {
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.danger-zone h3 {
+  color: #991b1b;
+  margin-bottom: 0.5rem;
+}
+
+.danger-zone p {
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .privacy-settings-container {
+    background-color: #111827;
+  }
+
+  .privacy-section {
+    background: #1f2937;
+  }
+
+  .danger-zone {
+    background-color: rgba(127, 29, 29, 0.2);
+    border-color: rgba(220, 38, 38, 0.3);
+  }
+}

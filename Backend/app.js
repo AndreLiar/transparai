@@ -47,7 +47,14 @@ const sessionRoutes = require('./routes/sessionRoutes');
 const gdprRoutes = require('./routes/gdprRoutes');
 
 const app = express();
-connectDB();
+
+// Initialize database connection
+(async () => {
+  await connectDB();
+})().catch(err => {
+  console.error('❌ Failed to initialize database:', err.message);
+  process.exit(1);
+});
 
 // ✅ Initialize Sentry error monitoring
 initSentry(app);

@@ -1,4 +1,3 @@
-// src/routes/index.tsx
 import { Routes, Route } from 'react-router-dom';
 import LandingPage from '../screens/landingPage/LandingPage';
 import Signup from '@/screens/AuthenticationsPages/Signup';
@@ -7,6 +6,7 @@ import ResetPassword from '@/screens/AuthenticationsPages/ResetPassword';
 import VerifyEmail from '@/screens/AuthenticationsPages/VerifyEmail';
 import MagicLink from '@/screens/AuthenticationsPages/MagicLink';
 import PrivateRoute from '@/components/guard/PrivateRoute';
+import AdminRoute from '@/components/guard/AdminRoute';
 import Dashboard from '@/screens/Dashboard/Dashboard';
 import Account from '@/screens/Account/Account'; // ✅ NEW - Merged Profile + Infos
 import AnalyzeEnhanced from '@/screens/Analyse/AnalyzeEnhanced'; // ✅ Enhanced version
@@ -29,6 +29,8 @@ import OrganizationDashboard from '@/screens/Organization/OrganizationDashboard'
 import UserManagement from '@/screens/Organization/UserManagement';
 import AcceptInvitation from '@/screens/AcceptInvitation/AcceptInvitation';
 import AISettings from '@/screens/AISettings/AISettings';
+import PrivacySettings from '@/screens/PrivacySettings/PrivacySettings';
+import AdminDashboard from '@/screens/AdminDashboard/AdminDashboard';
 
 const AppRoutes = () => {
   return (
@@ -64,6 +66,24 @@ const AppRoutes = () => {
           <PrivateRoute>
             <AISettings />
           </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/privacy-settings"
+        element={
+          <PrivateRoute>
+            <PrivacySettings />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
         }
       />
 

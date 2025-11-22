@@ -14,8 +14,13 @@ const connectDB = async () => {
   }
 
   try {
-    await mongoose.connect(uri);
-    console.log('✅ MongoDB connected');
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 10000, // 10 second timeout
+      connectTimeoutMS: 10000,
+    });
+    console.log('✅ MongoDB connected successfully');
+    console.log(`   Database: ${mongoose.connection.name}`);
+    console.log(`   Host: ${mongoose.connection.host}`);
 
     // Run plan migration on startup to fix any existing users
     // Temporarily disabled to debug startup issues
@@ -27,7 +32,11 @@ const connectDB = async () => {
     }
     */
   } catch (err) {
-    console.error('❌ MongoDB connection error:', err.message);
+    console.error('❌ MongoDB connection failed:', err.message);
+    console.error('❌ Application cannot start without database connection');
+    if (process.env.NODE_ENV === 'production') {
+      process.exit(1); // Exit in production if DB connection fails
+    }
   }
 };
 
