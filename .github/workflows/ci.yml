@@ -316,3 +316,43 @@ jobs:
           echo "- Backend tests: ${{ needs.backend-test.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- Frontend tests: ${{ needs.frontend-test.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- Security audit: ${{ needs.security-audit.result }}" >> $GITHUB_STEP_SUMMARY
+
+  # Protected Deployment (Only runs if all tests pass)
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test, security-audit, code-quality, deployment-check]
+    if: github.ref == 'refs/heads/main' && success()
+    environment: production
+    
+    steps:
+      - name: Deployment Gate Check
+        run: |
+          echo "🔍 All CI/CD checks passed successfully!"
+          echo "✅ Backend tests: PASSED"
+          echo "✅ Frontend tests: PASSED" 
+          echo "✅ Security audit: PASSED"
+          echo "✅ Code quality: PASSED"
+          echo "✅ Deployment readiness: PASSED"
+          echo ""
+          echo "🚀 Triggering production deployment..."
+
+      - name: Deploy to Render Backend
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            echo "🚀 Deploying backend to Render..."
+            curl -X POST "$RENDER_DEPLOY_HOOK"
+            echo "✅ Render deployment triggered"
+          else
+            echo "⚠️ RENDER_DEPLOY_HOOK not configured - manual deployment required"
+          fi
+
+      - name: Create deployment summary
+        run: |
+          echo "## 🎉 Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔒 All security checks passed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ All tests passed" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚀 Production deployment initiated" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 Monitor your application at your Render dashboard" >> $GITHUB_STEP_SUMMARY
