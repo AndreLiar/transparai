@@ -15,12 +15,18 @@ export default defineConfig({
     poolOptions: {
       forks: {
         singleFork: true,
+        isolate: true,
+        execArgv: ['--max-old-space-size=4096'],
       },
     },
     logHeapUsage: true,
     sequence: {
       concurrent: false,
+      shuffle: false,
     },
+    testTimeout: 30000,
+    hookTimeout: 10000,
+    bail: 1,
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
