@@ -1,98 +1,120 @@
-/* src/components/LandingComponents/Footer.css */
-/* Import Google Fonts for Inter and Manrope, if not already global */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Manrope:wght@600&display=swap');
+/* Footer.css — Editorial legal aesthetic */
 
-/* Main Footer Section */
-.site-footer {
-  padding: 40px 24px; /* Generous padding top/bottom (8pt system) */
-  background-color: #0A1E3F; /* Deep Navy from brand kit for a rich, dark footer */
-  color: #F6F8FC; /* Sky Gray for text, offering good contrast */
-  text-align: center;
-  font-family: 'Inter', sans-serif; /* Primary font for footer text */
-  box-sizing: border-box; /* Include padding in element's total width and height */
+.lp-footer {
+  background: #0C1A2E;
+  color: #FAF8F4;
+  font-family: 'DM Sans', sans-serif;
+  padding: 80px 40px 40px;
+  box-sizing: border-box;
 }
 
-/* Content wrapper for potential future expansion */
-.footer-content {
-  max-width: 1200px; /* Aligned with your main content width */
-  margin: 0 auto; /* Center the content */
+/* ── Inner layout ──────────────────────────────────────────────────── */
+.lp-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto 64px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 64px;
+  align-items: start;
 }
 
-/* Copyright Text Styling */
-.copyright-text {
-  font-size: 16px; /* Clear and readable font size */
-  font-weight: 400; /* Regular weight for clarity */
-  margin: 0; /* Remove default paragraph margin */
-  opacity: 0.85; /* Slightly softer than pure white for a refined look */
-  line-height: 1.5; /* Good line height for readability */
+/* ── Brand column ──────────────────────────────────────────────────── */
+.lp-footer-logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FAF8F4;
+  letter-spacing: -0.02em;
+  display: block;
+  margin-bottom: 16px;
 }
 
-/* Brand Name in Copyright */
-.brand-name {
-  font-weight: 600; /* Make 'TransparAI' stand out slightly */
-  color: #F6F8FC; /* Ensure brand name is clearly visible */
+.lp-footer-tagline {
+  font-size: 0.875rem;
+  color: rgba(250, 248, 244, 0.6);
+  line-height: 1.65;
+  margin: 0 0 20px;
 }
 
-/* --- Optional: Styles for additional luxury elements (uncomment in .tsx if used) --- */
-/* Footer Links (if added) */
+.lp-footer-host {
+  font-size: 0.75rem;
+  color: rgba(250, 248, 244, 0.4);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
 
-.footer-links {
-  margin-top: 24px;
+/* ── Link columns ──────────────────────────────────────────────────── */
+.lp-footer-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.lp-footer-col {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.footer-link {
-  color: #F6F8FC;
+.lp-footer-col-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(250, 248, 244, 0.4);
+  margin: 0 0 4px;
+}
+
+.lp-footer-link {
+  font-size: 0.875rem;
+  color: rgba(250, 248, 244, 0.7);
   text-decoration: none;
-  font-size: 16px;
-  opacity: 0.8;
-  transition: opacity 0.2s ease, color 0.2s ease;
+  transition: color 0.18s;
 }
 
-.footer-link:hover {
-  opacity: 1;
-  color: #005CFF; 
+.lp-footer-link:hover {
+  color: #FAF8F4;
 }
 
-.separator {
-  color: rgba(246, 248, 252, 0.4);
-  font-size: 16px;
-}
-
-
-/* Social Media Icons (if added) */
-
-.social-media {
-  margin-top: 24px;
+/* ── Bottom bar ────────────────────────────────────────────────────── */
+.lp-footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 32px;
+  border-top: 1px solid rgba(250, 248, 244, 0.1);
   display: flex;
-  justify-content: center;
-  gap: 24px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: rgba(250, 248, 244, 0.35);
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.social-media a {
-  color: #F6F8FC;
-  font-size: 20px;
-  transition: color 0.2s ease, transform 0.2s ease;
+.lp-footer-rgpd {
+  letter-spacing: 0.04em;
 }
 
-.social-media a:hover {
-  color: #005CFF; 
-  transform: translateY(-2px); 
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .lp-footer-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
 }
 
-
-/* Responsive adjustments */
-@media (min-width: 768px) {
-  .site-footer {
-    padding: 64px 40px; /* More padding on larger screens */
+@media (max-width: 600px) {
+  .lp-footer {
+    padding: 64px 24px 36px;
   }
 
-  /* Optional:
-  .footer-links {
-    gap: 24px; // More space between links on larger screens
+  .lp-footer-links {
+    grid-template-columns: 1fr 1fr;
   }
-  */
+
+  .lp-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
 }

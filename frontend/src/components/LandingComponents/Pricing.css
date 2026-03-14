@@ -1,433 +1,372 @@
-/* src/components/LandingComponents/Pricing.css */
-/* Import Google Fonts for Inter and Manrope */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@600;700&display=swap');
+/* Pricing.css — Editorial legal aesthetic */
+/* Fonts loaded via LandingPage.css global import */
 
-/* Base styles - TransparAI Brand Kit with Luxury Feel */
+/* ── Section ─────────────────────────────────────────────────────────── */
 .pricing-section {
-  padding: 80px 24px; /* Increased padding from 64px to 80px for more spacious luxury */
-  background-color: var(--color-bg-secondary); /* Sky Gray background - light, clean, modern */
-  font-family: 'Inter', sans-serif; /* Primary font: Inter for UI text */
-  color: var(--color-text-primary); /* Deep Navy for general text - strong, professional */
+  padding: 120px 24px;
+  background: #FAF8F4;
+  font-family: 'DM Sans', sans-serif;
+  color: #0C1A2E;
   text-align: center;
-  overflow: hidden;
-  box-sizing: border-box; /* Ensure padding is included in width */
+  box-sizing: border-box;
 }
 
-/* Section Header - Elegant Introduction */
-.section-header {
-  margin-bottom: 80px; /* More generous space for a grander intro */
+.pricing-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+.pricing-label {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #C8102E;
+  margin-bottom: 20px;
 }
 
 .section-title {
-  font-family: 'Manrope', sans-serif; /* Secondary font: Manrope for headings - impactful */
-  font-size: 48px; /* Larger, more impactful title for luxury */
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 700;
-  color: var(--color-text-primary); /* Deep Navy for headings - strong presence */
-  margin-bottom: 16px;
-  letter-spacing: -0.04em; /* Tighter letter spacing for sophisticated look */
-  line-height: 1.15; /* Slightly tighter line height */
+  color: #0C1A2E;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 16px;
 }
 
 .section-subtitle {
-  font-size: 20px;
-  color: var(--color-text-primary);
-  max-width: 800px; /* Wider subtitle for more refined composition */
-  margin: 0 auto;
-  line-height: 1.6;
-  opacity: 0.8; /* Subtle transparency for a softer touch */
+  font-size: 1rem;
+  color: #4a5568;
+  max-width: 560px;
+  margin: 0 auto 72px;
+  line-height: 1.65;
 }
 
-/* Pricing Grid - Balanced & Spacious Layout */
+/* ── Grid ────────────────────────────────────────────────────────────── */
 .pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border: 1px solid #d4cfc8;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1100px) {
+  .pricing-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ── Card ────────────────────────────────────────────────────────────── */
+.pricing-card {
+  background: #ffffff;
+  padding: 40px 32px;
+  border-right: 1px solid #d4cfc8;
+  border-bottom: 1px solid #d4cfc8;
+  position: relative;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 40px; /* Increased gap for more breathing room between cards */
-  align-items: center;
 }
 
-/* Pricing Card - A Visual Statement */
-.pricing-card {
-  background-color: #ffffff;
-  border: 1px solid #DDE3EC; /* Soft, refined border */
-  border-radius: 12px; /* Softer, more luxurious rounded corners */
-  padding: 48px 32px; /* Increased padding for a more substantial feel */
-  box-shadow: 0 12px 40px rgba(10, 30, 63, 0.06); /* Deeper, more luxurious shadow */
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smoother, more elegant transitions */
-  width: 100%;
-  max-width: 400px; /* Slightly wider cards for a bolder presence */
-  position: relative;
-  overflow: hidden;
+.pricing-card:last-child {
+  border-right: none;
 }
 
-.pricing-card:hover {
-  transform: translateY(-12px); /* More pronounced lift on hover */
-  box-shadow: 0 18px 50px rgba(10, 30, 63, 0.12); /* More prominent shadow on hover */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .pricing-card:nth-child(2n) {
+    border-right: none;
+  }
 }
 
-/* Highlighted Card (Standard) - The Star of the Show */
+/* Standard — highlighted */
 .pricing-card.highlight {
-  border: 2px solid #005CFF; /* Primary Blue for emphasis */
-  background-color: #ffffff; /* Keep background clean white */
-  box-shadow: 0 15px 45px rgba(0, 92, 255, 0.2); /* Stronger, more vibrant shadow for highlight */
+  background: #0C1A2E;
+  color: #FAF8F4;
 }
 
-.pricing-card .ribbon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: #005CFF; /* Primary Blue for the ribbon */
-  color: #fff;
-  padding: 10px 40px; /* More substantial ribbon padding */
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.08em; /* Slightly more spaced for ribbon text */
-  text-transform: uppercase;
-  transform: translateY(25px) rotate(45deg); /* Slightly more pronounced angle */
-  transform-origin: 100% 0;
-  width: 160px; /* Wider ribbon for better visibility */
-  text-align: center;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); /* Deeper shadow for ribbon */
+.pricing-card.highlight .plan-description,
+.pricing-card.highlight .features-list li {
+  color: rgba(250, 248, 244, 0.72);
 }
 
-.plan-title {
-  font-family: 'Manrope', sans-serif;
-  font-size: 28px; /* Larger plan titles */
-  font-weight: 700; /* Bolder plan titles */
-  color: var(--color-text-primary);
-  margin-bottom: 24px; /* Ample space */
+.pricing-card.highlight .plan-title {
+  color: #FAF8F4;
 }
 
-.price {
-  font-family: 'Manrope', sans-serif;
-  font-size: 40px; /* Prominent price size */
+.pricing-card.highlight .price .amount {
+  color: #FAF8F4;
+}
+
+.pricing-card.highlight .price .frequency {
+  color: rgba(250, 248, 244, 0.6);
+}
+
+/* Enterprise */
+.pricing-card.enterprise {
+  background: #0C1A2E;
+  color: #FAF8F4;
+  border-right: none;
+}
+
+.pricing-card.enterprise .plan-description,
+.pricing-card.enterprise .features-list li {
+  color: rgba(250, 248, 244, 0.72);
+}
+
+.pricing-card.enterprise .plan-title {
+  color: #FAF8F4;
+}
+
+.pricing-card.enterprise .price .amount {
+  color: #C8102E;
+}
+
+.pricing-card.enterprise .price .frequency {
+  color: rgba(250, 248, 244, 0.6);
+}
+
+/* ── Ribbon badge ────────────────────────────────────────────────────── */
+.ribbon {
+  display: inline-block;
+  font-size: 10px;
   font-weight: 700;
-  color: var(--color-primary); /* Primary Blue for price - strong brand presence */
-  margin-bottom: 24px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #C8102E;
+  border: 1px solid #C8102E;
+  border-radius: 2px;
+  padding: 3px 8px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.pricing-card.highlight .ribbon {
+  color: #FAF8F4;
+  border-color: rgba(250, 248, 244, 0.5);
+}
+
+.enterprise-banner {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #C8102E;
+  border: 1px solid #C8102E;
+  border-radius: 2px;
+  padding: 3px 8px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+/* ── Plan title ──────────────────────────────────────────────────────── */
+.plan-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #0C1A2E;
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+/* ── Price ───────────────────────────────────────────────────────────── */
+.price {
   display: flex;
-  justify-content: center;
   align-items: baseline;
-  line-height: 1; /* Ensure tight line height for price */
+  gap: 6px;
+  margin: 20px 0 8px;
 }
 
 .price .amount {
-  font-size: clamp(32px, 4vw, 56px); /* Responsive amount size */
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  font-weight: 700;
+  color: #0C1A2E;
   line-height: 1;
 }
 
 .price .frequency {
-  font-size: clamp(14px, 2vw, 18px); /* Responsive frequency size */
-  color: var(--color-text-primary);
-  margin-left: 8px;
-  opacity: 0.7;
-  word-break: keep-all; /* Prevent line breaks */
+  font-size: 0.875rem;
+  color: #718096;
+  line-height: 1;
 }
 
-/* Feature List - Clean & Legible */
+/* ── Plan description ────────────────────────────────────────────────── */
+.plan-description {
+  font-size: 0.8125rem;
+  color: #718096;
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+/* ── Features list ───────────────────────────────────────────────────── */
 .features-list {
   list-style: none;
   padding: 0;
-  margin-bottom: 40px; /* More space before button */
-  text-align: left;
+  margin: 0 0 32px;
+  flex: 1;
+  border-top: 1px solid rgba(12, 26, 46, 0.1);
+  padding-top: 24px;
+}
+
+.pricing-card.highlight .features-list,
+.pricing-card.enterprise .features-list {
+  border-top-color: rgba(250, 248, 244, 0.15);
 }
 
 .features-list li {
   display: flex;
-  align-items: flex-start; /* Better alignment for multi-line text */
-  margin-bottom: 16px;
-  font-size: 16px; /* Reduced from 18px for better fit */
-  color: var(--color-text-primary);
-  opacity: 0.9;
-  line-height: 1.5; /* Better line spacing */
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+  color: #2d3748;
+  line-height: 1.5;
 }
 
-.features-list li .feature-icon {
-  width: 24px; /* Larger, more visible icons */
-  height: 24px;
-  margin-right: 12px;
-  color: var(--color-success); /* Success Green */
-  flex-shrink: 0; /* Prevent icon from shrinking */
+.feature-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #C8102E;
 }
 
-.features-list li .feature-icon.unavailable-icon {
-  color: #EF4444; /* Error Red */
+.pricing-card.highlight .feature-icon,
+.pricing-card.enterprise .feature-icon {
+  color: rgba(250, 248, 244, 0.7);
 }
 
-/* Buttons - Premium Interaction */
+/* ── Buttons ─────────────────────────────────────────────────────────── */
 .btn {
-  display: inline-block;
-  padding: 16px 32px;
-  border-radius: 8px;
-  font-size: 16px;
+  display: block;
+  padding: 13px 24px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
   font-weight: 600;
+  letter-spacing: 0.04em;
   text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  width: 100%; /* Full width for consistency */
-  max-width: 240px;
   text-align: center;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.02em;
-  border: 2px solid transparent;
+  border-radius: 2px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .btn-primary {
-  background-color: #005CFF;
-  color: #ffffff;
-  border: 2px solid #005CFF;
-  box-shadow: 0 4px 15px rgba(0, 92, 255, 0.2);
+  background: #C8102E;
+  color: #FAF8F4;
+  border: 1px solid #C8102E;
 }
 
 .btn-primary:hover {
-  background-color: #0044cc;
-  border-color: #0044cc;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 92, 255, 0.3);
-  color: #ffffff;
+  background: #a00d24;
+  border-color: #a00d24;
+  color: #FAF8F4;
 }
 
 .btn-outline {
-  background-color: transparent;
-  color: #005CFF;
-  border: 2px solid #005CFF;
+  background: transparent;
+  color: #0C1A2E;
+  border: 1px solid #0C1A2E;
 }
 
 .btn-outline:hover {
-  background-color: #005CFF;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 92, 255, 0.2);
+  background: #0C1A2E;
+  color: #FAF8F4;
 }
 
-/* Plan description — short tagline under the price */
-.plan-description {
-  font-size: 13px;
-  color: var(--color-text-secondary, #6b7280);
-  margin: -8px 0 16px;
-  line-height: 1.4;
-  opacity: 0.85;
+.pricing-card.highlight .btn-primary {
+  background: #C8102E;
+  border-color: #C8102E;
+  color: #FAF8F4;
 }
 
-/* Compliance footnote below the pricing grid */
-.pricing-note {
-  margin-top: 32px;
-  font-size: 12px;
-  color: var(--color-text-secondary, #6b7280);
-  opacity: 0.7;
-}
-
-/* Call to Action for free analysis - Prominent & Inviting */
-.cta-free {
-  margin-top: 80px; /* Generous top margin */
-  padding: 56px 32px; /* Increased padding for a substantial block */
-  background-color: #ffffff;
-  border-radius: 16px; /* Slightly more rounded for a friendly luxury feel */
-  box-shadow: 0 10px 35px rgba(10, 30, 63, 0.05); /* Soft, elegant shadow */
-}
-
-.cta-title {
-  font-family: 'Manrope', sans-serif;
-  font-size: 36px; /* Larger CTA title for impact */
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin-bottom: 24px;
-}
-
-.cta-description {
-  font-size: 20px; /* Larger description for readability */
-  color: var(--color-text-primary);
-  margin-bottom: 40px; /* More space before the button */
-  max-width: 700px; /* Wider description */
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.6;
-  opacity: 0.85;
-}
-
-.btn-large {
-  padding: 20px 48px; /* Even larger padding for the main CTA button */
-  font-size: 20px; /* Larger text for the main CTA button */
-}
-
-/* Responsive adjustments - Maintaining Elegance Across Devices */
-@media (min-width: 768px) {
-  .pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .pricing-card {
-    max-width: none;
-    width: 100%;
-  }
-
-  .section-title {
-    font-size: clamp(32px, 5vw, 64px); /* Responsive title scaling */
-  }
-}
-
-@media (min-width: 1200px) {
-  .pricing-section {
-    padding: 120px 64px;
-  }
-
-  .pricing-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 32px;
-    max-width: 1400px;
-  }
-
-  .pricing-card {
-    max-width: 320px;
-    justify-self: center;
-  }
-
-  .features-list li {
-    font-size: 15px; /* Smaller text for better fit on 4-column layout */
-  }
-}
-
-/* Enterprise Plan Styling */
-.pricing-card.enterprise {
-  position: relative;
-  background: linear-gradient(135deg, #1e40af 0%, #3730a3 50%, #581c87 100%);
-  color: white;
-  border: 2px solid #fbbf24;
-  box-shadow: 0 20px 50px rgba(30, 64, 175, 0.3);
-  /* Removed transform: scale(1.05) to fix layout overflow */
-}
-
-.enterprise-banner {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  color: #1e40af;
-  padding: 10px 28px;
-  border-radius: 24px;
-  font-weight: 700;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
-  z-index: 10;
-}
-
-.pricing-card.enterprise .plan-title {
-  color: white;
-  margin-top: 20px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Better readability */
-}
-
-.pricing-card.enterprise .price .amount {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.pricing-card.enterprise .price .frequency {
-  color: #f3f4f6; /* Better contrast for readability */
-  opacity: 0.9;
-}
-
-.pricing-card.enterprise .features-list li {
-  color: #f8fafc; /* Better contrast on dark background */
-}
-
-.pricing-card.enterprise .feature-icon {
-  color: #fbbf24;
-  margin-top: 2px; /* Align with first line of text */
+.pricing-card.highlight .btn-primary:hover {
+  background: #a00d24;
+  border-color: #a00d24;
 }
 
 .pricing-card.enterprise .btn-primary {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  color: #1e40af;
-  font-weight: 700;
-  border: 2px solid #fbbf24;
-  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+  background: transparent;
+  border: 1px solid rgba(250, 248, 244, 0.5);
+  color: #FAF8F4;
 }
 
 .pricing-card.enterprise .btn-primary:hover {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  border-color: #f59e0b;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.5);
-  color: #1e40af;
+  background: #C8102E;
+  border-color: #C8102E;
 }
 
-/* Mobile-first responsive improvements */
+.btn-large {
+  padding: 16px 40px;
+  font-size: 0.9375rem;
+}
+
+/* ── Footnote ────────────────────────────────────────────────────────── */
+.pricing-note {
+  margin-top: 24px;
+  font-size: 0.75rem;
+  color: #718096;
+  line-height: 1.6;
+}
+
+/* ── CTA ─────────────────────────────────────────────────────────────── */
+.cta-free {
+  margin-top: 96px;
+  padding: 64px 32px;
+  border: 1px solid #d4cfc8;
+  text-align: center;
+}
+
+.cta-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  color: #0C1A2E;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.cta-description {
+  font-size: 0.9375rem;
+  color: #4a5568;
+  margin: 0 auto 36px;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.btn-large {
+  display: inline-block;
+  width: auto;
+  padding: 15px 48px;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .pricing-section {
-    padding: 60px 16px;
-  }
-
-  .section-title {
-    font-size: clamp(28px, 6vw, 48px);
-    margin-bottom: 12px;
-  }
-
-  .section-subtitle {
-    font-size: 16px;
-    padding: 0 16px;
-  }
-
-  .pricing-grid {
-    gap: 24px;
+    padding: 80px 20px;
   }
 
   .pricing-card {
-    padding: 32px 24px;
-    max-width: 100%;
-  }
-
-  .plan-title {
-    font-size: 24px;
-  }
-
-  .price {
-    margin-bottom: 20px;
-  }
-
-  .features-list {
-    margin-bottom: 32px;
-  }
-
-  .features-list li {
-    font-size: 15px;
-    margin-bottom: 12px;
-  }
-
-  .btn {
-    padding: 14px 24px;
-    font-size: 15px;
+    border-right: none;
   }
 
   .cta-free {
-    margin-top: 60px;
-    padding: 40px 24px;
-  }
-
-  .cta-title {
-    font-size: 28px;
-  }
-
-  .cta-description {
-    font-size: 16px;
-  }
-
-  /* Enterprise card mobile adjustments */
-  .pricing-card.enterprise {
-    margin-top: 24px; /* Extra space for banner */
-  }
-
-  .enterprise-banner {
-    top: -16px;
-    padding: 8px 20px;
-    font-size: 11px;
+    margin-top: 64px;
+    padding: 48px 24px;
   }
 }

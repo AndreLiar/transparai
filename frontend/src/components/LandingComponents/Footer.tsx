@@ -1,53 +1,44 @@
-//src/components/LandingComponents/Footer.tsx
+// src/components/LandingComponents/Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Footer.css'; // Ensure this path is correct
+import './Footer.css';
 
 const Footer: React.FC = () => (
-  <footer className="enhanced-footer">
-    <div className="footer-content">
-      <div className="footer-brand">
-        <h3>TransparAI</h3>
-        <p>L'intelligence artificielle au service de la transparence contractuelle</p>
-        <div className="footer-badges">
-          <span className="badge">🇫🇷 Made in France</span>
-          <span className="badge">🛡️ RGPD Compliant</span>
-        </div>
+  <footer className="lp-footer">
+    <div className="lp-footer-inner">
+      <div className="lp-footer-brand">
+        <span className="lp-footer-logo">TransparAI</span>
+        <p className="lp-footer-tagline">
+          L'intelligence artificielle au service<br />de la transparence contractuelle.
+        </p>
+        <p className="lp-footer-host">Données hébergées en UE · Microsoft Azure</p>
       </div>
-      
-      <div className="footer-links">
-        <div className="link-group">
-          <h4>Légal</h4>
-          <Link to="/privacy-policy">Politique de Confidentialité</Link>
-          <Link to="/terms-of-service">Conditions Générales</Link>
-          <Link to="/cookies">Gestion des Cookies</Link>
-        </div>
-        
-        <div className="link-group">
-          <h4>Support</h4>
-          <Link to="/contact">Contact</Link>
-          <Link to="/help">Centre d'Aide</Link>
-          <Link to="/faq">FAQ</Link>
-        </div>
-        
-        <div className="link-group">
-          <h4>Entreprise</h4>
-          <Link to="/about">À Propos</Link>
-          <Link to="/security">Sécurité</Link>
-          <Link to="/api">API</Link>
+
+      <div className="lp-footer-links">
+        <div className="lp-footer-col">
+          <h5 className="lp-footer-col-title">Légal</h5>
+          <Link to="/privacy-policy" className="lp-footer-link">Politique de confidentialité</Link>
+          <Link to="/terms-of-service" className="lp-footer-link">Conditions générales</Link>
+          <Link to="/cookies" className="lp-footer-link">Gestion des cookies</Link>
         </div>
 
-        <div className="link-group">
-          <h4>Produit</h4>
-          <Link to="/analyze">Analyser un document</Link>
+        <div className="lp-footer-col">
+          <h5 className="lp-footer-col-title">Support</h5>
+          <Link to="/contact" className="lp-footer-link">Contact</Link>
+          <Link to="/faq" className="lp-footer-link">FAQ</Link>
+        </div>
+
+        <div className="lp-footer-col">
+          <h5 className="lp-footer-col-title">Produit</h5>
+          <Link to="/analyze" className="lp-footer-link">Analyser un document</Link>
+          <Link to="/signup" className="lp-footer-link">Créer un compte</Link>
         </div>
       </div>
     </div>
-    
-    <div className="footer-bottom">
-      <p>
-        © {new Date().getFullYear()} <span className="brand-name">TransparAI</span> – Tous droits réservés.
-      </p>
+
+    <div className="lp-footer-bottom">
+      <span>© {new Date().getFullYear()} TransparAI — Tous droits réservés.</span>
+      <span className="lp-footer-rgpd">Conforme RGPD · EU AI Act Art. 13</span>
     </div>
   </footer>
 );
