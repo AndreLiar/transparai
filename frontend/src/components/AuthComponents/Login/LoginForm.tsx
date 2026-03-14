@@ -1,4 +1,3 @@
-//src/components/AuthComponents/Login/LoginForm.tsx
 // src/components/AuthComponents/Login/LoginForm.tsx
 import React, { useState, useEffect } from 'react';
 import { auth } from '@/configFirebase/Firebase';
@@ -23,8 +22,7 @@ const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  
-  // Check for invitation token
+
   const invitationToken = searchParams.get('invitation');
 
   useEffect(() => {
@@ -42,8 +40,7 @@ const LoginForm: React.FC = () => {
     try {
       await setPersistence(auth, browserSessionPersistence);
       await signInWithEmailAndPassword(auth, email, password);
-      
-      // If there's an invitation token, redirect to accept invitation
+
       if (invitationToken) {
         navigate(`/accept-invitation?token=${invitationToken}`);
       } else {
@@ -63,14 +60,14 @@ const LoginForm: React.FC = () => {
       {invitationToken && (
         <div className="invitation-notice">
           <div className="invitation-notice-content">
-            <h3>🏢 Invitation à rejoindre une organisation</h3>
-            <p>Vous avez été invité(e) à rejoindre une organisation. Connectez-vous pour accepter l'invitation.</p>
+            <h3>Invitation à rejoindre une organisation</h3>
+            <p>Connectez-vous pour accepter l'invitation.</p>
           </div>
         </div>
       )}
-      
-      <form className="login-form" onSubmit={handleLogin}>
-        <div className="form-group">
+
+      <form onSubmit={handleLogin}>
+        <div className="auth-field">
           <label htmlFor="email">Adresse email</label>
           <input
             type="email"
@@ -78,53 +75,46 @@ const LoginForm: React.FC = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="ex: vous@example.com"
+            placeholder="vous@example.com"
           />
         </div>
 
-        <div className="form-group">
+        <div className="auth-field">
           <label htmlFor="password">Mot de passe</label>
-          <div className="password-group">
+          <div className="auth-pw-row">
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="••••••••••••"
             />
             <button
               type="button"
-              className="toggle-password"
+              className="auth-pw-toggle"
               onClick={() => setShowPassword((prev) => !prev)}
             >
               {showPassword ? 'Cacher' : 'Voir'}
             </button>
           </div>
           {password && passwordFeedback && (
-            <div className="password-feedback">{passwordFeedback}</div>
+            <div className="auth-field-feedback">{passwordFeedback}</div>
           )}
         </div>
 
-        <button type="submit" className="btn-primary full-width" disabled={loading}>
+        <button type="submit" className="auth-submit" disabled={loading}>
           {loading ? 'Connexion...' : 'Se connecter'}
         </button>
       </form>
 
-      <div className="form-links">
-        <Link to="/reset-password">Mot de passe oublié ?</Link>
-        <div>
-          <span>Ou utilisez un </span>
-          <Link to="/magic-link" className="highlight-link">lien magique</Link>
+      <div className="auth-links">
+        <div className="auth-link-row">
+          <Link to="/reset-password">Mot de passe oublié ?</Link>
         </div>
-        <div>
-          <span>Vous n'avez pas encore de compte ? </span>
-          <Link 
-            to={invitationToken ? `/signup?invitation=${invitationToken}` : "/signup"} 
-            className="highlight-link"
-          >
-            Créez-en un
-          </Link>
+        <div className="auth-link-row">
+          Ou connectez-vous avec un{' '}
+          <Link to="/magic-link">lien magique</Link>
         </div>
       </div>
 

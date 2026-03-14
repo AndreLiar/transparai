@@ -1,4 +1,3 @@
-//src/screens/AuthenticationsPages/MagicLink.tsx
 // src/screens/AuthenticationsPages/MagicLink.tsx
 import React, { useEffect, useState } from 'react';
 import {
@@ -6,12 +5,11 @@ import {
   sendSignInLinkToEmail,
   signInWithEmailLink,
   setPersistence,
-  browserSessionPersistence
+  browserSessionPersistence,
 } from 'firebase/auth';
 import { auth } from '@/configFirebase/Firebase';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-import MagicLinkHeader from '@/components/AuthComponents/MagicLink/MagicLinkHeader';
 import MagicLinkForm from '@/components/AuthComponents/MagicLink/MagicLinkForm';
 import MagicLinkMessage from '@/components/AuthComponents/MagicLink/MagicLinkMessage';
 import './auth.css';
@@ -30,7 +28,7 @@ const MagicLink: React.FC = () => {
         const emailToUse = storedEmail || window.prompt('Entrez votre email pour confirmer');
 
         if (!emailToUse) {
-          setError("Email requis pour terminer la connexion.");
+          setError('Email requis pour terminer la connexion.');
           return;
         }
 
@@ -40,7 +38,7 @@ const MagicLink: React.FC = () => {
           window.localStorage.removeItem('emailForSignIn');
           navigate('/dashboard');
         } catch {
-          setError("Lien invalide ou expiré.");
+          setError('Lien invalide ou expiré.');
         }
       }
     };
@@ -57,10 +55,10 @@ const MagicLink: React.FC = () => {
     try {
       await sendSignInLinkToEmail(auth, email, {
         url: `${window.location.origin}/magic-link`,
-        handleCodeInApp: true
+        handleCodeInApp: true,
       });
       window.localStorage.setItem('emailForSignIn', email);
-      setMessage("📩 Lien envoyé ! Vérifiez votre boîte de réception.");
+      setMessage('Lien envoyé. Vérifiez votre boîte de réception.');
     } catch {
       setError("Erreur lors de l'envoi du lien.");
     } finally {
@@ -69,16 +67,68 @@ const MagicLink: React.FC = () => {
   };
 
   return (
-    <div className="auth-wrapper">
-      <div className="auth-card">
-        <MagicLinkHeader />
-        <MagicLinkMessage message={message} error={error} />
-        <MagicLinkForm
-          email={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onSubmit={handleSendLink}
-          loading={loading}
-        />
+    <div className="auth-shell">
+      {/* ── Left panel ── */}
+      <div className="auth-panel-left">
+        <div className="auth-left-top">
+          <p className="auth-left-dateline">Analyse de documents &mdash; IA &amp; Droit</p>
+          <hr className="auth-left-rule" />
+          <h1 className="auth-left-brand">TransparAI</h1>
+          <hr className="auth-left-rule-bottom" />
+          <p className="auth-left-tagline">Connexion sans mot de passe</p>
+          <p className="auth-left-desc">
+            Recevez un lien de connexion sécurisé directement dans votre boîte email —
+            aucun mot de passe à retenir.
+          </p>
+        </div>
+        <ul className="auth-trust-list">
+          <li className="auth-trust-item">
+            <span className="auth-trust-dot" />
+            <div className="auth-trust-text">
+              <strong>Lien valable 1 heure</strong>
+              <span>Expiré après usage pour votre sécurité.</span>
+            </div>
+          </li>
+          <li className="auth-trust-item">
+            <span className="auth-trust-dot" />
+            <div className="auth-trust-text">
+              <strong>Zéro mot de passe stocké</strong>
+              <span>Authentification Firebase — standard industrie.</span>
+            </div>
+          </li>
+        </ul>
+        <p className="auth-left-copy">
+          &copy; {new Date().getFullYear()} TransparAI &mdash; Tous droits réservés
+        </p>
+      </div>
+
+      {/* ── Right form panel ── */}
+      <div className="auth-panel-right">
+        <div className="auth-form-box">
+          <Link to="/login" className="auth-back">
+            <span className="auth-back-arrow">&#8592;</span> Connexion
+          </Link>
+
+          <p className="auth-form-eyebrow">Lien magique</p>
+          <h2 className="auth-form-title">Connexion par email</h2>
+          <p className="auth-form-subtitle">
+            Saisissez votre email — vous recevrez un lien de connexion instantané.
+          </p>
+
+          <MagicLinkMessage message={message} error={error} />
+          <MagicLinkForm
+            email={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onSubmit={handleSendLink}
+            loading={loading}
+          />
+
+          <div className="auth-links" style={{ marginTop: '24px' }}>
+            <div className="auth-link-row">
+              Préférez-vous un mot de passe ? <Link to="/login">Se connecter</Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

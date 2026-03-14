@@ -1,6 +1,6 @@
 // src/components/AuthComponents/MagicLink/MagicLinkForm.tsx
 import React from 'react';
-import './magic-link.css';
+
 interface MagicLinkFormProps {
   email: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -9,19 +9,19 @@ interface MagicLinkFormProps {
 }
 
 const MagicLinkForm: React.FC<MagicLinkFormProps> = ({ email, onChange, onSubmit, loading }) => (
-  <form onSubmit={onSubmit} className="form">
-    <div className="form-group">
-      <label htmlFor="email">Adresse email</label>
+  <form onSubmit={onSubmit}>
+    <div className="auth-field">
+      <label htmlFor="magic-email">Adresse email</label>
       <input
         type="email"
-        id="email"
+        id="magic-email"
         required
         value={email}
         onChange={onChange}
-        placeholder="nom@exemple.com"
+        placeholder="vous@example.com"
       />
     </div>
-    <button type="submit" className="btn-primary" disabled={loading}>
+    <button type="submit" className="auth-submit" disabled={loading}>
       {loading ? 'Envoi en cours...' : 'Envoyer le lien de connexion'}
     </button>
   </form>

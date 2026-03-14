@@ -1,4 +1,4 @@
-//src/components/AuthComponents/SignupForm.tsx
+// src/components/AuthComponents/Signup/SignupForm.tsx
 import React, { useState, useEffect } from 'react';
 import { validatePassword } from '@/utils/validatePassword';
 import './signup.css';
@@ -20,7 +20,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
   onChangePassword,
   onSubmit,
   loading,
-  error
+  error,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordFeedback, setPasswordFeedback] = useState<string | null>(null);
@@ -30,25 +30,25 @@ const SignupForm: React.FC<SignupFormProps> = ({
   }, [password]);
 
   return (
-    <form onSubmit={onSubmit} className="form">
-      <div className="form-group">
-        <label htmlFor="email">Adresse email</label>
+    <form onSubmit={onSubmit}>
+      <div className="auth-field">
+        <label htmlFor="signup-email">Adresse email</label>
         <input
           type="email"
-          id="email"
+          id="signup-email"
           required
           value={email}
           onChange={onChangeEmail}
-          placeholder="ex: vous@example.com"
+          placeholder="vous@example.com"
         />
       </div>
 
-      <div className="form-group">
-        <label htmlFor="password">Mot de passe</label>
-        <div className="input-group">
+      <div className="auth-field">
+        <label htmlFor="signup-password">Mot de passe</label>
+        <div className="auth-pw-row">
           <input
             type={showPassword ? 'text' : 'password'}
-            id="password"
+            id="signup-password"
             required
             value={password}
             onChange={onChangePassword}
@@ -56,26 +56,22 @@ const SignupForm: React.FC<SignupFormProps> = ({
           />
           <button
             type="button"
-            className="btn-secondary"
+            className="auth-pw-toggle"
             onClick={() => setShowPassword((prev) => !prev)}
           >
             {showPassword ? 'Cacher' : 'Voir'}
           </button>
         </div>
         {password && passwordFeedback && (
-          <div className="form-feedback error">{passwordFeedback}</div>
+          <div className="auth-field-feedback">{passwordFeedback}</div>
         )}
       </div>
 
-      {error && <div className="alert error">{error}</div>}
+      {error && <div className="auth-alert error">{error}</div>}
 
-      <button type="submit" className="btn-primary" disabled={loading}>
+      <button type="submit" className="auth-submit" disabled={loading}>
         {loading ? 'Création...' : "S'inscrire"}
       </button>
-
-      <p className="link-text">
-        Déjà inscrit ? <a href="/login">Se connecter</a>
-      </p>
     </form>
   );
 };
