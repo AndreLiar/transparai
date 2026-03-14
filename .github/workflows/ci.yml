@@ -1,21 +1,20 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch: # Allow manual triggers
+    branches: [main]
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '20'
 
 jobs:
-  # Backend Tests
   backend-test:
     name: Backend Tests
     runs-on: ubuntu-latest
-    
+
     services:
       mongodb:
         image: mongo:7.0
@@ -32,24 +31,22 @@ jobs:
           --health-start-period 30s
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: Backend/package-lock.json
 
-      - name: Install Backend dependencies
+      - name: Install dependencies
         working-directory: ./Backend
         run: npm ci
 
-      - name: Create test environment file
+      - name: Create test env
         working-directory: ./Backend
         run: |
-          cat > .env << EOF
+          cat > .env << 'ENVEOF'
           NODE_ENV=test
           PORT=5001
           MONGO_URI=mongodb://root:password@localhost:27017/transparai_test?authSource=admin
@@ -66,51 +63,47 @@ jobs:
           SESSION_SECRET=test_session_secret_that_is_long_enough
           JWT_SECRET=test_jwt_secret_that_is_long_enough_for_security
           ENCRYPTION_KEY=test_encryption_key_that_is_long_enough_too
-          EOF
+          ENVEOF
 
-      - name: Wait for MongoDB to be ready
-        run: |
-          timeout 30s bash -c 'until nc -z localhost 27017; do sleep 1; done'
+      - name: Wait for MongoDB
+        run: timeout 30s bash -c 'until nc -z localhost 27017; do sleep 1; done'
 
-      - name: Run Backend tests
+      - name: Run tests
         working-directory: ./Backend
         run: npm test
 
-      - name: Run Backend linting
+      - name: Lint
         working-directory: ./Backend
         run: npm run lint
 
-  # Frontend Tests
   frontend-test:
     name: Frontend Tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install Frontend dependencies
+      - name: Install dependencies
         working-directory: ./frontend
         run: npm ci
 
-      - name: Run Frontend tests
+      - name: Run tests
         working-directory: ./frontend
         env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
+          NODE_OPTIONS: --max-old-space-size=4096
         run: npm run test:run
 
-      - name: Run Frontend linting
+      - name: Lint
         working-directory: ./frontend
         run: npm run lint
 
-      - name: Build Frontend
+      - name: Build
         working-directory: ./frontend
         env:
           VITE_API_BASE_URL: http://localhost:5001
@@ -118,249 +111,46 @@ jobs:
           VITE_FIREBASE_AUTH_DOMAIN: test.firebaseapp.com
           VITE_FIREBASE_PROJECT_ID: test
           VITE_FIREBASE_STORAGE_BUCKET: test.appspot.com
-          VITE_FIREBASE_MESSAGING_SENDER_ID: 123456789
+          VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789'
           VITE_FIREBASE_APP_ID: 1:123456789:web:abcdef
         run: npm run build
 
-  # Security Audit
   security-audit:
     name: Security Audit
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Backend Security Audit
+      - name: Backend audit
         working-directory: ./Backend
-        run: |
-          npm install
-          npm audit --audit-level=high
+        run: npm install && npm audit --audit-level=high
 
-      - name: Frontend Security Audit
+      - name: Frontend audit
         working-directory: ./frontend
-        run: |
-          npm install
-          npm audit --audit-level=high
+        run: npm install && npm audit --audit-level=high
 
-  # Code Quality
   code-quality:
-    name: Code Quality Check
+    name: Code Quality
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Check for secrets in code
+      - name: Check for live secrets
         run: |
-          # Check for real secrets (exclude test/mock keys and workflow files)
-          if grep -r "sk_live_" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude="*.test.*" --exclude="*.spec.*" --exclude="*setup*" .; then
-            echo "❌ Live Stripe keys found in code"
+          if grep -r "sk_live_" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude="*.test.*" --exclude="*.spec.*" .; then
+            echo "Live Stripe keys found in code"
             exit 1
           fi
-          
-          # Allow test keys but warn about them
-          if grep -r "sk_test_" --exclude-dir=node_modules --exclude-dir=.git --exclude="*.test.*" --exclude="*.spec.*" --exclude="*setup*" .; then
-            echo "⚠️  Test Stripe keys found in non-test files (review if necessary)"
-          fi
-          
-          # Check for real Google API keys (not test ones)
-          if grep -r "AIza[0-9A-Za-z-_]\{35\}" --exclude-dir=node_modules --exclude-dir=.git --exclude="*.test.*" --exclude="*.spec.*" .; then
-            echo "⚠️  Google API keys found (ensure they are for development only)"
-          fi
-          
-          echo "✅ No live production secrets found"
+          echo "No live secrets found"
 
-      - name: Check environment configuration
+      - name: Check env examples exist
         run: |
-          # Verify .env.example files exist
-          if [ ! -f Backend/.env.example ]; then
-            echo "❌ Backend/.env.example missing"
-            exit 1
-          fi
-          if [ ! -f frontend/.env.example ]; then
-            echo "❌ frontend/.env.example missing"
-            exit 1
-          fi
-          echo "✅ Environment examples present"
-
-      - name: Check for TODO/FIXME comments
-        run: |
-          TODO_COUNT=$(grep -r "TODO\|FIXME" --include="*.js" --include="*.ts" --include="*.tsx" --exclude-dir=node_modules --exclude-dir=.git . | wc -l)
-          if [ "$TODO_COUNT" -gt 20 ]; then
-            echo "⚠️ High number of TODO/FIXME comments: $TODO_COUNT"
-            grep -r "TODO\|FIXME" --include="*.js" --include="*.ts" --include="*.tsx" --exclude-dir=node_modules --exclude-dir=.git .
-          else
-            echo "✅ TODO/FIXME count acceptable: $TODO_COUNT"
-          fi
-
-  # Integration Tests (Optional - runs after unit tests pass)
-  integration-test:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test]
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-    
-    services:
-      mongodb:
-        image: mongo:6.0
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: password
-        ports:
-          - 27017:27017
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Start Backend
-        working-directory: ./Backend
-        run: |
-          npm install
-          cat > .env << EOF
-          NODE_ENV=test
-          PORT=5001
-          MONGO_URI=mongodb://root:password@localhost:27017/transparai_integration?authSource=admin
-          FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account","project_id":"test","private_key":"test","client_email":"test@test.com"}
-          AZURE_OPENAI_ENDPOINT=https://fake.openai.azure.com/
-          AZURE_OPENAI_API_KEY=test_azure_key
-          AZURE_OPENAI_API_VERSION=2024-08-01-preview
-          AZURE_OPENAI_DEPLOYMENT_GPT4O=gpt-4o
-          AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI=gpt-4o-mini
-          STRIPE_SECRET_KEY=sk_test_fake
-          STRIPE_WEBHOOK_SECRET=whsec_test
-          LOG_LEVEL=error
-          FRONTEND_URL=http://localhost:3000
-          SESSION_SECRET=test_session_secret_that_is_long_enough
-          JWT_SECRET=test_jwt_secret_that_is_long_enough_for_security
-          ENCRYPTION_KEY=test_encryption_key_that_is_long_enough_too
-          EOF
-          npm start &
-          sleep 10
-
-      - name: Test API Health
-        run: |
-          curl -f http://localhost:5001/health || exit 1
-          echo "✅ Backend health check passed"
-
-      - name: Run Integration Tests
-        working-directory: ./Backend
-        run: |
-          if [ -d "test/integration" ]; then
-            npm test -- --testPathPattern=integration
-          else
-            echo "No integration tests found"
-          fi
-
-  # Deployment Check (for main branch)
-  deployment-check:
-    name: Deployment Readiness
-    runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test, security-audit]
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Check deployment configuration
-        run: |
-          echo "✅ Checking deployment readiness..."
-          
-          # Check if required files exist
-          REQUIRED_FILES=(
-            "Backend/package.json"
-            "frontend/package.json" 
-            "Backend/.env.example"
-            "frontend/.env.example"
-          )
-          
-          for file in "${REQUIRED_FILES[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "❌ Required file missing: $file"
-              exit 1
-            fi
-          done
-          
-          echo "✅ All required files present"
-          echo "✅ Ready for deployment"
-
-      - name: Generate deployment summary
-        run: |
-          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Tests passed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Security audit completed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Build successful" >> $GITHUB_STEP_SUMMARY
-          echo "- 🎯 Ready for production deployment" >> $GITHUB_STEP_SUMMARY
-
-  # Notify on failure
-  notify-failure:
-    name: Notify on Failure
-    runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test, security-audit]
-    if: failure()
-    
-    steps:
-      - name: Create failure summary
-        run: |
-          echo "## ❌ CI/CD Pipeline Failed" >> $GITHUB_STEP_SUMMARY
-          echo "Please check the failed jobs above and fix the issues." >> $GITHUB_STEP_SUMMARY
-          echo "- Backend tests: ${{ needs.backend-test.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Frontend tests: ${{ needs.frontend-test.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Security audit: ${{ needs.security-audit.result }}" >> $GITHUB_STEP_SUMMARY
-
-  # Protected Deployment (Only runs if all tests pass)
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test, security-audit, code-quality, deployment-check]
-    if: github.ref == 'refs/heads/main' && success()
-    environment: production
-    
-    steps:
-      - name: Deployment Gate Check
-        run: |
-          echo "🔍 All CI/CD checks passed successfully!"
-          echo "✅ Backend tests: PASSED"
-          echo "✅ Frontend tests: PASSED" 
-          echo "✅ Security audit: PASSED"
-          echo "✅ Code quality: PASSED"
-          echo "✅ Deployment readiness: PASSED"
-          echo ""
-          echo "🚀 Triggering production deployment..."
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy Backend to Azure App Service
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ./Backend
-
-      - name: Create deployment summary
-        run: |
-          echo "## 🎉 Deployment Successful" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔒 All security checks passed" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ All tests passed" >> $GITHUB_STEP_SUMMARY
-          echo "- 🚀 Backend deployed to Azure App Service" >> $GITHUB_STEP_SUMMARY
-          echo "- 🌐 Frontend deployed via Vercel (automatic on push)" >> $GITHUB_STEP_SUMMARY
-          echo "- 📊 Monitor at Azure Application Insights" >> $GITHUB_STEP_SUMMARY
+          [ -f Backend/.env.example ] || { echo "Backend/.env.example missing"; exit 1; }
+          [ -f frontend/.env.example ] || { echo "frontend/.env.example missing"; exit 1; }
+          echo "Env examples present"

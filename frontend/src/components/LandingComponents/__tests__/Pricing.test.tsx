@@ -10,10 +10,10 @@ describe('Pricing component', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Starter')).toBeInTheDocument();
+    expect(screen.getByText('Gratuit')).toBeInTheDocument();
     expect(screen.getByText('Standard')).toBeInTheDocument();
     expect(screen.getByText('Premium')).toBeInTheDocument();
-    expect(screen.getByText('Entreprise')).toBeInTheDocument();
+    expect(screen.getByText('Enterprise')).toBeInTheDocument();
 
     const links = screen.getAllByRole('link', { name: /Commencer|Analyse/i });
     const hrefs = links.map((link) => link.getAttribute('href'));

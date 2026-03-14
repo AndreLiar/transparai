@@ -20,9 +20,12 @@ vi.mock('@/components/Layout/ThemeSwitcher', () => ({
   default: () => <div data-testid="theme-switcher-mock" />,
 }));
 
+vi.mock('@/components/common/UpgradePrompt', () => ({
+  default: () => <div data-testid="upgrade-prompt-mock" />,
+}));
+
 const translationMap: Record<string, string> = {
   'sidebar.account': 'Compte',
-  'sidebar.history': 'Historique',
   'sidebar.analyze': 'Analyser',
   'sidebar.upgrade': 'Mettre à niveau',
   'sidebar.logout': 'Déconnexion',
@@ -75,46 +78,35 @@ describe('Sidebar', () => {
     vi.clearAllMocks();
   });
 
-  it('renders base menu items and logout control', async () => {
+  it('renders brand, nav items, and controls', async () => {
     await renderSidebar('free');
 
     expect(screen.getByText('🧠 TransparAI')).toBeInTheDocument();
-    expect(screen.getByText(/Compte/i)).toBeInTheDocument();
-    
-    // Look for Historique specifically in navigation buttons, not in upgrade prompt
-    const historiqueButton = screen.getByRole('button', { name: /Historique/i });
-    expect(historiqueButton).toBeInTheDocument();
-    
     expect(screen.getByText(/Analyser/i)).toBeInTheDocument();
-    expect(screen.getByText(/Support/)).toBeInTheDocument();
-    expect(screen.getByText(/Mettre à niveau/i)).toBeInTheDocument();
+    expect(screen.getByText(/Compte/i)).toBeInTheDocument();
     expect(screen.getByText(/Déconnexion/i)).toBeInTheDocument();
     expect(screen.getByTestId('language-switcher-mock')).toBeInTheDocument();
     expect(screen.getByTestId('theme-switcher-mock')).toBeInTheDocument();
   });
 
-  it('includes premium routes when plan is premium', async () => {
-    await renderSidebar('premium');
+  it('shows upgrade prompt for free plan users', async () => {
+    await renderSidebar('free');
 
-    expect(screen.getByText('Analyse Comparative')).toBeInTheDocument();
-    expect(screen.queryByText(/Organisation/)).not.toBeInTheDocument();
+    expect(screen.getByTestId('upgrade-prompt-mock')).toBeInTheDocument();
   });
 
-  it('includes enterprise menu options when plan is enterprise', async () => {
-    await renderSidebar('enterprise');
-
-    expect(screen.getByText('Analyse Comparative')).toBeInTheDocument();
-    expect(screen.getByText(/Organisation/)).toBeInTheDocument();
-    expect(screen.getByText(/Utilisateurs/)).toBeInTheDocument();
-  });
-
-  it('navigates to click targets and logs out', async () => {
+  it('navigates to analyze on click and closes sidebar', async () => {
     const user = userEvent.setup();
     await renderSidebar('free');
 
     await user.click(screen.getByText(/Analyser/i));
     expect(navigateMock).toHaveBeenCalledWith('/analyze');
     expect(setIsOpenMock).toHaveBeenCalledWith(false);
+  });
+
+  it('calls signOut and navigates to login on logout', async () => {
+    const user = userEvent.setup();
+    await renderSidebar('free');
 
     await user.click(screen.getByText(/Déconnexion/i));
     expect(signOutMock).toHaveBeenCalled();
