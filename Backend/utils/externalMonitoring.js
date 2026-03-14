@@ -9,29 +9,31 @@ const checkExternalServices = async () => {
     overall: 'healthy',
   };
 
-  // Check Gemini API
+  // Check Azure AI Foundry
   try {
-    const geminiStartTime = Date.now();
-    // This would be a lightweight test call to Gemini API
-    // For now, we'll simulate the check
-    const geminiLatency = Date.now() - geminiStartTime;
+    const azureStartTime = Date.now();
+    // Lightweight check — verify env vars are present
+    if (!process.env.AZURE_OPENAI_ENDPOINT || !process.env.AZURE_OPENAI_API_KEY) {
+      throw new Error('Azure AI Foundry not configured');
+    }
+    const azureLatency = Date.now() - azureStartTime;
 
-    results.services.gemini = {
+    results.services.azureAI = {
       status: 'healthy',
-      latency: geminiLatency,
+      latency: azureLatency,
       lastChecked: new Date().toISOString(),
     };
 
-    logger.logExternalService('gemini', 'health_check', true, geminiLatency);
+    logger.logExternalService('azureAI', 'health_check', true, azureLatency);
   } catch (error) {
-    results.services.gemini = {
+    results.services.azureAI = {
       status: 'unhealthy',
       error: error.message,
       lastChecked: new Date().toISOString(),
     };
     results.overall = 'degraded';
 
-    logger.logExternalService('gemini', 'health_check', false, 0, error);
+    logger.logExternalService('azureAI', 'health_check', false, 0, error);
   }
 
   // Check Stripe API
@@ -208,54 +210,16 @@ const generateUptimeRobotConfig = () => {
   };
 };
 
-// New Relic configuration helper
-const generateNewRelicConfig = () => ({
-  app_name: ['TransparAI API'],
-  license_key: process.env.NEW_RELIC_LICENSE_KEY,
-  logging: {
-    level: 'info',
-    filepath: 'logs/newrelic_agent.log',
-  },
-  error_collector: {
-    enabled: true,
-    ignore_status_codes: [404, 401, 403],
-  },
-  transaction_tracer: {
-    enabled: true,
-    transaction_threshold: 'apdex_f',
-    record_sql: 'obfuscated',
-  },
-  browser_monitoring: {
-    enable: false, // API only, no browser monitoring needed
-  },
-  application_logging: {
-    enabled: true,
-    forwarding: {
-      enabled: true,
-      max_samples_stored: 10000,
-    },
-    metrics: {
-      enabled: true,
-    },
-    local_decorating: {
-      enabled: true,
-    },
-  },
-});
-
 // Setup monitoring alerts
 const setupMonitoringAlerts = () => {
-  // This would integrate with your alerting system
   logger.info('Setting up monitoring alerts', {
     uptimeRobotConfig: generateUptimeRobotConfig(),
-    newRelicAvailable: !!process.env.NEW_RELIC_LICENSE_KEY,
     slackAlertsEnabled: !!process.env.SLACK_WEBHOOK_URL,
     emailAlertsEnabled: !!process.env.ALERT_EMAIL,
   });
 
   return {
     uptimeRobot: generateUptimeRobotConfig(),
-    newRelic: generateNewRelicConfig(),
     alertsConfigured: {
       email: !!process.env.ALERT_EMAIL,
       slack: !!process.env.SLACK_WEBHOOK_URL,
@@ -301,7 +265,6 @@ const trackPerformanceMetrics = (req, res, next) => {
 module.exports = {
   checkExternalServices,
   generateUptimeRobotConfig,
-  generateNewRelicConfig,
   setupMonitoringAlerts,
   trackPerformanceMetrics,
 };

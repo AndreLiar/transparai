@@ -1,48 +1,6 @@
 // Backend/models/User.js
 const mongoose = require('mongoose');
 
-const analysisSchema = new mongoose.Schema({
-  date: { type: Date, default: Date.now },
-  source: String,
-  summary: String,
-  score: String,
-  clauses: [String],
-  pdfLink: String,
-});
-
-const comparativeAnalysisSchema = new mongoose.Schema({
-  documents: [{
-    name: String,
-    source: String,
-  }],
-  industry: { type: String, default: 'default' },
-  template: { type: String, default: 'Analyse Standard' },
-  summary: String,
-  comparisonTable: [{
-    criteria: String,
-    documents: [{
-      name: String,
-      value: String,
-      score: Number,
-    }],
-  }],
-  bestPractices: [String],
-  redFlags: [String],
-  recommendations: [String],
-  overallRanking: [{
-    name: String,
-    rank: Number,
-    justification: String,
-  }],
-  complianceAnalysis: [{
-    framework: String,
-    status: String,
-    details: String,
-  }],
-  industryInsights: [String],
-  createdAt: { type: Date, default: Date.now },
-});
-
 const userSchema = new mongoose.Schema({
   firebaseUid: {
     type: String,
@@ -72,15 +30,6 @@ const userSchema = new mongoose.Schema({
     enum: ['free', 'starter', 'standard', 'premium', 'enterprise'],
     default: 'free',
   },
-  organization: {
-    id: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', default: null },
-    role: {
-      type: String,
-      enum: ['admin', 'manager', 'analyst', 'viewer'],
-      default: null,
-    },
-    joinedAt: { type: Date, default: null },
-  },
   stripeCustomerId: {
     type: String,
     default: null,
@@ -100,7 +49,7 @@ const userSchema = new mongoose.Schema({
   aiSettings: {
     preferredModel: {
       type: String,
-      enum: ['auto', 'gpt-4-turbo', 'gpt-3.5-turbo', 'gemini'],
+      enum: ['auto', 'gpt-4o', 'gpt-4o-mini'],
       default: 'auto',
     },
     allowPremiumAI: { type: Boolean, default: true },
@@ -112,8 +61,8 @@ const userSchema = new mongoose.Schema({
   },
   aiUsageStats: {
     totalAnalyses: { type: Number, default: 0 },
-    gptAnalyses: { type: Number, default: 0 },
-    geminiAnalyses: { type: Number, default: 0 },
+    gpt4oAnalyses: { type: Number, default: 0 },
+    gpt4oMiniAnalyses: { type: Number, default: 0 },
     totalAICost: { type: Number, default: 0 },
     lastUpdated: { type: Date, default: new Date() },
   },
@@ -122,14 +71,16 @@ const userSchema = new mongoose.Schema({
     analytics: { type: Boolean, default: false },
     marketing: { type: Boolean, default: false },
     dataProcessing: { type: Boolean, default: true }, // Required for service
+    // Explicit consent for AI processing of document content (Art. 22 GDPR)
+    // Also covers third-party processors: Azure OpenAI (Microsoft)
+    aiProcessing: { type: Boolean, default: false },
+    aiProcessingDate: { type: Date, default: null },
     lastUpdated: { type: Date, default: Date.now },
   },
   dataRetention: {
     analysesDeleteAfter: { type: Number, default: 730 }, // Days (2 years)
     accountCreated: { type: Date, default: Date.now },
   },
-  analyses: [analysisSchema],
-  comparativeAnalyses: [comparativeAnalysisSchema],
 });
 
 module.exports = mongoose.model('User', userSchema);

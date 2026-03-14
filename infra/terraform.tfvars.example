@@ -1,0 +1,35 @@
+# Copy this file to terraform.tfvars and fill in real values.
+# terraform.tfvars is gitignored — never commit it.
+
+location            = "West Europe"
+environment         = "production"
+resource_group_name = "rg-transparai"
+app_name            = "transparai"
+node_version        = "20-lts"
+
+# ─── Secrets ──────────────────────────────────────────────────────────────────
+
+firebase_service_account_json = "{\"type\":\"service_account\",\"project_id\":\"...\"}"
+# mongo_uri is auto-populated from the Cosmos DB resource — no manual value needed
+
+# ─── Frontend (Vercel) ────────────────────────────────────────────────────────
+frontend_url = "https://transparai.vercel.app"  # replace with your Vercel URL or custom domain
+
+# ─── Azure AI Foundry (primary LLM provider) ──────────────────────────────────
+# Leave endpoint + api_key empty to fall back to direct OpenAI (local dev only)
+azure_openai_endpoint              = "https://your-resource.openai.azure.com/"
+azure_openai_api_key               = "your-azure-openai-key"
+azure_openai_api_version           = "2024-08-01-preview"
+azure_openai_deployment_gpt4o      = "gpt-4o"
+azure_openai_deployment_gpt4o_mini = "gpt-4o-mini"
+
+# ─── Direct OpenAI (local dev fallback — omit in production) ──────────────────
+openai_api_key                = ""
+voyage_api_key                = "pa-..."
+stripe_secret_key             = "sk_live_..."
+stripe_webhook_secret         = "whsec_..."
+jwt_secret                    = "at-least-32-random-chars"
+encryption_key                = "at-least-32-random-chars"
+session_secret                = "at-least-32-random-chars"
+
+# Optional — leave empty string to skip

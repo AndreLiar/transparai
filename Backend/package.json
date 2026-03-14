@@ -13,8 +13,6 @@
     "monitor": "node scripts/health-monitor.js start",
     "monitor:test": "node scripts/health-monitor.js test",
     "monitor:check": "node scripts/health-monitor.js check",
-    "sentry:test": "node scripts/test-sentry.js",
-    "newrelic:test": "node scripts/test-newrelic.js",
     "deploy:check": "node scripts/deploy.js",
     "start": "node index.js"
   },
@@ -23,10 +21,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@sentry/integrations": "^7.114.0",
-    "@sentry/node": "^10.26.0",
+    "@langchain/community": "^1.1.22",
+    "@langchain/core": "^1.1.31",
+"@langchain/openai": "^1.2.12",
     "@slack/web-api": "^7.11.0",
     "agent-base": "^6.0.2",
+    "applicationinsights": "^3.4.0",
     "axios": "^1.9.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
@@ -39,9 +39,9 @@
     "gcp-metadata": "^5.3.0",
     "helmet": "^8.1.0",
     "https-proxy-agent": "^5.0.1",
+    "langchain": "^1.2.30",
     "mongoose": "^8.14.1",
     "mongoose-paginate-v2": "^1.9.1",
-    "newrelic": "^13.6.6",
     "nodemailer": "^7.0.9",
     "openai": "^6.7.0",
     "pdfkit": "^0.17.1",
@@ -49,9 +49,11 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^13.0.0",
+    "voyageai": "^0.2.1",
     "winston": "^3.18.3",
     "winston-slack-webhook-transport": "^2.3.6",
-    "winston-transport": "^4.9.0"
+    "winston-transport": "^4.9.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",

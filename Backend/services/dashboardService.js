@@ -1,5 +1,6 @@
 // Backend/services/dashboardService.js
 const User = require('../models/User');
+const Analysis = require('../models/Analysis');
 const {
   getMonthlyLimit, getPlanConfig, getUpgradeRecommendation, getRemainingAnalyses,
 } = require('../utils/planUtils');
@@ -15,7 +16,6 @@ const getDashboardData = async (firebaseUid, emailFromToken) => {
       plan: 'free',
       monthlyQuota: { used: 0, limit: 20 },
       lastQuotaReset: new Date(),
-      analyses: [],
     });
   } else {
     // Reset quota if a new month has started
@@ -48,6 +48,11 @@ const getDashboardData = async (firebaseUid, emailFromToken) => {
   const upgradeRecommendation = getUpgradeRecommendation(user.plan || 'free', user.monthlyQuota.used);
   const remainingAnalyses = getRemainingAnalyses(user.plan || 'free', user.monthlyQuota.used);
 
+  const analyses = await Analysis.find(
+    { firebaseUid },
+    { clauses: 0 }, // exclude large field from list view
+  ).sort({ createdAt: -1 }).limit(20).lean();
+
   return {
     plan: user.plan || 'free',
     planConfig,
@@ -56,7 +61,7 @@ const getDashboardData = async (firebaseUid, emailFromToken) => {
       limit: user.monthlyQuota.limit,
       remaining: remainingAnalyses,
     },
-    analyses: user.analyses,
+    analyses,
     upgradeRecommendation,
     features: planConfig.features,
   };

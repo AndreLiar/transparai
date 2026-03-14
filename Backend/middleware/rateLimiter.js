@@ -49,6 +49,26 @@ const apiLimiter = rateLimit({
 
 });
 
+// Per-user burst limiter for analysis — prevents scripted abuse (10 req/min)
+// Applied BEFORE analysisLimiter so burst is checked first
+const analysisBurstLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  message: {
+    success: false,
+    error: {
+      message: 'Trop de requêtes d\'analyse en peu de temps. Attendez 1 minute avant de réessayer.',
+      code: 'ANALYSIS_BURST_LIMIT_EXCEEDED',
+      timestamp: new Date().toISOString(),
+      retryAfter: '1 minute',
+    },
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: createKeyGenerator('analysis-burst'),
+  handler,
+});
+
 // Analysis endpoint rate limiter (more restrictive)
 const analysisLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
@@ -218,6 +238,7 @@ const createCustomLimiter = (options = {}) => {
 
 module.exports = {
   apiLimiter,
+  analysisBurstLimiter,
   analysisLimiter,
   authLimiter,
   passwordResetLimiter,

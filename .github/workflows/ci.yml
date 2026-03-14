@@ -54,7 +54,11 @@ jobs:
           PORT=5001
           MONGO_URI=mongodb://root:password@localhost:27017/transparai_test?authSource=admin
           FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account","project_id":"test","private_key":"test","client_email":"test@test.com"}
-          GEMINI_API_KEY=test_key
+          AZURE_OPENAI_ENDPOINT=https://fake.openai.azure.com/
+          AZURE_OPENAI_API_KEY=test_azure_key
+          AZURE_OPENAI_API_VERSION=2024-08-01-preview
+          AZURE_OPENAI_DEPLOYMENT_GPT4O=gpt-4o
+          AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI=gpt-4o-mini
           STRIPE_SECRET_KEY=sk_test_fake
           STRIPE_WEBHOOK_SECRET=whsec_test
           LOG_LEVEL=error
@@ -235,7 +239,11 @@ jobs:
           PORT=5001
           MONGO_URI=mongodb://root:password@localhost:27017/transparai_integration?authSource=admin
           FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account","project_id":"test","private_key":"test","client_email":"test@test.com"}
-          GEMINI_API_KEY=test_key
+          AZURE_OPENAI_ENDPOINT=https://fake.openai.azure.com/
+          AZURE_OPENAI_API_KEY=test_azure_key
+          AZURE_OPENAI_API_VERSION=2024-08-01-preview
+          AZURE_OPENAI_DEPLOYMENT_GPT4O=gpt-4o
+          AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI=gpt-4o-mini
           STRIPE_SECRET_KEY=sk_test_fake
           STRIPE_WEBHOOK_SECRET=whsec_test
           LOG_LEVEL=error
@@ -338,22 +346,21 @@ jobs:
           echo ""
           echo "🚀 Triggering production deployment..."
 
-      - name: Deploy to Render Backend
-        env:
-          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
-        run: |
-          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
-            echo "🚀 Deploying backend to Render..."
-            curl -X POST "$RENDER_DEPLOY_HOOK"
-            echo "✅ Render deployment triggered"
-          else
-            echo "⚠️ RENDER_DEPLOY_HOOK not configured - manual deployment required"
-          fi
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy Backend to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./Backend
 
       - name: Create deployment summary
         run: |
           echo "## 🎉 Deployment Successful" >> $GITHUB_STEP_SUMMARY
           echo "- 🔒 All security checks passed" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ All tests passed" >> $GITHUB_STEP_SUMMARY
-          echo "- 🚀 Production deployment initiated" >> $GITHUB_STEP_SUMMARY
-          echo "- 📊 Monitor your application at your Render dashboard" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚀 Backend deployed to Azure App Service" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 Frontend deployed via Vercel (automatic on push)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 Monitor at Azure Application Insights" >> $GITHUB_STEP_SUMMARY

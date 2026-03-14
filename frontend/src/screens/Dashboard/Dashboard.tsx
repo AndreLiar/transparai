@@ -5,9 +5,10 @@ import { useAuth } from '@/context/AuthContext';
 import { Smiley, ChartPie, Target, Calendar, TrendUp, Rocket, FileText, CheckCircle } from 'phosphor-react';
 import { useTranslation } from 'react-i18next';
 import { fetchDashboardData, InfoData } from '@/services/InfoService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import EmailVerificationBanner from '@/components/common/EmailVerificationBanner';
 import UpgradePrompt from '@/components/common/UpgradePrompt';
+import { ONBOARDING_KEY } from '@/screens/Onboarding/Onboarding';
 import './Dashboard.css';
 import '@/styles/Layout.css';
 
@@ -17,7 +18,8 @@ const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState<InfoData | null>(null);
   const [loading, setLoading] = useState(true);
-  
+  const navigate = useNavigate();
+
   const firstName = user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || t('dashboard.default_user');
 
   useEffect(() => {
@@ -27,6 +29,11 @@ const Dashboard: React.FC = () => {
         const token = await user.getIdToken(true);
         const data = await fetchDashboardData(token);
         setDashboardData(data);
+        // Redirect to onboarding on first-ever login
+        const onboardingDone = localStorage.getItem(`${ONBOARDING_KEY}_${user.uid}`);
+        if (!onboardingDone && data.quota.used === 0) {
+          navigate('/onboarding');
+        }
       } catch (error) {
         console.error('Error loading dashboard data:', error);
       } finally {

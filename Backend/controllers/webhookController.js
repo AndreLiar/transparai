@@ -107,8 +107,8 @@ const handleStripeWebhook = async (req, res) => {
       if (!user.aiUsageStats) {
         user.aiUsageStats = {
           totalAnalyses: 0,
-          gptAnalyses: 0,
-          geminiAnalyses: 0,
+          gpt4oAnalyses: 0,
+          gpt4oMiniAnalyses: 0,
           totalAICost: 0,
           lastUpdated: new Date(),
         };

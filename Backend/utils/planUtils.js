@@ -1,101 +1,142 @@
 // Backend/utils/planUtils.js
-const { PLAN_AI_BUDGETS } = require('../services/aiModelService');
+const { PLAN_AI_BUDGETS } = require('../orchestrator/modelRouter');
 
-// Plan configuration with features and limits
+// ── Plan configuration ────────────────────────────────────────────────────────
+//
+// Pricing rationale (updated):
+//   Free     €0      —  5 analyses/mo, gpt-4o-mini (capped budget), text-only input
+//                        Goal: demonstrate value, funnel to Standard
+//   Standard €14.99  — 100 analyses/mo, gpt-4o-mini, PDF export + history
+//                        Goal: primary B2C revenue driver
+//   Premium  €29.99  — Unlimited, gpt-4o, comparative analysis, API access
+//                        Goal: power users + freelance lawyers
+//   Enterprise €199  — Unlimited, gpt-4o priority, teams, SLA, custom branding
+//                        Goal: B2B — law firms, compliance teams, LegalTech
+//
+// AI cost break-even (worst case, all gpt-4o at $0.015/analysis):
+//   Standard:   100 × $0.015 = $1.50  → margin: €14.99 - $1.50 ≈ €13.85/user
+//   Premium:    heavy user 300 × $0.015 = $4.50  → margin: €29.99 - $4.50 ≈ €25/user
+//   Enterprise: team 500 × $0.015 = $7.50  → margin: €199 - $7.50 ≈ €191/org
+//
+// In practice, prompt cache and model downgrading cut real AI costs by 60–80%.
 const PLAN_CONFIG = {
   free: {
     name: 'Gratuit',
-    monthlyAnalyses: 20,
+    priceEur: 0,
+    monthlyAnalyses: 5,       // was 20 — real scarcity to drive upgrades
     aiBudget: 0,
     features: {
-      basicAnalysis: true,
-      sampleContracts: true,
-      textInput: true,
-      fileUpload: true,
-      ocrProcessing: true,
-      pdfExport: false,
-      history: false,
-      prioritySupport: false,
+      basicAnalysis:    true,
+      sampleContracts:  true,
+      textInput:        true,
+      fileUpload:       false, // free plan: text paste only (reduces abuse + costs)
+      ocrProcessing:    false, // OCR is a premium differentiator
+      pdfExport:        false,
+      history:          false,
+      prioritySupport:  false,
       advancedAnalysis: false,
-      teamFeatures: false,
-      apiAccess: false,
-      premiumAI: false,
+      comparativeAnalysis: false,
+      teamFeatures:     false,
+      apiAccess:        false,
+      premiumAI:        false, // gpt-4o-mini only with capped budget
+      historyRetentionDays: 0,
     },
   },
+
+  // Kept for backwards compatibility with existing DB records — same limits as free
+  // New users should not be assigned 'starter'; use 'free' instead
   starter: {
     name: 'Starter',
-    monthlyAnalyses: 20,
+    priceEur: 0,
+    monthlyAnalyses: 5,
     aiBudget: 0,
     features: {
-      basicAnalysis: true,
-      sampleContracts: true,
-      textInput: true,
-      fileUpload: true,
-      ocrProcessing: true,
-      pdfExport: false,
-      history: false,
-      prioritySupport: false,
+      basicAnalysis:    true,
+      sampleContracts:  true,
+      textInput:        true,
+      fileUpload:       false,
+      ocrProcessing:    false,
+      pdfExport:        false,
+      history:          false,
+      prioritySupport:  false,
       advancedAnalysis: false,
-      teamFeatures: false,
-      apiAccess: false,
-      premiumAI: false,
+      comparativeAnalysis: false,
+      teamFeatures:     false,
+      apiAccess:        false,
+      premiumAI:        false,
+      historyRetentionDays: 0,
     },
   },
+
   standard: {
     name: 'Standard',
-    monthlyAnalyses: 40,
-    aiBudget: 2.0,
+    priceEur: 14.99,          // was €9.99 — still below market, more sustainable
+    monthlyAnalyses: 100,     // was 40 — removes churn pressure at this price point
+    aiBudget: 3.0,            // was $2 — covers 100 gpt-4o-mini analyses comfortably
     features: {
-      basicAnalysis: true,
-      sampleContracts: true,
-      textInput: true,
-      fileUpload: true,
-      ocrProcessing: true,
-      pdfExport: true,
-      history: true,
-      prioritySupport: false,
+      basicAnalysis:    true,
+      sampleContracts:  true,
+      textInput:        true,
+      fileUpload:       true,
+      ocrProcessing:    true,
+      pdfExport:        true,
+      history:          true,
+      prioritySupport:  false,
       advancedAnalysis: false,
-      teamFeatures: false,
-      apiAccess: false,
-      premiumAI: true,
+      comparativeAnalysis: false, // comparative is Premium+
+      teamFeatures:     false,
+      apiAccess:        false,
+      premiumAI:        true,  // gpt-4o-mini
+      historyRetentionDays: 90,
     },
   },
+
   premium: {
     name: 'Premium',
-    monthlyAnalyses: -1, // Unlimited
-    aiBudget: 10.0,
+    priceEur: 29.99,          // was €19.99 — matches Grammarly/Notion tier
+    monthlyAnalyses: -1,      // Unlimited
+    aiBudget: 15.0,           // was $10 — covers ~1000 gpt-4o-mini or ~300 gpt-4o analyses
     features: {
-      basicAnalysis: true,
-      sampleContracts: true,
-      textInput: true,
-      fileUpload: true,
-      ocrProcessing: true,
-      pdfExport: true,
-      history: true,
-      prioritySupport: true,
+      basicAnalysis:    true,
+      sampleContracts:  true,
+      textInput:        true,
+      fileUpload:       true,
+      ocrProcessing:    true,
+      pdfExport:        true,
+      history:          true,
+      prioritySupport:  true,
       advancedAnalysis: true,
-      teamFeatures: false,
-      apiAccess: true,
-      premiumAI: true,
+      comparativeAnalysis: true,
+      teamFeatures:     false,
+      apiAccess:        true,
+      premiumAI:        true,  // gpt-4o
+      historyRetentionDays: 730, // 2 years
     },
   },
+
   enterprise: {
     name: 'Enterprise',
-    monthlyAnalyses: -1, // Unlimited
-    aiBudget: 50.0,
+    priceEur: 199,            // was €99 — still 10× below legal SaaS market rate
+    monthlyAnalyses: -1,      // Unlimited
+    aiBudget: 75.0,           // was $50 — covers a full team's heavy usage
     features: {
-      basicAnalysis: true,
-      sampleContracts: true,
-      textInput: true,
-      fileUpload: true,
-      ocrProcessing: true,
-      pdfExport: true,
-      history: true,
-      prioritySupport: true,
+      basicAnalysis:    true,
+      sampleContracts:  true,
+      textInput:        true,
+      fileUpload:       true,
+      ocrProcessing:    true,
+      pdfExport:        true,
+      history:          true,
+      prioritySupport:  true,
       advancedAnalysis: true,
-      teamFeatures: true,
-      apiAccess: true,
-      premiumAI: true,
+      comparativeAnalysis: true,
+      teamFeatures:     true,
+      apiAccess:        true,
+      premiumAI:        true,  // gpt-4o priority routing
+      historyRetentionDays: 730,
+      slaGuarantee:     true,
+      customBranding:   true,
+      dedicatedSupport: true,
     },
   },
 };
@@ -198,21 +239,22 @@ const hasAIAccess = (plan, aiSettings = {}) => {
 const getAIUpgradeRecommendation = (plan, aiUsage = {}) => {
   const config = getPlanConfig(plan);
 
-  if (!config.features.premiumAI && aiUsage.totalAnalyses > 5) {
+  if (!config.features.premiumAI && aiUsage.totalAnalyses > 2) {
     return {
       suggested: 'standard',
       reason: 'premium_ai_needed',
-      message: 'Débloquez l\'IA premium pour une analyse plus précise avec le plan Standard.',
+      message: 'Passez à Standard (€14,99/mois) pour des analyses illimitées avec GPT-4o mini et un budget IA mensuel dédié.',
     };
   }
 
   const budget = aiUsage.monthlyAIBudget || { allocated: 0, used: 0 };
   if (budget.allocated > 0 && budget.used >= budget.allocated * 0.8) {
     const nextPlan = plan === 'standard' ? 'premium' : 'enterprise';
+    const nextConfig = getPlanConfig(nextPlan);
     return {
       suggested: nextPlan,
       reason: 'ai_budget_exhausted',
-      message: `Budget IA bientôt épuisé. Passez à ${getPlanConfig(nextPlan).name} pour plus d'analyses premium.`,
+      message: `Budget IA bientôt épuisé. Passez à ${nextConfig.name} (€${nextConfig.priceEur}/mois) pour ${nextPlan === 'premium' ? '$15' : '$75'} de budget IA/mois.`,
     };
   }
 
@@ -225,28 +267,31 @@ const getUpgradeRecommendation = (plan, usedAnalyses) => {
   const limit = config.monthlyAnalyses;
 
   if (plan === 'free' || plan === 'starter') {
-    if (limit !== -1 && usedAnalyses >= limit * 0.8) {
+    if (limit !== -1 && usedAnalyses >= limit * 0.6) {
+      // Trigger upgrade prompt earlier (at 60%) — 5 analyses goes fast
       return {
         suggested: 'standard',
         reason: 'quota_nearly_reached',
-        message: 'Vous approchez de votre limite mensuelle. Passez à Standard pour 40 analyses + historique.',
+        message: `Vous avez utilisé ${usedAnalyses}/${limit} analyses ce mois. Passez à Standard (€14,99/mois) pour 100 analyses + historique + export PDF.`,
       };
     }
-    if (usedAnalyses >= 5) {
+    if (usedAnalyses >= 2) {
       return {
         suggested: 'standard',
         reason: 'active_user',
-        message: 'Vous utilisez régulièrement TransparAI. Débloquez plus d\'analyses et l\'historique avec Standard.',
+        message: 'Vous utilisez déjà TransparAI. Débloquez 100 analyses/mois, l\'historique et l\'IA avancée avec Standard à €14,99/mois.',
       };
     }
   }
 
-  if (plan === 'standard' && limit !== -1 && usedAnalyses >= limit * 0.9) {
-    return {
-      suggested: 'premium',
-      reason: 'heavy_usage',
-      message: 'Analyses illimitées + support prioritaire avec Premium.',
-    };
+  if (plan === 'standard') {
+    if (limit !== -1 && usedAnalyses >= limit * 0.9) {
+      return {
+        suggested: 'premium',
+        reason: 'heavy_usage',
+        message: 'Analyses illimitées + analyse comparative multi-documents + accès API avec Premium à €29,99/mois.',
+      };
+    }
   }
 
   return null;

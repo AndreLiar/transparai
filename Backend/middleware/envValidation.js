@@ -12,7 +12,6 @@ const validateEnvironmentVariables = () => {
     'MONGO_URI',
     'FIREBASE_SERVICE_ACCOUNT_JSON',
     'FRONTEND_URL',
-    'GEMINI_API_KEY',
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET',
     'LOG_LEVEL',
@@ -33,12 +32,6 @@ const validateEnvironmentVariables = () => {
     openai: {
       condition: process.env.OPENAI_ENABLED !== 'false',
       vars: ['OPENAI_API_KEY'],
-      optional: true,
-    },
-    // New Relic monitoring (optional)
-    newrelic: {
-      condition: process.env.NEW_RELIC_LICENSE_KEY && process.env.NEW_RELIC_LICENSE_KEY !== 'your_new_relic_license_key',
-      vars: ['NEW_RELIC_LICENSE_KEY', 'NEW_RELIC_APP_NAME'],
       optional: true,
     },
   };
@@ -145,7 +138,6 @@ const validateEnvironmentVariables = () => {
   if (process.env.ALERT_EMAIL_ENABLED === 'true') configuredFeatures.push('Email Alerts');
   if (process.env.ALERT_SLACK_ENABLED === 'true') configuredFeatures.push('Slack Alerts');
   if (process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY.startsWith('your_')) configuredFeatures.push('OpenAI');
-  if (process.env.NEW_RELIC_LICENSE_KEY && !process.env.NEW_RELIC_LICENSE_KEY.startsWith('your_')) configuredFeatures.push('New Relic');
 
   logger.info('Environment validation passed', {
     nodeEnv: process.env.NODE_ENV,

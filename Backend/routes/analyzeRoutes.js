@@ -4,8 +4,8 @@ const express = require('express');
 const router = express.Router();
 const authenticate = require('../middleware/authMiddleware');
 const { analyzeText } = require('../controllers/analyzeController');
+const { analyzeStream } = require('../controllers/analyzeStreamController');
 const { routeValidations } = require('../middleware/validation');
-const { validateContentQuality } = require('../middleware/contentQualityValidator');
 const {
   sanitizeInput,
   noSQLInjectionProtection,
@@ -121,6 +121,7 @@ const {
  *       500:
  *         $ref: '#/components/responses/ServerError'
  */
+// Standard JSON endpoint (kept for backwards compatibility)
 router.post(
   '/',
   securityLogger,
@@ -129,8 +130,19 @@ router.post(
   noSQLInjectionProtection,
   authenticate,
   routeValidations.analyzeContract,
-  validateContentQuality, // Add content quality validation
   analyzeText,
+);
+
+// SSE streaming endpoint — emits progress events during analysis
+router.post(
+  '/stream',
+  securityLogger,
+  requestSizeLimiter,
+  sanitizeInput,
+  noSQLInjectionProtection,
+  authenticate,
+  routeValidations.analyzeContract,
+  analyzeStream,
 );
 
 module.exports = router;

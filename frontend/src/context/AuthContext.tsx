@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../configFirebase/Firebase';
+import { setAppInsightsUser, clearAppInsightsUser } from '@/config/appInsights';
 
 interface AuthContextType {
   user: User | null;
@@ -18,6 +19,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
+      if (firebaseUser) {
+        setAppInsightsUser(firebaseUser.uid);
+      } else {
+        clearAppInsightsUser();
+      }
     });
 
     // Listen for logout from other tabs

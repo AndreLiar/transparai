@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { fetchDashboardData } from '@/services/InfoService';
 import {
-  User, BookOpen, MagnifyingGlass, ArrowCircleUp, SignOut, X, List, ChartBar, Buildings, Users, Headset, Robot
+  User, MagnifyingGlass, ArrowCircleUp, SignOut, X, List, Robot, Lock
 } from 'phosphor-react';
 import LanguageSwitcher from '@/components/Layout/LanguageSwitcher'; // 👈 Import switcher
 import ThemeSwitcher from '@/components/Layout/ThemeSwitcher'; // adjust path if needed
@@ -46,30 +46,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     localStorage.setItem('logout-event', Date.now().toString());
   };
 
-  const baseNavItems = [
-    { label: t('sidebar.account'), path: '/account', icon: <User size={20} /> },
-    { label: t('sidebar.history'), path: '/history', icon: <BookOpen size={20} /> },
-    { label: t('sidebar.analyze'), path: '/analyze', icon: <MagnifyingGlass size={20} /> },
-    { label: 'Paramètres IA', path: '/ai-settings', icon: <Robot size={20} /> },
-    { label: 'Support', path: '/support', icon: <Headset size={20} /> },
-  ];
-
-  const premiumNavItems = [
-    { label: 'Analyse Comparative', path: '/compare', icon: <ChartBar size={20} /> },
-  ];
-
-  const enterpriseNavItems = [
-    { label: 'Organisation', path: '/organization', icon: <Buildings size={20} /> },
-    { label: 'Utilisateurs', path: '/user-management', icon: <Users size={20} /> },
-  ];
-
-  const upgradeItem = { label: t('sidebar.upgrade'), path: '/upgrade', icon: <ArrowCircleUp size={20} /> };
-
   const navItems = [
-    ...baseNavItems,
-    ...(userPlan === 'premium' ? premiumNavItems : []),
-    ...(userPlan === 'enterprise' ? [...premiumNavItems, ...enterpriseNavItems] : []),
-    upgradeItem,
+    { label: t('sidebar.analyze'), path: '/analyze', icon: <MagnifyingGlass size={20} /> },
+    { label: t('sidebar.account'), path: '/account', icon: <User size={20} /> },
+    { label: 'Paramètres IA', path: '/ai-settings', icon: <Robot size={20} /> },
+    { label: 'Confidentialité', path: '/privacy-settings', icon: <Lock size={20} /> },
+    { label: t('sidebar.upgrade'), path: '/upgrade', icon: <ArrowCircleUp size={20} /> },
   ];
 
   return (

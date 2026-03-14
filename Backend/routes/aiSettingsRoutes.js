@@ -15,7 +15,7 @@ const { PLAN_AI_BUDGETS } = require('../services/aiModelService');
  *       properties:
  *         preferredModel:
  *           type: string
- *           enum: [auto, gpt-4-turbo, gpt-3.5-turbo, gemini]
+ *           enum: [auto, gpt-4o, gpt-4o-mini]
  *           description: Preferred AI model for analysis
  *         allowPremiumAI:
  *           type: boolean
@@ -95,8 +95,8 @@ router.get('/', authenticateUser, async (req, res) => {
         },
         aiUsageStats: user.aiUsageStats || {
           totalAnalyses: 0,
-          gptAnalyses: 0,
-          geminiAnalyses: 0,
+          gpt4oAnalyses: 0,
+          gpt4oMiniAnalyses: 0,
           totalAICost: 0,
         },
         plan: user.plan,
@@ -131,7 +131,7 @@ router.get('/', authenticateUser, async (req, res) => {
  *             properties:
  *               preferredModel:
  *                 type: string
- *                 enum: [auto, gpt-4-turbo, gpt-3.5-turbo, gemini]
+ *                 enum: [auto, gpt-4o, gpt-4o-mini]
  *               allowPremiumAI:
  *                 type: boolean
  *     responses:
@@ -151,7 +151,7 @@ router.put('/', authenticateUser, async (req, res) => {
     }
 
     // Validate preferredModel
-    const validModels = ['auto', 'gpt-4-turbo', 'gpt-3.5-turbo', 'gemini'];
+    const validModels = ['auto', 'gpt-4o', 'gpt-4o-mini'];
     if (preferredModel && !validModels.includes(preferredModel)) {
       return res.status(400).json({
         success: false,
@@ -238,9 +238,8 @@ router.get('/usage', authenticateUser, async (req, res) => {
       data: {
         usage: {
           totalAnalyses: stats.totalAnalyses || 0,
-          gptAnalyses: stats.gptAnalyses || 0,
-          geminiAnalyses: stats.geminiAnalyses || 0,
-          gptPercentage: parseFloat(gptPercentage),
+          gpt4oAnalyses: stats.gpt4oAnalyses || 0,
+          gpt4oMiniAnalyses: stats.gpt4oMiniAnalyses || 0,
         },
         budget: {
           allocated: budget.allocated,

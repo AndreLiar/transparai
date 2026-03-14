@@ -38,46 +38,39 @@ const checkDatabaseHealth = async () => {
 };
 
 /**
- * Gemini AI API health check
+ * Azure AI Foundry health check
  */
-const checkGeminiAPIHealth = async () => {
+const checkAzureAIHealth = async () => {
   try {
-    const startTime = Date.now();
-    const { GEMINI_API_KEY } = process.env;
+    const { AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY } = process.env;
 
-    if (!GEMINI_API_KEY) {
+    if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY) {
       return {
         status: 'unhealthy',
         responseTime: null,
-        error: 'Gemini API key not configured',
+        error: 'Azure AI Foundry not configured (AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_API_KEY missing)',
       };
     }
 
-    // Simple test request to Gemini API
-    const testUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`;
+    const startTime = Date.now();
+    const testUrl = `${AZURE_OPENAI_ENDPOINT}openai/models?api-version=2024-08-01-preview`;
     const response = await axios.get(testUrl, {
-      timeout: 5000, // 5 second timeout
+      headers: { 'api-key': AZURE_OPENAI_API_KEY },
+      timeout: 5000,
     });
 
     const responseTime = Date.now() - startTime;
-
     return {
       status: response.status === 200 ? 'healthy' : 'unhealthy',
       responseTime,
-      details: {
-        statusCode: response.status,
-        modelsAvailable: response.data?.models?.length || 0,
-      },
+      details: { statusCode: response.status },
     };
   } catch (error) {
     return {
       status: 'unhealthy',
       responseTime: null,
       error: error.message,
-      details: {
-        code: error.code,
-        timeout: error.code === 'ECONNABORTED',
-      },
+      details: { code: error.code, timeout: error.code === 'ECONNABORTED' },
     };
   }
 };
@@ -203,26 +196,35 @@ const checkSystemHealth = () => {
 /**
  * Comprehensive health check that runs all checks
  */
+const { getCircuitStatus } = require('../orchestrator/resilience');
+
 const runAllHealthChecks = async () => {
   const startTime = Date.now();
 
   console.log('🔍 Running health checks...');
 
-  const [database, geminiAPI, stripe, firebase] = await Promise.allSettled([
+  const [database, azureAI, stripe, firebase] = await Promise.allSettled([
     checkDatabaseHealth(),
-    checkGeminiAPIHealth(),
+    checkAzureAIHealth(),
     checkStripeHealth(),
     checkFirebaseHealth(),
   ]);
 
   const system = checkSystemHealth();
 
+  const circuitBreakers = getCircuitStatus();
+  const anyCircuitOpen = Object.values(circuitBreakers).some((cb) => cb.state === 'OPEN');
+
   const checks = {
     database: database.status === 'fulfilled' ? database.value : { status: 'unhealthy', error: database.reason?.message },
-    geminiAPI: geminiAPI.status === 'fulfilled' ? geminiAPI.value : { status: 'unhealthy', error: geminiAPI.reason?.message },
+    azureAI: azureAI.status === 'fulfilled' ? azureAI.value : { status: 'unhealthy', error: azureAI.reason?.message },
     stripe: stripe.status === 'fulfilled' ? stripe.value : { status: 'unhealthy', error: stripe.reason?.message },
     firebase: firebase.status === 'fulfilled' ? firebase.value : { status: 'unhealthy', error: firebase.reason?.message },
     system,
+    aiCircuitBreakers: {
+      status: anyCircuitOpen ? 'degraded' : 'healthy',
+      models: circuitBreakers,
+    },
   };
 
   // Determine overall health status
@@ -258,7 +260,7 @@ const runAllHealthChecks = async () => {
 
 module.exports = {
   checkDatabaseHealth,
-  checkGeminiAPIHealth,
+  checkAzureAIHealth,
   checkStripeHealth,
   checkFirebaseHealth,
   checkSystemHealth,

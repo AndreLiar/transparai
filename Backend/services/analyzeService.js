@@ -1,186 +1,204 @@
 // Backend/services/analyzeService.js
+const crypto = require('crypto');
 const User = require('../models/User');
-const { saveDocumentToLibrary } = require('./documentLibraryService');
-const { generateAnalysisPrompt } = require('../utils/analysisTemplates');
-const { performSmartAnalysis } = require('./aiModelService');
-const { syncAIBudgetWithPlan } = require('../utils/planUtils');
+const Analysis = require('../models/Analysis');
+const { analyseDocument } = require('../orchestrator');
+const { syncAIBudgetWithPlan, canAnalyze, getMonthlyLimit, hasFeature } = require('../utils/planUtils');
+
+const sha256 = (text) => crypto.createHash('sha256').update(text).digest('hex');
 
 const preprocessText = (text) => {
-  // Clean and normalize the text
   let cleaned = text
-    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
-    .replace(/\n\s*\n/g, '\n') // Remove empty lines
+    .replace(/\s+/g, ' ')
+    .replace(/\n\s*\n/g, '\n')
     .trim();
 
-  // Validate text length and quality
   if (cleaned.length < 100) {
     throw new Error('Le texte fourni est trop court pour une analyse pertinente (minimum 100 caractères).');
   }
 
+  // Hard limit before sending to orchestrator — orchestrator applies plan-specific limits
   if (cleaned.length > 200000) {
-    // Truncate if too long but keep structure
-    cleaned = `${cleaned.substring(0, 200000)}...`;
+    cleaned = cleaned.substring(0, 200000);
   }
 
   return cleaned;
 };
 
 const processAnalysis = async ({
-  uid, text, source, documentName, originalName, fileType, sizeBytes, pageCount, ocrConfidence,
+  firebaseUid, text, source, documentName, originalName, fileType, sizeBytes, pageCount, ocrConfidence,
 }) => {
-  const user = await User.findOne({ firebaseUid: uid });
-  if (!user) throw new Error('Utilisateur introuvable');
+  const user = await User.findOne({ firebaseUid });
+  if (!user) return { status: 404, body: { message: 'Utilisateur introuvable' } };
 
-  // Reset quota if a new month has started
+  // ── Guard: GDPR Art. 22 — AI processing consent ──────────────────────────
+  if (!user.consent?.aiProcessing) {
+    return {
+      status: 403,
+      body: {
+        message: 'Vous devez accepter le traitement de vos documents par notre IA avant de pouvoir analyser. Activez le consentement dans Confidentialité > Consentement IA.',
+        code: 'AI_CONSENT_REQUIRED',
+        consentRequired: true,
+      },
+    };
+  }
+
+  // ── Guard: OCR feature gate ───────────────────────────────────────────────
+  if (source === 'ocr' && !hasFeature(user.plan, 'ocrProcessing')) {
+    return {
+      status: 403,
+      body: {
+        message: "L'analyse OCR nécessite un plan Standard ou supérieur.",
+        featureRequired: 'ocrProcessing',
+        currentPlan: user.plan,
+        upgradeRequired: true,
+      },
+    };
+  }
+
+  // ── Quota reset + AI budget sync (write only when dirty) ─────────────────
   const now = new Date();
   const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   const lastResetMonth = user.lastQuotaReset
     ? `${user.lastQuotaReset.getFullYear()}-${String(user.lastQuotaReset.getMonth() + 1).padStart(2, '0')}`
     : null;
 
-  if (currentMonth !== lastResetMonth) {
+  const needsQuotaReset = currentMonth !== lastResetMonth;
+  if (needsQuotaReset) {
     user.monthlyQuota.used = 0;
-    user.lastQuotaReset = new Date();
+    user.lastQuotaReset = now;
   }
 
-  // 🔄 Sync AI budget with current plan
-  const aiSettingsChanged = await syncAIBudgetWithPlan(user);
-  if (aiSettingsChanged) {
-    console.log(`🔄 Synced AI budget for user ${uid}: $${user.aiSettings.monthlyAIBudget.allocated}`);
-  }
-
-  // 🔁 Always sync quota limit with plan
-  let expectedLimit = 20;
-  if (user.plan === 'standard') expectedLimit = 40;
-  if (user.plan === 'premium') expectedLimit = -1;
-
+  const expectedLimit = getMonthlyLimit(user.plan);
   if (user.monthlyQuota.limit !== expectedLimit) {
     user.monthlyQuota.limit = expectedLimit;
   }
 
-  await user.save();
+  const needsBudgetSync = await syncAIBudgetWithPlan(user);
 
-  const { used, limit } = user.monthlyQuota;
-  const isUnlimited = limit === -1;
+  if (needsQuotaReset || needsBudgetSync) {
+    await user.save(); // write #1 — only fires when state actually changed
+  }
 
-  if (!isUnlimited && used >= limit) {
+  // ── Guard: quota check ────────────────────────────────────────────────────
+  if (!canAnalyze(user.plan, user.monthlyQuota.used)) {
+    const limit = getMonthlyLimit(user.plan);
     return {
-      quotaReached: true,
-      message: `Quota mensuel atteint pour le plan "${user.plan}".`,
-      remaining: 0,
+      status: 429,
+      body: {
+        quotaReached: true,
+        message: `Quota mensuel atteint (${user.monthlyQuota.used}/${limit}). Passez à un plan supérieur pour continuer.`,
+        currentPlan: user.plan,
+        usedAnalyses: user.monthlyQuota.used,
+        limit,
+        upgradeRequired: true,
+      },
     };
   }
 
-  // Preprocess the text for better analysis
+  // ── AI analysis ───────────────────────────────────────────────────────────
   const processedText = preprocessText(text);
+  const inputHash = sha256(processedText);
 
-  // Save document to library (with duplicate detection)
-  let documentLibraryInfo = null;
-  if (documentName && originalName) {
-    try {
-      documentLibraryInfo = await saveDocumentToLibrary({
-        uid,
-        name: documentName,
-        originalName,
-        extractedText: processedText,
-        source,
-        fileType,
-        sizeBytes,
-        pageCount,
-        ocrConfidence,
-      });
-
-      console.log(`📚 Document library: ${documentLibraryInfo.message}`);
-    } catch (libError) {
-      console.warn('⚠️ Erreur sauvegarde bibliothèque:', libError.message);
-      // Continue with analysis even if library save fails
-    }
+  // ── Idempotency: return cached result if same text was already analysed ───
+  // Saves LLM cost + latency for duplicate submissions (refresh, double-click, retry).
+  // Free plan: we still check the cache but we do not store (no Analysis record).
+  const cachedAnalysis = await Analysis.findOne({ inputHash, firebaseUid }).lean();
+  if (cachedAnalysis) {
+    const usedAfter = user.monthlyQuota.used + 1;
+    return {
+      status: 200,
+      body: {
+        summary: cachedAnalysis.summary,
+        score: cachedAnalysis.score,
+        clauses: cachedAnalysis.clauses,
+        analysisId: cachedAnalysis._id,
+        canExportPdf: user.plan !== 'free',
+        remaining: user.monthlyQuota.limit === -1 ? -1 : user.monthlyQuota.limit - usedAfter,
+        quotaReached: false,
+        aiModelUsed: cachedAnalysis.aiModelUsed,
+        confidenceLevel: cachedAnalysis.confidenceLevel,
+        requiresHumanReview: cachedAnalysis.requiresHumanReview,
+        promptVersion: cachedAnalysis.promptVersion,
+        disclaimerVersion: cachedAnalysis.disclaimerVersion,
+        jurisdiction: cachedAnalysis.jurisdiction,
+        cached: true,
+      },
+    };
   }
-
-  // === Smart AI Analysis ===
-  const prompt = generateAnalysisPrompt(user.plan || 'standard', processedText);
 
   let aiResult;
   try {
-    aiResult = await performSmartAnalysis(user, processedText, prompt);
-    console.log(`🎯 AI Analysis completed with ${aiResult.model} (Cost: $${aiResult.actualCost.toFixed(4)})`);
+    aiResult = await analyseDocument({ user, text: processedText, plan: user.plan });
   } catch (aiError) {
-    console.error('❌ Smart AI Analysis Error:', aiError.message);
     throw new Error(`Erreur d'analyse IA: ${aiError.message}`);
   }
 
-  const raw = aiResult.response;
-  let parsed;
-  try {
-    // Multiple cleaning attempts for better JSON extraction
-    let cleaned = raw.trim()
-      .replace(/^```json\s*/, '')
-      .replace(/\s*```$/, '')
-      .replace(/^```\s*/, '')
-      .replace(/\s*```$/, '');
+  const { resume, score, clauses, _meta } = aiResult;
+  const isFree = user.plan === 'free';
+  const isUnlimited = user.monthlyQuota.limit === -1;
 
-    // Try to find JSON object if wrapped in text
-    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      cleaned = jsonMatch[0];
-    }
-
-    parsed = JSON.parse(cleaned);
-  } catch (err) {
-    console.error('❌ JSON invalide:', raw.substring(0, 500));
-    throw new Error('Réponse IA invalide. Veuillez réessayer.');
+  // ── Atomic post-analysis write (write #2) ─────────────────────────────────
+  // Combines: quota increment + AI usage stats — one findOneAndUpdate
+  const statsInc = {
+    'monthlyQuota.used': 1,
+    'aiUsageStats.totalAnalyses': 1,
+    'aiUsageStats.totalAICost': _meta.actualCost || 0,
+  };
+  statsInc['aiSettings.monthlyAIBudget.used'] = _meta.actualCost || 0;
+  if (_meta.modelUsed === 'gpt-4o') {
+    statsInc['aiUsageStats.gpt4oAnalyses'] = 1;
+  } else {
+    statsInc['aiUsageStats.gpt4oMiniAnalyses'] = 1;
   }
 
-  // Enhanced validation
-  const validScores = ['Excellent', 'Bon', 'Moyen', 'Médiocre', 'Problématique'];
-  if (!parsed
-      || typeof parsed.resume !== 'string'
-      || typeof parsed.score !== 'string'
-      || !Array.isArray(parsed.clauses)
-      || !validScores.includes(parsed.score)
-      || parsed.clauses.length === 0) {
-    console.error('❌ Structure JSON invalide:', parsed);
-    throw new Error('Analyse incomplète. Veuillez réessayer.');
-  }
+  await User.findOneAndUpdate(
+    { firebaseUid },
+    { $inc: statsInc, $set: { 'aiUsageStats.lastUpdated': now } },
+  );
 
-  // Save if user is standard/premium (for export and history)
+  // ── Analysis record (write #3, skipped for free plan) ────────────────────
   let analysisId = null;
-  try {
-    if (user.plan !== 'free') {
-      const newAnalysis = {
-        source,
-        summary: parsed.resume,
-        score: parsed.score,
-        clauses: parsed.clauses,
-        createdAt: new Date(),
-      };
-      user.analyses.push(newAnalysis);
-
-      // Get the ID of the newly added analysis
-      await user.save();
-      analysisId = user.analyses[user.analyses.length - 1]._id;
-    } else {
-      // For free users, just update quota
-      user.monthlyQuota.used += 1;
-      await user.save();
-    }
-  } catch (err) {
-    throw new Error('Erreur enregistrement analyse.');
+  if (!isFree) {
+    const saved = await Analysis.create({
+      firebaseUid,
+      source,
+      documentName: documentName || originalName,
+      summary: resume,
+      score,
+      clauses,
+      inputHash,
+      aiModelUsed: _meta.modelUsed,
+      confidenceLevel: _meta.confidenceLevel,
+      requiresHumanReview: _meta.requiresHumanReview,
+      promptVersion: _meta.promptVersion,
+      disclaimerVersion: _meta.disclaimerVersion,
+      jurisdiction: _meta.jurisdiction,
+    });
+    analysisId = saved._id;
   }
 
+  // Audit log is written async inside the orchestrator (fire-and-forget, non-blocking)
+
+  const usedAfter = user.monthlyQuota.used + 1;
   return {
-    summary: parsed.resume,
-    score: parsed.score,
-    clauses: parsed.clauses,
-    analysisId, // Include ID for Standard/Premium users
-    canExportPdf: user.plan !== 'free',
-    remaining: isUnlimited ? -1 : user.monthlyQuota.limit - user.monthlyQuota.used,
-    quotaReached: false,
-    // AI Model Information for transparency
-    aiModelUsed: aiResult.model,
-    analysisComplexity: aiResult.selection.complexity,
-    aiCost: aiResult.actualCost,
-    remainingAIBudget: user.aiSettings?.monthlyAIBudget?.allocated - user.aiSettings?.monthlyAIBudget?.used || 0,
+    status: 200,
+    body: {
+      summary: resume,
+      score,
+      clauses,
+      analysisId,
+      canExportPdf: !isFree,
+      remaining: isUnlimited ? -1 : user.monthlyQuota.limit - usedAfter,
+      quotaReached: false,
+      aiModelUsed: _meta.modelUsed,
+      confidenceLevel: _meta.confidenceLevel,
+      requiresHumanReview: _meta.requiresHumanReview,
+      promptVersion: _meta.promptVersion,
+      disclaimerVersion: _meta.disclaimerVersion,
+      jurisdiction: _meta.jurisdiction,
+      fromPromptCache: _meta.fromPromptCache || false,
+    },
   };
 };
 

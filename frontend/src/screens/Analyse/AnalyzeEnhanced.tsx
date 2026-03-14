@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useSearchParams } from 'react-router-dom';
-import { analyzeCGA } from '@/services/analyze';
+import { analyzeCGAStream, type AnalysisProgress } from '@/services/analyze';
 import { fetchDashboardData } from '@/services/InfoService';
 import { exportAnalysisPdf } from '@/services/export';
 import Tesseract from 'tesseract.js';
@@ -12,6 +12,8 @@ import Sidebar from '@/components/Layout/Sidebar';
 import EmailVerificationBanner from '@/components/common/EmailVerificationBanner';
 import { sampleContracts, getSampleContract } from '@/utils/sampleContracts';
 import UpgradePrompt from '@/components/common/UpgradePrompt';
+import AIDisclaimer from '@/components/common/AIDisclaimer';
+import AIConsentModal from '@/components/common/AIConsentModal';
 import './Analyze.css';
 
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.mjs';
@@ -26,8 +28,23 @@ const AnalyzeEnhanced: React.FC = () => {
   const [sourceType, setSourceType] = useState<'text' | 'file'>('text');
   const [inputText, setInputText] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<{ summary: string; score: string; clauses: string[]; analysisId?: string; canExportPdf?: boolean } | null>(null);
+  const [result, setResult] = useState<{
+    summary: string;
+    score: string;
+    clauses: string[];
+    analysisId?: string;
+    canExportPdf?: boolean;
+    aiModelUsed?: string;
+    confidenceLevel?: 'high' | 'medium' | 'low';
+    requiresHumanReview?: boolean;
+    promptVersion?: string;
+    jurisdiction?: string;
+  } | null>(null);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [consentLoading, setConsentLoading] = useState(false);
+  const [hasAIConsent, setHasAIConsent] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState<AnalysisProgress | null>(null);
   const [ocrStatus, setOcrStatus] = useState('');
   const [error, setError] = useState('');
   const [quotaError, setQuotaError] = useState<{message: string, upgradeRequired: boolean, currentPlan: string} | null>(null);
@@ -44,6 +61,20 @@ const AnalyzeEnhanced: React.FC = () => {
       setQuota(infos.quota);
       setIsFirstTime(infos.quota.used === 0);
       setUserPlan(infos.plan || 'free');
+
+      // Check AI processing consent status
+      try {
+        const { API_BASE_URL } = await import('@/config/api');
+        const consentRes = await fetch(`${API_BASE_URL}/api/gdpr/consent`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (consentRes.ok) {
+          const data = await consentRes.json();
+          setHasAIConsent(data.consent?.aiProcessing === true);
+        }
+      } catch {
+        setHasAIConsent(false);
+      }
     };
     loadQuota();
     
@@ -99,12 +130,47 @@ const AnalyzeEnhanced: React.FC = () => {
     }
   };
 
+  const handleGrantConsent = async () => {
+    if (!user) return;
+    setConsentLoading(true);
+    try {
+      const { API_BASE_URL } = await import('@/config/api');
+      const token = await user.getIdToken(true);
+      const res = await fetch(`${API_BASE_URL}/api/gdpr/ai-consent`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ aiProcessing: true }),
+      });
+      if (res.ok) {
+        setHasAIConsent(true);
+        setShowConsentModal(false);
+        // Proceed with analysis after consent granted
+        handleSubmit();
+      } else {
+        setError('Erreur lors de l\'enregistrement du consentement. Veuillez réessayer.');
+        setShowConsentModal(false);
+      }
+    } catch {
+      setError('Erreur réseau lors de l\'enregistrement du consentement.');
+      setShowConsentModal(false);
+    } finally {
+      setConsentLoading(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!user) return;
+
+    // Show consent modal if user hasn't given AI processing consent yet
+    if (hasAIConsent === false) {
+      setShowConsentModal(true);
+      return;
+    }
 
     setError('');
     setQuotaError(null);
     setResult(null);
+    setProgress(null);
     setLoading(true);
     setOcrStatus('');
 
@@ -141,31 +207,38 @@ const AnalyzeEnhanced: React.FC = () => {
 
       const token = await user.getIdToken(true);
       const apiSource = sourceType === 'text' ? 'upload' : 'ocr';
-      const response = await analyzeCGA(token, analysisText, apiSource);
+      const response = await analyzeCGAStream(
+        token,
+        analysisText,
+        apiSource,
+        (p) => setProgress(p),
+      );
       setResult(response);
 
       const infos = await fetchDashboardData(token);
       setQuota(infos.quota);
     } catch (err: any) {
-      if (err.response?.status === 429 && err.response?.data?.quotaReached) {
-        // Quota exceeded error
+      // SSE errors arrive as { type:'error', status, quotaReached, upgradeRequired, ... }
+      if (err.quotaReached || err.status === 429) {
         setQuotaError({
-          message: err.response.data.message,
-          upgradeRequired: err.response.data.upgradeRequired || false,
-          currentPlan: err.response.data.currentPlan || 'free'
+          message: err.message,
+          upgradeRequired: err.upgradeRequired || false,
+          currentPlan: err.currentPlan || 'free',
         });
-      } else if (err.response?.status === 403 && err.response?.data?.upgradeRequired) {
-        // Feature access error
+      } else if (err.upgradeRequired || (err.status === 403 && !err.consentRequired)) {
         setQuotaError({
-          message: err.response.data.message,
+          message: err.message,
           upgradeRequired: true,
-          currentPlan: err.response.data.currentPlan || 'free'
+          currentPlan: err.currentPlan || 'free',
         });
+      } else if (err.consentRequired) {
+        setShowConsentModal(true);
       } else {
         setError(err.message || 'Erreur inconnue');
       }
     } finally {
       setLoading(false);
+      setProgress(null);
       setOcrStatus('');
     }
   };
@@ -183,6 +256,13 @@ const AnalyzeEnhanced: React.FC = () => {
 
   return (
     <div className="dashboard-layout">
+      {showConsentModal && (
+        <AIConsentModal
+          onAccept={handleGrantConsent}
+          onDecline={() => setShowConsentModal(false)}
+          loading={consentLoading}
+        />
+      )}
       <EmailVerificationBanner />
       <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
@@ -318,29 +398,39 @@ const AnalyzeEnhanced: React.FC = () => {
           )}
 
           <div className="submit-section">
-            <button 
-              onClick={handleSubmit} 
+            <button
+              onClick={handleSubmit}
               disabled={loading || (sourceType === 'text' && !inputText.trim()) || (sourceType === 'file' && !file)}
               className="analyze-button"
             >
-              {loading ? (
-                <>
-                  ⏳ Analyse en cours...
-                  {ocrStatus && <span className="ocr-status">{ocrStatus}</span>}
-                </>
-              ) : (
-                <>
-                  🚀 Analyser avec l'IA
-                  <span className="button-subtitle">Résultat en ~30 secondes</span>
-                </>
+              {loading ? '⏳ Analyse en cours…' : (
+                <>🚀 Analyser avec l'IA<span className="button-subtitle">Résultat en ~30 secondes</span></>
               )}
             </button>
-            
-            {(sourceType === 'text' && !inputText.trim()) && (
+
+            {loading && (
+              <div className="analysis-progress">
+                {ocrStatus && (
+                  <p className="progress-step-label">{ocrStatus}</p>
+                )}
+                {progress && (
+                  <>
+                    <div className="progress-bar-track">
+                      <div
+                        className="progress-bar-fill"
+                        style={{ width: `${progress.percent}%` }}
+                      />
+                    </div>
+                    <p className="progress-step-label">{progress.message}</p>
+                  </>
+                )}
+              </div>
+            )}
+
+            {sourceType === 'text' && !inputText.trim() && (
               <p className="form-hint">Collez votre contrat dans la zone de texte ci-dessus</p>
             )}
-            
-            {(sourceType === 'file' && !file) && (
+            {sourceType === 'file' && !file && (
               <p className="form-hint">Sélectionnez un fichier PDF ou image à analyser</p>
             )}
           </div>
@@ -394,6 +484,14 @@ const AnalyzeEnhanced: React.FC = () => {
               <h2>✅ Analyse terminée !</h2>
               <p>Voici ce que notre IA a découvert dans votre contrat :</p>
             </div>
+
+            <AIDisclaimer
+              modelUsed={result.aiModelUsed}
+              confidenceLevel={result.confidenceLevel}
+              requiresHumanReview={result.requiresHumanReview}
+              promptVersion={result.promptVersion}
+              jurisdiction={result.jurisdiction}
+            />
 
             <div className="result-grid">
               <div className="result-card score-card">

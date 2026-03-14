@@ -199,6 +199,23 @@
   box-shadow: 0 4px 15px rgba(0, 92, 255, 0.2);
 }
 
+/* Plan description — short tagline under the price */
+.plan-description {
+  font-size: 13px;
+  color: var(--color-text-secondary, #6b7280);
+  margin: -8px 0 16px;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+/* Compliance footnote below the pricing grid */
+.pricing-note {
+  margin-top: 32px;
+  font-size: 12px;
+  color: var(--color-text-secondary, #6b7280);
+  opacity: 0.7;
+}
+
 /* Call to Action for free analysis - Prominent & Inviting */
 .cta-free {
   margin-top: 80px; /* Generous top margin */

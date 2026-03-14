@@ -1,10 +1,10 @@
 // Backend/index.js
 require('dotenv').config();
 
-// Initialize New Relic FIRST (must be before any other requires)
-const { initNewRelic } = require('./config/newrelic');
-
-const newrelic = initNewRelic();
+// Initialise Application Insights FIRST — must be before any other require
+// so the SDK can auto-instrument Express, Mongoose, and outbound HTTP calls.
+const { initAppInsights } = require('./config/appInsights');
+initAppInsights();
 
 // Validate environment variables before starting the application
 const { validateEnvironmentVariables } = require('./middleware/envValidation');

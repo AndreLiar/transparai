@@ -1,0 +1,141 @@
+/* AIConsentModal.css */
+.ai-consent-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.ai-consent-modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 540px;
+  width: 100%;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.ai-consent-modal h2 {
+  margin: 0 0 20px 0;
+  font-size: 1.25rem;
+  color: #111;
+}
+
+.ai-consent-body {
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.ai-consent-body p {
+  margin: 0 0 12px 0;
+}
+
+.ai-consent-body ul {
+  margin: 0 0 12px 16px;
+  padding: 0;
+}
+
+.ai-consent-body li {
+  margin-bottom: 4px;
+}
+
+.ai-consent-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.ai-consent-checkbox input[type="checkbox"] {
+  margin-top: 2px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.ai-consent-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ai-consent-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s;
+}
+
+.ai-consent-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ai-consent-btn--accept {
+  background: #2563eb;
+  color: #fff;
+}
+
+.ai-consent-btn--accept:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.ai-consent-btn--decline {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.ai-consent-btn--decline:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.ai-consent-footer {
+  margin-top: 16px;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-align: center;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .ai-consent-modal {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+
+  .ai-consent-modal h2 {
+    color: #f9fafb;
+  }
+
+  .ai-consent-body {
+    color: #d1d5db;
+  }
+
+  .ai-consent-checkbox {
+    background: #111827;
+    border-color: #374151;
+  }
+
+  .ai-consent-btn--decline {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+  }
+}

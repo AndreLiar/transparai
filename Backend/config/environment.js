@@ -4,7 +4,6 @@ require('dotenv').config();
 // Environment validation
 const requiredEnvVars = [
   'FIREBASE_SERVICE_ACCOUNT_JSON',
-  'GEMINI_API_KEY',
   'MONGO_URI',
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
@@ -48,9 +47,6 @@ const config = {
 
   // Database
   MONGO_URI: process.env.MONGO_URI,
-
-  // External APIs
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
 
   // Stripe
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,

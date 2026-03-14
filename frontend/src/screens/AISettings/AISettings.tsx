@@ -102,7 +102,7 @@ const AISettings: React.FC = () => {
   };
 
   const getAvailableModels = () => {
-    return PLAN_FEATURES[userPlan as keyof typeof PLAN_FEATURES]?.availableModels || ['gemini'];
+    return PLAN_FEATURES[userPlan as keyof typeof PLAN_FEATURES]?.availableModels || ['gpt-4o-mini'];
   };
 
   return (
@@ -228,12 +228,12 @@ const AISettings: React.FC = () => {
                   <span className="stat-label">Analyses totales</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-number">{usageStats.gptAnalyses}</span>
-                  <span className="stat-label">Analyses GPT</span>
+                  <span className="stat-number">{usageStats.gpt4oAnalyses}</span>
+                  <span className="stat-label">Analyses GPT-4o</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-number">{usageStats.geminiAnalyses}</span>
-                  <span className="stat-label">Analyses Gemini</span>
+                  <span className="stat-number">{usageStats.gpt4oMiniAnalyses}</span>
+                  <span className="stat-label">Analyses GPT-4o Mini</span>
                 </div>
                 <div className="stat-item">
                   <span className="stat-number">${usageStats.totalAICost.toFixed(2)}</span>

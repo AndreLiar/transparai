@@ -2,6 +2,7 @@
 
 const PDFDocument = require('pdfkit');
 const User = require('../models/User');
+const Analysis = require('../models/Analysis');
 const { hasFeature } = require('../utils/planUtils');
 
 // Helper function for score colors
@@ -35,7 +36,7 @@ const exportAnalysisPDF = async (req, res) => {
       });
     }
 
-    const analysis = user.analyses.id(analysisId);
+    const analysis = await Analysis.findOne({ _id: analysisId, firebaseUid: uid }).lean();
     if (!analysis) {
       return res.status(404).json({ message: 'Analyse non trouvée' });
     }

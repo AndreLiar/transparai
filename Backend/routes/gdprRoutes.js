@@ -5,6 +5,7 @@ const {
   deleteUserAccount,
   getConsentStatus,
   updateConsent,
+  updateAIConsent,
   getRetentionPolicy,
 } = require('../controllers/gdprController');
 const authenticateToken = require('../middleware/authMiddleware');
@@ -105,6 +106,32 @@ router.put('/consent', authenticateToken, updateConsent);
  *       200:
  *         description: Retention policy retrieved
  */
+/**
+ * @swagger
+ * /api/gdpr/ai-consent:
+ *   put:
+ *     summary: Grant or withdraw AI processing consent (GDPR Art. 22)
+ *     description: Explicit consent for document processing by third-party AI providers (Google Gemini, OpenAI)
+ *     tags: [GDPR]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - aiProcessing
+ *             properties:
+ *               aiProcessing:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: AI consent updated
+ */
+router.put('/ai-consent', authenticateToken, updateAIConsent);
+
 router.get('/retention-policy', getRetentionPolicy);
 
 module.exports = router;

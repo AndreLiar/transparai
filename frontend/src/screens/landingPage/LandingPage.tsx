@@ -25,31 +25,31 @@ const LandingPage: React.FC = () => {
       <motion.section className="hero-section" {...fadeInUp}>
         <div className="hero-content">
           <div className="hero-badge">
-            <span className="badge-icon">✨</span>
-            <span>Nouveau : Analyse IA Ultra-Rapide</span>
+            <span className="badge-icon">🇪🇺</span>
+            <span>100% RGPD · Données hébergées en UE</span>
           </div>
-          
+
           <h1 className="hero-title">
-            Révolutionnez votre façon d'analyser les <span className="hero-highlight">contrats</span>
+            Vous signez sans avocat ? Lisez vraiment ce que vous <span className="hero-highlight">acceptez</span>
           </h1>
-          
+
           <p className="hero-subtitle">
-            <strong>TransparAI</strong> transforme vos documents complexes en analyses claires et actionables. 
-            Détection intelligente de clauses, scoring automatique et protection contre les pièges contractuels.
+            <strong>TransparAI</strong> analyse vos contrats, CGU et CGV en moins de 30 secondes.
+            Détection des clauses abusives, score de transparence, export PDF — sans jargon juridique.
           </p>
 
           <div className="hero-stats">
             <div className="stat-item">
-              <span className="stat-number">IA</span>
-              <span className="stat-label">Analyse intelligente</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-number">Rapide</span>
-              <span className="stat-label">Résultats instantanés</span>
-            </div>
-            <div className="stat-item">
               <span className="stat-number">&lt; 30s</span>
               <span className="stat-label">Temps d'analyse</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">Gratuit</span>
+              <span className="stat-label">5 analyses / mois</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">0€</span>
+              <span className="stat-label">Sans carte bancaire</span>
             </div>
           </div>
 
@@ -65,10 +65,10 @@ const LandingPage: React.FC = () => {
           </div>
 
           <div className="hero-trust">
-            <p className="trust-text">Analysez vos contrats en toute confiance</p>
+            <p className="trust-text">Conçu pour ceux qui signent sans avocat</p>
             <div className="trust-badges">
-              <span className="trust-badge">🏢 Entreprises</span>
-              <span className="trust-badge">⚖️ Professionnels du droit</span>
+              <span className="trust-badge">💼 Freelances & indépendants</span>
+              <span className="trust-badge">🏢 TPE / PME</span>
               <span className="trust-badge">👥 Particuliers</span>
             </div>
           </div>
@@ -133,7 +133,7 @@ const LandingPage: React.FC = () => {
           <div className="feature-icon">⚡</div>
           <h2>Analyse IA Ultra-Précise en <span className="highlight">30 Secondes</span></h2>
           <p className="feature-description">
-            Propulsée par <strong>Gemini 2.0 Flash</strong>, notre IA de dernière génération décortique vos contrats plus rapidement qu'un juriste expert. 
+            Propulsée par <strong>Azure OpenAI GPT-4o</strong>, notre IA de dernière génération décortique vos contrats plus rapidement qu'un juriste expert.
           </p>
           
           <div className="enhanced-features-grid">

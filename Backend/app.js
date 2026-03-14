@@ -9,14 +9,7 @@ const { runAllHealthChecks } = require('./middleware/healthChecks');
 const logger = require('./utils/logger');
 const { errorTracker, requestTimer, globalErrorHandler } = require('./middleware/errorTracker');
 
-// Initialize Sentry for error monitoring
-const {
-  initSentry,
-  requestHandler: sentryRequestHandler,
-  tracingHandler: sentryTracingHandler,
-  errorHandler: sentryErrorHandler,
-} = require('./config/sentry');
-const { apiLimiter, analysisLimiter } = require('./middleware/rateLimiter');
+const { apiLimiter, analysisBurstLimiter, analysisLimiter } = require('./middleware/rateLimiter');
 const { corsOptions } = require('./middleware/corsConfig');
 const { apiVersionMiddleware, versionInfoHandler } = require('./middleware/apiVersioning');
 const {
@@ -33,17 +26,7 @@ const webhookRoutes = require('./routes/webhookRoutes');
 const exportRoutes = require('./routes/exportRoutes');
 const userRoutes = require('./routes/userRoutes');
 const profileRoutes = require('./routes/profileRoutes');
-const supportRoutes = require('./routes/supportRoutes');
-const comparativeRoutes = require('./routes/comparativeRoutes');
-const analyticsRoutes = require('./routes/analyticsRoutes');
-const organizationRoutes = require('./routes/organizationRoutes');
-const userManagementRoutes = require('./routes/userManagementRoutes');
-const collaborationRoutes = require('./routes/collaborationRoutes');
-const documentLibraryRoutes = require('./routes/documentLibraryRoutes');
-const adminRoutes = require('./routes/adminRoutes');
 const aiSettingsRoutes = require('./routes/aiSettingsRoutes');
-const contactRoutes = require('./routes/contactRoutes');
-const sessionRoutes = require('./routes/sessionRoutes');
 const gdprRoutes = require('./routes/gdprRoutes');
 
 const app = express();
@@ -65,13 +48,6 @@ const initializeDatabase = async () => {
 
 // Call database initialization
 initializeDatabase();
-
-// ✅ Initialize Sentry error monitoring
-initSentry(app);
-
-// ✅ Sentry request handler (must be first middleware)
-app.use(sentryRequestHandler());
-app.use(sentryTracingHandler());
 
 // ✅ SECURITY: HTTPS enforcement must come FIRST (before CORS)
 app.use(environmentSecurity);
@@ -129,24 +105,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Other app routes
+// ✅ MVP routes
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/analyze', analysisLimiter, analyzeRoutes);
+app.use('/api/analyze', analysisBurstLimiter, analysisLimiter, analyzeRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/profile', profileRoutes);
-app.use('/api/support', supportRoutes);
-app.use('/api/comparative', comparativeRoutes);
-app.use('/api/analytics', analyticsRoutes);
-app.use('/api/organization', organizationRoutes);
-app.use('/api/user-management', userManagementRoutes);
-app.use('/api/collaboration', collaborationRoutes);
-app.use('/api/documents', documentLibraryRoutes);
-app.use('/api/admin', adminRoutes);
 app.use('/api/ai-settings', aiSettingsRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/session', sessionRoutes);
 app.use('/api/gdpr', gdprRoutes);
 
 // ✅ Root route for health checks
@@ -176,8 +142,7 @@ app.get('/health', (_req, res) => {
     environment: process.env.NODE_ENV,
     uptime: uptimeFormatted,
     monitoring: {
-      sentry: process.env.SENTRY_DSN ? 'enabled' : 'disabled',
-      newrelic: process.env.NEW_RELIC_LICENSE_KEY ? 'enabled' : 'disabled',
+      appInsights: process.env.APPLICATIONINSIGHTS_CONNECTION_STRING ? 'enabled' : 'disabled',
     },
   });
 });
@@ -204,9 +169,6 @@ app.get('/health/detailed', async (_req, res) => {
 
 // ✅ Error tracking middleware
 app.use(errorTracker);
-
-// ✅ Sentry error handler (must be before global error handler)
-app.use(sentryErrorHandler());
 
 // ✅ Global error handler (must be last)
 app.use(globalErrorHandler);

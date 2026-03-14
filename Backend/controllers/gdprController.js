@@ -1,7 +1,6 @@
 // Backend/controllers/gdprController.js
 const User = require('../models/User');
-const SharedAnalysis = require('../models/SharedAnalysis');
-const Session = require('../models/Session');
+const Analysis = require('../models/Analysis');
 const logger = require('../utils/logger');
 
 /**
@@ -20,65 +19,37 @@ const exportUserData = async (req, res) => {
       });
     }
 
-    // Get user analyses (stored in user document)
-    const analyses = user.analyses || [];
-    
-    // Get shared analyses
-    const sharedAnalyses = await SharedAnalysis.find({ 'collaborators.firebaseUid': uid })
-      .select('-__v')
-      .sort({ createdAt: -1 });
+    const analyses = await Analysis.find(
+      { firebaseUid: uid },
+      { _id: 1, source: 1, score: 1, summary: 1, createdAt: 1 },
+    ).lean();
 
-    // Get active sessions
-    const sessions = await Session.find({ firebaseUid: uid, isActive: true })
-      .select('deviceInfo createdAt lastActivity -_id');
-
-    // Compile user data
     const userData = {
       exportDate: new Date().toISOString(),
-      exportVersion: '1.0',
+      exportVersion: '1.1',
       user: {
         email: user.email,
         plan: user.plan,
         createdAt: user.createdAt,
-        lastLogin: user.lastLogin,
-        analysisCount: user.analysisCount,
-        quota: {
-          monthly: user.monthlyQuota,
-          currentUsage: user.currentUsage,
-        },
-        aiSettings: user.aiSettings,
-        preferences: user.preferences,
+        quota: user.monthlyQuota,
+        consent: user.consent,
       },
       analyses: analyses.map((a) => ({
         id: a._id,
-        documentName: a.documentName,
         source: a.source,
         score: a.score,
-        createdAt: a.createdAt,
-        issues: a.issues,
         summary: a.summary,
+        createdAt: a.createdAt,
       })),
-      sharedAnalyses: sharedAnalyses.map((sa) => ({
-        id: sa._id,
-        documentName: sa.documentName,
-        createdAt: sa.createdAt,
-        role: sa.collaborators.find(c => c.firebaseUid === uid)?.role || 'viewer',
-      })),
-      activeSessions: sessions,
       statistics: {
         totalAnalyses: analyses.length,
-        totalSharedAnalyses: sharedAnalyses.length,
-        averageScore: analyses.length > 0
-          ? (analyses.reduce((sum, a) => sum + (a.score || 0), 0) / analyses.length).toFixed(2)
-          : 0,
       },
     };
 
-    // Log export event
     logger.logDataExport({
       uid,
       email: user.email,
-      dataTypes: ['user', 'analyses', 'sessions'],
+      dataTypes: ['user', 'analyses'],
       recordCount: analyses.length,
       ip: req.ip,
     });
@@ -137,14 +108,10 @@ const deleteUserAccount = async (req, res) => {
       ip: req.ip,
     });
 
-    // Delete all user data
+    // Delete all user data (GDPR Art. 17 — includes all linked analyses)
     await Promise.all([
-      Session.deleteMany({ firebaseUid: uid }),
-      SharedAnalysis.updateMany(
-        { 'collaborators.firebaseUid': uid },
-        { $pull: { collaborators: { firebaseUid: uid } } }
-      ),
       User.deleteOne({ firebaseUid: uid }),
+      Analysis.deleteMany({ firebaseUid: uid }),
     ]);
 
     logger.info('User account deleted', {
@@ -294,10 +261,55 @@ const getRetentionPolicy = (req, res) => {
   });
 };
 
+/**
+ * Record explicit AI processing consent (GDPR Art. 22 — automated decision-making,
+ * and third-party processor notice: Google Gemini + OpenAI)
+ */
+const updateAIConsent = async (req, res) => {
+  try {
+    const { uid } = req.user;
+    const { aiProcessing } = req.body;
+
+    if (typeof aiProcessing !== 'boolean') {
+      return res.status(400).json({
+        error: 'Le champ aiProcessing doit être un booléen',
+        code: 'INVALID_INPUT',
+      });
+    }
+
+    const user = await User.findOne({ firebaseUid: uid });
+    if (!user) {
+      return res.status(404).json({ error: 'Utilisateur non trouvé', code: 'USER_NOT_FOUND' });
+    }
+
+    user.consent.aiProcessing = aiProcessing;
+    user.consent.aiProcessingDate = new Date();
+    user.consent.lastUpdated = new Date();
+    await user.save();
+
+    logger.info('AI processing consent updated', { uid, aiProcessing });
+
+    res.json({
+      success: true,
+      consent: {
+        aiProcessing: user.consent.aiProcessing,
+        aiProcessingDate: user.consent.aiProcessingDate,
+      },
+      message: aiProcessing
+        ? 'Consentement au traitement IA accordé. Vos documents seront traités par Google Gemini et/ou OpenAI.'
+        : 'Consentement au traitement IA retiré. Vous ne pourrez plus utiliser les fonctions d\'analyse.',
+    });
+  } catch (error) {
+    logger.error('AI consent update failed', { error: error.message, uid: req.user?.uid });
+    res.status(500).json({ error: 'Échec de la mise à jour du consentement IA', code: 'AI_CONSENT_UPDATE_FAILED' });
+  }
+};
+
 module.exports = {
   exportUserData,
   deleteUserAccount,
   getConsentStatus,
   updateConsent,
+  updateAIConsent,
   getRetentionPolicy,
 };

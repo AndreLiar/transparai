@@ -226,7 +226,7 @@ const options = {
                     },
                   },
                 },
-                geminiAPI: {
+                azureAI: {
                   type: 'object',
                   properties: {
                     status: {

@@ -9,7 +9,7 @@ const PrivacyPolicy: React.FC = () => {
         <div className="container">
           <Link to="/" className="back-link">← Retour à l'accueil</Link>
           <h1>Politique de Confidentialité</h1>
-          <p className="last-updated">Dernière mise à jour : 10 octobre 2025</p>
+          <p className="last-updated">Dernière mise à jour : 13 mars 2026</p>
         </div>
       </header>
 
@@ -45,7 +45,7 @@ const PrivacyPolicy: React.FC = () => {
             <h2>3. Comment nous utilisons vos informations</h2>
             <ul>
               <li><strong>Fourniture du service :</strong> Traitement et analyse de vos documents CGA</li>
-              <li><strong>Amélioration du service :</strong> Optimisation de nos algorithmes d'IA</li>
+              <li><strong>Amélioration du service :</strong> Statistiques d'usage agrégées et anonymisées — vos documents ne sont jamais utilisés pour entraîner des modèles IA</li>
               <li><strong>Communication :</strong> Envoi de notifications importantes sur votre compte</li>
               <li><strong>Facturation :</strong> Gestion des abonnements et paiements</li>
             </ul>
@@ -73,7 +73,14 @@ const PrivacyPolicy: React.FC = () => {
             <ul>
               <li>Avec votre consentement explicite</li>
               <li>Pour respecter nos obligations légales</li>
-              <li>Avec nos fournisseurs de services (Firebase, Stripe) sous contrat strict</li>
+              <li>Avec nos fournisseurs de services sous contrat strict et DPA RGPD :
+                <ul>
+                  <li><strong>Firebase (Google)</strong> — authentification</li>
+                  <li><strong>Stripe</strong> — paiements sécurisés</li>
+                  <li><strong>Microsoft Azure OpenAI</strong> — traitement IA des documents (région UE, données non conservées)</li>
+                  <li><strong>Microsoft Azure</strong> — hébergement de l'infrastructure (région UE)</li>
+                </ul>
+              </li>
             </ul>
           </section>
 
