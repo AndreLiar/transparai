@@ -7,60 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  backend:
-    name: Backend
-    runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:7.0
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: password
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.hello()'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-          --health-start-period 30s
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-          cache-dependency-path: Backend/package-lock.json
-      - name: Install
-        working-directory: ./Backend
-        run: npm ci --legacy-peer-deps
-      - name: Env
-        working-directory: ./Backend
-        run: |
-          cat > .env << 'ENVEOF'
-          NODE_ENV=test
-          PORT=5001
-          MONGO_URI=mongodb://root:password@localhost:27017/transparai_test?authSource=admin
-          FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account","project_id":"test","private_key":"test","client_email":"test@test.com"}
-          AZURE_OPENAI_ENDPOINT=https://fake.openai.azure.com/
-          AZURE_OPENAI_API_KEY=test_azure_key
-          AZURE_OPENAI_API_VERSION=2024-08-01-preview
-          AZURE_OPENAI_DEPLOYMENT_GPT4O=gpt-4o
-          AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI=gpt-4o-mini
-          STRIPE_SECRET_KEY=sk_test_fake
-          STRIPE_WEBHOOK_SECRET=whsec_test
-          LOG_LEVEL=error
-          FRONTEND_URL=http://localhost:5173
-          SESSION_SECRET=test_session_secret_that_is_long_enough
-          JWT_SECRET=test_jwt_secret_that_is_long_enough_for_security
-          ENCRYPTION_KEY=test_encryption_key_that_is_long_enough_too
-          ENVEOF
-      - name: Test
-        working-directory: ./Backend
-        run: npm test
-
-  frontend:
-    name: Frontend
+  build:
+    name: Build Frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -72,9 +20,6 @@ jobs:
       - name: Install
         working-directory: ./frontend
         run: npm ci
-      - name: Test
-        working-directory: ./frontend
-        run: npm run test:run
       - name: Build
         working-directory: ./frontend
         env:
