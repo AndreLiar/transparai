@@ -1,6 +1,19 @@
 /* src/screens/AuthenticationsPages/auth.css*/
 /* src/screens/AuthenticationsPages/auth.css */
 
+.auth-back-link {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.auth-back-link:hover {
+  color: #4f46e5;
+}
+
 .auth-wrapper {
     display: flex;
     justify-content: center;

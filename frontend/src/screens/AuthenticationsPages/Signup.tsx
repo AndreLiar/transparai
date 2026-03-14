@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '@/configFirebase/Firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import logo from '@/assets/logo.png';
 
 import SignupForm from '@/components/AuthComponents/Signup/SignupForm';
@@ -113,6 +113,7 @@ const Signup: React.FC = () => {
         )}
         
         <div className="auth-logo-section">
+          <Link to="/" className="auth-back-link">&larr; Retour à l'accueil</Link>
           <img src={logo} alt="TransparAI Logo" />
           <h2>{invitationDetails ? 'Créer votre compte' : 'Créer un compte'}</h2>
           <p>L'IA qui éclaire vos conditions d'abonnement.</p>

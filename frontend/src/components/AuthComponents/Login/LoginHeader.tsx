@@ -1,18 +1,20 @@
-//src/components/AuthComponents/Login/LoginHeader.tsx
-// src/components/AuthComponents/Login/LoginHeader.tsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 import logo from '@/assets/logo.png';
 import './LoginHeader.css';
 
 const LoginHeader: React.FC = () => (
   <div className="login-header">
+    <Link to="/" className="auth-back-link">
+      &larr; Retour à l'accueil
+    </Link>
     <img
       src={logo}
       alt="TransparAI logo"
       className="login-logo"
     />
     <h2 className="login-title">Connexion</h2>
-    <p className="login-subtitle">L’IA qui éclaire vos conditions d’abonnement.</p>
+    <p className="login-subtitle">L'IA qui éclaire vos conditions d'abonnement.</p>
   </div>
 );
 
