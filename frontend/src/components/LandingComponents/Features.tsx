@@ -95,7 +95,7 @@ const Features: React.FC = () => {
               visibility: 'visible',
               opacity: 1
             }}>
-              Intelligence artificielle Gemini 2.0 Flash pour une analyse exhaustive et des résumés clairs en quelques secondes.
+              Azure OpenAI GPT-4o pour une analyse exhaustive et des résumés clairs en quelques secondes.
             </p>
             <div style={{
               position: 'absolute',
