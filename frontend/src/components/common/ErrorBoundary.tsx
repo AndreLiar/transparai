@@ -3,7 +3,7 @@
 // React error boundary — catches unhandled render errors and reports them
 // to Application Insights instead of crashing the entire app.
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
 import { trackException } from '@/config/appInsights';
 
 interface Props {
