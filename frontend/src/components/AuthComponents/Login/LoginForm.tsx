@@ -7,7 +7,7 @@ import {
   setPersistence,
   browserSessionPersistence,
 } from 'firebase/auth';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation, Link, useSearchParams } from 'react-router-dom';
 import { validatePassword } from '@/utils/validatePassword';
 import LoginErrorModal from './LoginErrorModal';
 import './LoginForm.css';
@@ -21,6 +21,7 @@ const LoginForm: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   
   // Check for invitation token
@@ -46,7 +47,8 @@ const LoginForm: React.FC = () => {
       if (invitationToken) {
         navigate(`/accept-invitation?token=${invitationToken}`);
       } else {
-        navigate('/dashboard');
+        const from = (location.state as { from?: string })?.from;
+        navigate(from ?? '/dashboard');
       }
     } catch (err: any) {
       setErrorMsg('Email ou mot de passe incorrect.');
