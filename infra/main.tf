@@ -167,6 +167,7 @@ resource "azurerm_application_insights" "main" {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   application_type    = "Node.JS"
+  workspace_id        = "/subscriptions/fd0b9d4a-6ef0-4ef7-8078-c4ebedb30c4d/resourceGroups/ai_transparai-ai-production_bc1f99b9-9ef9-4ff6-87a8-1fb419018072_managed/providers/Microsoft.OperationalInsights/workspaces/managed-transparai-ai-production-ws"
 
   tags = azurerm_resource_group.main.tags
 }
