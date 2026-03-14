@@ -11,15 +11,12 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
-    pool: 'forks',
+    pool: 'vmThreads',
     poolOptions: {
-      forks: {
-        singleFork: true,
-        isolate: true,
-        execArgv: ['--max-old-space-size=4096'],
+      vmThreads: {
+        execArgv: ['--max-old-space-size=2048'],
       },
     },
-    logHeapUsage: true,
     sequence: {
       concurrent: false,
       shuffle: false,
