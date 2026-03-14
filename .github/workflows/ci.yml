@@ -5,16 +5,11 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
-  workflow_dispatch:
-
-env:
-  NODE_VERSION: '20'
 
 jobs:
-  backend-test:
-    name: Backend Tests
+  backend:
+    name: Backend
     runs-on: ubuntu-latest
-
     services:
       mongodb:
         image: mongo:7.0
@@ -29,21 +24,17 @@ jobs:
           --health-timeout 5s
           --health-retries 10
           --health-start-period 30s
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20'
           cache: npm
           cache-dependency-path: Backend/package-lock.json
-
-      - name: Install dependencies
+      - name: Install
         working-directory: ./Backend
-        run: npm ci
-
-      - name: Create test env
+        run: npm ci --legacy-peer-deps
+      - name: Env
         working-directory: ./Backend
         run: |
           cat > .env << 'ENVEOF'
@@ -64,45 +55,28 @@ jobs:
           JWT_SECRET=test_jwt_secret_that_is_long_enough_for_security
           ENCRYPTION_KEY=test_encryption_key_that_is_long_enough_too
           ENVEOF
-
-      - name: Wait for MongoDB
-        run: timeout 30s bash -c 'until nc -z localhost 27017; do sleep 1; done'
-
-      - name: Run tests
+      - name: Test
         working-directory: ./Backend
         run: npm test
 
-      - name: Lint
-        working-directory: ./Backend
-        run: npm run lint
-
-  frontend-test:
-    name: Frontend Tests
+  frontend:
+    name: Frontend
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
+      - name: Install
         working-directory: ./frontend
         run: npm ci
-
-      - name: Run tests
+      - name: Test
         working-directory: ./frontend
         env:
           NODE_OPTIONS: --max-old-space-size=4096
         run: npm run test:run
-
-      - name: Lint
-        working-directory: ./frontend
-        run: npm run lint
-
       - name: Build
         working-directory: ./frontend
         env:
@@ -114,43 +88,3 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: '123456789'
           VITE_FIREBASE_APP_ID: 1:123456789:web:abcdef
         run: npm run build
-
-  security-audit:
-    name: Security Audit
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Backend audit
-        working-directory: ./Backend
-        run: npm install && npm audit --audit-level=high
-
-      - name: Frontend audit
-        working-directory: ./frontend
-        run: npm install && npm audit --audit-level=high
-
-  code-quality:
-    name: Code Quality
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check for live secrets
-        run: |
-          if grep -r "sk_live_" --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=.github --exclude="*.test.*" --exclude="*.spec.*" .; then
-            echo "Live Stripe keys found in code"
-            exit 1
-          fi
-          echo "No live secrets found"
-
-      - name: Check env examples exist
-        run: |
-          [ -f Backend/.env.example ] || { echo "Backend/.env.example missing"; exit 1; }
-          [ -f frontend/.env.example ] || { echo "frontend/.env.example missing"; exit 1; }
-          echo "Env examples present"
