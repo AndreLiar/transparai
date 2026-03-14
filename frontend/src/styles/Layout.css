@@ -1,58 +1,54 @@
-/* Layout.css — global layout styling */
+/* Layout.css — editorial dashboard design system */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
 :root {
-  --primary: #4f46e5;
-  --accent: #f97316;
-  --danger: #ef4444;
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-300: #d1d5db;
-  --gray-700: #374151;
-  --text-dark: #1f2937;
-  --radius: 10px;
-  --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  --navy:      #0C1A2E;
+  --navy-80:   rgba(12, 26, 46, 0.8);
+  --navy-10:   rgba(12, 26, 46, 0.06);
+  --cream:     #FAF8F4;
+  --red:       #C8102E;
+  --red-10:    rgba(200, 16, 46, 0.08);
+  --border:    #e4e0d9;
+  --muted:     #6b7282;
+  --text:      #0C1A2E;
+  --bg:        #F5F3EF;
+  --white:     #ffffff;
+  --success:   #16a34a;
+  --warning:   #d97706;
+  --shadow-sm: 0 1px 3px rgba(12,26,46,0.07);
+  --shadow-md: 0 4px 16px rgba(12,26,46,0.08);
+  --radius:    4px;
 }
+
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--gray-50);
-  color: var(--text-dark);
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
   margin: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Layout wrapper */
+/* ── Layout shell ─────────────────────────────────────────────────────── */
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f9fafb;
 }
 
-/* Content area */
 .dashboard-main {
   flex: 1;
-  padding: 2rem 3rem;
-  background-color: var(--gray-50);
+  padding: 48px 56px;
+  background: var(--bg);
   overflow-y: auto;
   height: 100vh;
-  box-sizing: border-box;
 }
 
-/* Mobile layout */
 @media (max-width: 768px) {
-  .dashboard-layout {
-    flex-direction: column;
-  }
-
-  .dashboard-main {
-    padding: 1rem;
-    border-radius: 0;
-  }
+  .dashboard-layout { flex-direction: column; }
+  .dashboard-main   { padding: 20px 16px; height: auto; }
 }
 
-/* Utility classes */
-.mb-4 {
-  margin-bottom: 1.5rem;
-}
-
-.mt-4 {
-  margin-top: 1.5rem;
-}
+/* ── Utility ──────────────────────────────────────────────────────────── */
+.mb-4 { margin-bottom: 1.5rem; }
+.mt-4 { margin-top: 1.5rem; }
