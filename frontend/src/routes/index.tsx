@@ -34,7 +34,7 @@ const AppRoutes = () => {
       {/* Protected — core product */}
       <Route path="/onboarding" element={<PrivateRoute><Onboarding /></PrivateRoute>} />
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-      <Route path="/analyze" element={<PrivateRoute><AnalyzeEnhanced /></PrivateRoute>} />
+      <Route path="/analyze" element={<AnalyzeEnhanced />} />
       <Route path="/account" element={<PrivateRoute><Account /></PrivateRoute>} />
       <Route path="/ai-settings" element={<PrivateRoute><AISettings /></PrivateRoute>} />
       <Route path="/privacy-settings" element={<PrivateRoute><PrivacySettings /></PrivateRoute>} />

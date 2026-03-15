@@ -125,6 +125,73 @@ export const analyzeCGAStream = (
   });
 };
 
+/**
+ * Guest (unauthenticated) analysis stream — calls /api/analyze/guest, no token needed.
+ * Limited to 3 per IP per day on the backend.
+ */
+export const analyzeGuestStream = (
+  text: string,
+  onProgress: (progress: AnalysisProgress) => void,
+): Promise<AnalysisResult> => {
+  return new Promise(async (resolve, reject) => {
+    let response: Response;
+    try {
+      response = await fetch(`${API_BASE()}/api/analyze/guest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+    } catch (err: any) {
+      return reject({ type: 'error', message: err.message || 'Erreur réseau', status: 0 });
+    }
+
+    if (!response.ok || !response.body) {
+      let errBody: any = {};
+      try { errBody = await response.clone().json(); } catch { /* ignore */ }
+      return reject({
+        type: 'error',
+        message: errBody?.error?.message || 'Analyse échouée',
+        status: response.status,
+        guestLimitReached: response.status === 429,
+      });
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    const processChunk = (chunk: string) => {
+      const lines = chunk.split('\n');
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (!raw) continue;
+        let event: any;
+        try { event = JSON.parse(raw); } catch { continue; }
+        if (event.type === 'progress') onProgress(event as AnalysisProgress);
+        else if (event.type === 'result') resolve(event.data as AnalysisResult);
+        else if (event.type === 'error') reject(event as AnalysisError);
+      }
+    };
+
+    const pump = async () => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
+        for (const part of parts) processChunk(part);
+      }
+      if (buffer) processChunk(buffer);
+    };
+
+    pump().catch((err) =>
+      reject({ type: 'error', message: err.message || 'Stream error', status: 0 }),
+    );
+  });
+};
+
 // Legacy non-streaming endpoint — kept for fallback
 export const analyzeCGA = async (token: string, text: string, source: 'upload' | 'ocr') => {
   const response = await fetch(`${API_BASE()}/api/analyze`, {

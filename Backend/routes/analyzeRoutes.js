@@ -5,6 +5,7 @@ const router = express.Router();
 const authenticate = require('../middleware/authMiddleware');
 const { analyzeText } = require('../controllers/analyzeController');
 const { analyzeStream } = require('../controllers/analyzeStreamController');
+const { guestAnalyzeStream } = require('../controllers/guestAnalyzeController');
 const { routeValidations } = require('../middleware/validation');
 const {
   sanitizeInput,
@@ -12,6 +13,21 @@ const {
   requestSizeLimiter,
   securityLogger,
 } = require('../middleware/security');
+const { createCustomLimiter } = require('../middleware/rateLimiter');
+
+// 3 guest analyses per IP per day — strict to keep costs bounded
+const guestLimiter = createCustomLimiter({
+  prefix: 'guest-analyze',
+  windowMs: 24 * 60 * 60 * 1000,
+  max: 3,
+  message: {
+    success: false,
+    error: {
+      message: 'Vous avez atteint la limite de 3 analyses gratuites par jour. Créez un compte pour continuer.',
+      code: 'GUEST_LIMIT_REACHED',
+    },
+  },
+});
 
 /**
  * @swagger
@@ -143,6 +159,17 @@ router.post(
   authenticate,
   routeValidations.analyzeContract,
   analyzeStream,
+);
+
+// Guest SSE streaming endpoint — no auth required, IP rate-limited
+router.post(
+  '/guest',
+  securityLogger,
+  requestSizeLimiter,
+  sanitizeInput,
+  noSQLInjectionProtection,
+  guestLimiter,
+  guestAnalyzeStream,
 );
 
 module.exports = router;
