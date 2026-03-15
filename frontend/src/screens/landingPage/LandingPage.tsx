@@ -166,7 +166,7 @@ const LandingPage: React.FC = () => (
     </section>
 
     {/* ══ FEATURES ══════════════════════════════════════════════════════════ */}
-    <section className="lp-features">
+    <section id="features" className="lp-features">
       <div className="lp-container">
         <motion.div className="lp-section-header" {...reveal}>
           <span className="lp-label">Ce que vous obtenez</span>

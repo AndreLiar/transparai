@@ -68,13 +68,13 @@ const Header: React.FC = () => {
               >
                 Démo
               </Link>
-              <Link 
-                to="/contact" 
-                className="nav-link" 
+              <a
+                href="mailto:contact@transparai.com"
+                className="nav-link"
                 onClick={closeMenu}
               >
                 Contact
-              </Link>
+              </a>
             </div>
 
             <div className="nav-buttons">

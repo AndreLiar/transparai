@@ -24,8 +24,8 @@ const Footer: React.FC = () => (
 
         <div className="lp-footer-col">
           <h5 className="lp-footer-col-title">Support</h5>
-          <Link to="/contact" className="lp-footer-link">Contact</Link>
-          <Link to="/faq" className="lp-footer-link">FAQ</Link>
+          <a href="mailto:contact@transparai.com" className="lp-footer-link">Contact</a>
+          <a href="mailto:contact@transparai.com?subject=Question%20TransparAI" className="lp-footer-link">FAQ / Aide</a>
         </div>
 
         <div className="lp-footer-col">
