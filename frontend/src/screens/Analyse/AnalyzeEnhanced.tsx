@@ -244,7 +244,7 @@ const AnalyzeEnhanced: React.FC = () => {
       setInputText(sample.content);
       setSourceType('text');
       setShowSamples(false);
-      document.querySelector('.analyze-form')?.scrollIntoView({ behavior: 'smooth' });
+      document.querySelector('.g-form-section')?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -259,223 +259,308 @@ const AnalyzeEnhanced: React.FC = () => {
   // ── Guest layout ──────────────────────────────────────────────────────────
   if (isGuest) {
     return (
-      <div className="guest-analyze-shell">
-        {/* Top bar */}
-        <header className="guest-topbar">
-          <Link to="/" className="guest-topbar-logo">TransparAI</Link>
-          <div className="guest-topbar-actions">
-            <Link to="/login" className="guest-btn-outline">Connexion</Link>
-            <Link to="/signup" className="guest-btn-primary">Créer un compte</Link>
+      <div className="g-shell">
+        {/* Loading progress bar — CSS animated, shown only when loading */}
+        {loading && <div className="g-loading-bar" aria-hidden="true"><div className="g-loading-bar-fill" /></div>}
+
+        {/* Masthead */}
+        <header className="g-masthead">
+          <div className="g-masthead-inner">
+            <div className="g-masthead-left">
+              <div className="g-masthead-rule-top" />
+              <Link to="/" className="g-logo">TransparAI</Link>
+              <div className="g-masthead-rule-bottom" />
+            </div>
+            <nav className="g-masthead-nav">
+              <Link to="/login" className="g-nav-link">Connexion</Link>
+              <span className="g-nav-sep" aria-hidden="true">|</span>
+              <Link to="/signup" className="g-nav-cta">Compte gratuit</Link>
+            </nav>
           </div>
         </header>
 
-        <main className="guest-analyze-main">
-          <div className="guest-analyze-inner">
+        <main className="g-main">
 
-            {/* Header */}
-            <div className="guest-analyze-header">
-              <span className="guest-eyebrow">Démo gratuite</span>
-              <h1 className="guest-title">Analysez votre contrat</h1>
-              <p className="guest-subtitle">
-                1 analyse gratuite, sans compte, sans carte bancaire.<br />
-                Résultat en moins de 30 secondes.
-              </p>
-            </div>
-
-            {/* Guest limit reached */}
-            {guestLimitReached && (
-              <div className="guest-limit-wall">
-                <p className="guest-limit-label">Limite atteinte</p>
-                <h2 className="guest-limit-title">Vous avez utilisé votre analyse gratuite</h2>
-                <p className="guest-limit-body">
-                  Créez un compte gratuit pour obtenir 5 analyses par mois — sans carte bancaire.
+          {/* ── HERO — split layout ────────────────────────────────────── */}
+          {!result && !guestLimitReached && (
+            <section className="g-hero">
+              <div className="g-hero-left">
+                <span className="g-eyebrow">Démo gratuite &mdash; sans inscription</span>
+                <div className="g-hero-rule" />
+                <h1 className="g-hero-h1">
+                  Analysez votre<br />
+                  <em>contrat</em> en<br />
+                  30 secondes.
+                </h1>
+                <p className="g-hero-sub">
+                  Collez n'importe quel contrat, CGU ou bail. Notre IA le résume, le note
+                  et identifie les clauses à risque — gratuitement, sans compte.
                 </p>
-                <div className="guest-limit-actions">
-                  <Link to="/signup" className="guest-btn-primary">Créer un compte gratuit</Link>
-                  <Link to="/login" className="guest-btn-outline">Se connecter</Link>
+                <div className="g-trust-row">
+                  <span className="g-trust-item">Données hébergées en UE</span>
+                  <span className="g-trust-dot" />
+                  <span className="g-trust-item">Conforme RGPD</span>
+                  <span className="g-trust-dot" />
+                  <span className="g-trust-item">Avis IA, pas juridique</span>
                 </div>
               </div>
-            )}
 
-            {/* Result */}
-            {result && !guestLimitReached && (
-              <div className="analyze-result">
-                <div className="result-header">
-                  <h2>Analyse terminée</h2>
-                  <p>Voici ce que notre IA a découvert dans votre contrat :</p>
+              <div className="g-hero-right">
+                {/* Static demo card */}
+                <div className="g-demo-card">
+                  <div className="g-demo-card-head">
+                    <span className="g-demo-card-label">TransparAI — Exemple de résultat</span>
+                    <span className="g-demo-card-model">Azure OpenAI GPT-4o</span>
+                  </div>
+                  <div className="g-demo-card-rule" />
+                  <div className="g-demo-score-row">
+                    <div className="g-demo-grade-block">
+                      <span className="g-demo-grade">B+</span>
+                      <span className="g-demo-grade-label">Équilibré</span>
+                    </div>
+                    <p className="g-demo-summary-text">
+                      Contrat globalement équilibré. Attention à la clause de résiliation
+                      automatique (art.&nbsp;12) et à la cession de données (art.&nbsp;8).
+                    </p>
+                  </div>
+                  <div className="g-demo-card-rule" />
+                  <ul className="g-demo-clauses">
+                    <li className="g-demo-clause g-demo-clause--risk">
+                      <span className="g-demo-clause-dot" />
+                      Résiliation unilatérale sans préavis
+                    </li>
+                    <li className="g-demo-clause g-demo-clause--risk">
+                      <span className="g-demo-clause-dot" />
+                      Cession de données à des tiers non nommés
+                    </li>
+                    <li className="g-demo-clause g-demo-clause--ok">
+                      <span className="g-demo-clause-dot" />
+                      Droit de rétractation conforme (14 jours)
+                    </li>
+                  </ul>
+                  <div className="g-demo-card-foot">
+                    <span>analysé en 24s</span>
+                    <span>Conforme EU AI Act Art. 13</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* ── GUEST LIMIT WALL ──────────────────────────────────────── */}
+          {guestLimitReached && (
+            <div className="g-limit-wall">
+              <div className="g-limit-wall-inner">
+                <span className="g-eyebrow">Limite atteinte</span>
+                <div className="g-hero-rule" />
+                <h2 className="g-limit-title">Vous avez utilisé votre analyse gratuite du jour</h2>
+                <p className="g-limit-body">
+                  Créez un compte gratuit pour obtenir 5 analyses par mois, l'upload PDF et l'OCR — sans carte bancaire.
+                </p>
+                <div className="g-limit-actions">
+                  <Link to="/signup" className="g-submit-btn">Créer un compte gratuit</Link>
+                  <Link to="/login" className="g-outline-btn">Se connecter</Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── RESULTS ───────────────────────────────────────────────── */}
+          {result && !guestLimitReached && (
+            <div className="g-result-section">
+              <div className="g-result-masthead">
+                <span className="g-eyebrow">Analyse terminée</span>
+                <div className="g-hero-rule" />
+                <h2 className="g-result-title">Voici ce que notre IA a découvert</h2>
+              </div>
+
+              <AIDisclaimer
+                modelUsed={result.aiModelUsed}
+                confidenceLevel={result.confidenceLevel}
+                requiresHumanReview={result.requiresHumanReview}
+                promptVersion={result.promptVersion}
+                jurisdiction={result.jurisdiction}
+              />
+
+              <div className="g-result-grid">
+                <div className="g-result-card">
+                  <p className="g-result-card-label">Score de transparence</p>
+                  <div className="g-score-display">
+                    <span className={`g-score-badge g-score-${result.score.toLowerCase()}`}>{result.score}</span>
+                  </div>
+                  <p className="g-score-explanation">
+                    {result.score === 'Excellent' && 'Ce contrat est très favorable et transparent.'}
+                    {result.score === 'Bon' && "Ce contrat est globalement équilibré avec quelques points d'attention."}
+                    {result.score === 'Moyen' && 'Ce contrat présente quelques clauses à surveiller.'}
+                    {result.score === 'Médiocre' && 'Ce contrat contient plusieurs clauses défavorables.'}
+                    {result.score === 'Problématique' && 'Attention ! Ce contrat présente des risques importants.'}
+                  </p>
                 </div>
 
-                <AIDisclaimer
-                  modelUsed={result.aiModelUsed}
-                  confidenceLevel={result.confidenceLevel}
-                  requiresHumanReview={result.requiresHumanReview}
-                  promptVersion={result.promptVersion}
-                  jurisdiction={result.jurisdiction}
+                <div className="g-result-card g-result-card--wide">
+                  <p className="g-result-card-label">Résumé en français simple</p>
+                  <div className="g-result-body">{result.summary}</div>
+                </div>
+
+                <div className="g-result-card g-result-card--wide">
+                  <p className="g-result-card-label">Points d'attention</p>
+                  <ul className="g-clauses-list">
+                    {result.clauses.map((clause, i) => (
+                      <li key={i} className="g-clause-item">
+                        <span className="g-clause-marker" />
+                        {clause}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Signup wall — membership offer */}
+              <div className="g-membership-wall">
+                <div className="g-membership-inner">
+                  <span className="g-membership-eyebrow">Votre analyse est prête</span>
+                  <div className="g-membership-rule" />
+                  <h2 className="g-membership-title">
+                    Sauvegardez ce résultat.<br />
+                    <em>Analysez d'autres contrats.</em>
+                  </h2>
+                  <p className="g-membership-body">
+                    Créez un compte gratuit pour conserver vos analyses, uploader des PDF
+                    et obtenir 5 analyses par mois — sans carte bancaire.
+                  </p>
+                  <div className="g-perks-grid">
+                    <div className="g-perk-cell">
+                      <span className="g-perk-num">5</span>
+                      <span className="g-perk-label">analyses / mois gratuites</span>
+                    </div>
+                    <div className="g-perk-cell">
+                      <span className="g-perk-num">PDF</span>
+                      <span className="g-perk-label">upload &amp; OCR inclus</span>
+                    </div>
+                    <div className="g-perk-cell">
+                      <span className="g-perk-num">0&nbsp;€</span>
+                      <span className="g-perk-label">sans carte bancaire</span>
+                    </div>
+                  </div>
+                  <div className="g-membership-actions">
+                    <Link to="/signup" className="g-membership-cta">Créer un compte gratuit</Link>
+                    <Link to="/login" className="g-membership-secondary">Déjà un compte ? Se connecter</Link>
+                  </div>
+                </div>
+              </div>
+
+              <div className="g-result-reset">
+                <button className="g-outline-btn" onClick={resetForm}>Nouvelle analyse</button>
+              </div>
+            </div>
+          )}
+
+          {/* ── FORM ──────────────────────────────────────────────────── */}
+          {!result && !guestLimitReached && (
+            <section className="g-form-section">
+
+              {/* Sample contracts panel */}
+              {showSamples && (
+                <div className="g-samples-panel">
+                  <div className="g-samples-head">
+                    <span className="g-samples-title">Contrats d'exemple</span>
+                    <button className="g-samples-close" onClick={() => setShowSamples(false)} aria-label="Fermer">&#215;</button>
+                  </div>
+                  <div className="g-samples-grid">
+                    {Object.entries(sampleContracts).map(([key, contract]) => (
+                      <button key={key} className="g-sample-card" onClick={() => loadSampleContract(key)}>
+                        <h4 className="g-sample-title">{contract.title}</h4>
+                        <p className="g-sample-excerpt">{contract.content.substring(0, 120)}…</p>
+                        <span className="g-sample-cta">Analyser cet exemple &#8594;</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Document editor */}
+              <div className="g-editor">
+                <div className="g-editor-header">
+                  <div className="g-editor-header-left">
+                    <span className="g-editor-label">Document à analyser</span>
+                    <span className="g-editor-hint">Texte, CGU, bail, contrat de travail…</span>
+                  </div>
+                  {!showSamples && (
+                    <button className="g-samples-toggle" onClick={() => setShowSamples(true)}>
+                      Essayer un exemple
+                    </button>
+                  )}
+                </div>
+
+                <div className="g-editor-rule" />
+
+                <textarea
+                  className="g-editor-textarea"
+                  placeholder="Collez ici vos conditions générales, contrat de travail, bail, ou tout autre document juridique à analyser…"
+                  rows={14}
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
                 />
 
-                <div className="result-grid">
-                  <div className="result-card score-card">
-                    <h3>Score de transparence</h3>
-                    <div className="score-display">
-                      <span className={`score-badge score-${result.score.toLowerCase()}`}>{result.score}</span>
-                    </div>
-                    <p className="score-explanation">
-                      {result.score === 'Excellent' && 'Ce contrat est très favorable et transparent.'}
-                      {result.score === 'Bon' && "Ce contrat est globalement équilibré avec quelques points d'attention."}
-                      {result.score === 'Moyen' && 'Ce contrat présente quelques clauses à surveiller.'}
-                      {result.score === 'Médiocre' && 'Ce contrat contient plusieurs clauses défavorables.'}
-                      {result.score === 'Problématique' && 'Attention ! Ce contrat présente des risques importants.'}
-                    </p>
-                  </div>
-                  <div className="result-card summary-card">
-                    <h3>Résumé en français simple</h3>
-                    <div className="summary-content">{result.summary}</div>
-                  </div>
-                  <div className="result-card clauses-card">
-                    <h3>Points d'attention</h3>
-                    <ul className="clauses-list">
-                      {result.clauses.map((clause, i) => (
-                        <li key={i}><span className="clause-bullet">•</span>{clause}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Signup wall after results */}
-                <div className="guest-signup-wall">
-                  <div className="guest-signup-wall-inner">
-                    <span className="guest-signup-eyebrow">Votre analyse est prête</span>
-                    <h2 className="guest-signup-title">Sauvegardez ce résultat et analysez d'autres contrats</h2>
-                    <p className="guest-signup-body">
-                      Créez un compte gratuit pour sauvegarder vos analyses, uploader des PDF et obtenir 5 analyses par mois — sans carte bancaire.
-                    </p>
-                    <div className="guest-signup-perks">
-                      <div className="guest-perk">
-                        <span className="guest-perk-num">5</span>
-                        <span className="guest-perk-label">analyses / mois gratuites</span>
-                      </div>
-                      <div className="guest-perk">
-                        <span className="guest-perk-num">PDF</span>
-                        <span className="guest-perk-label">upload et OCR inclus</span>
-                      </div>
-                      <div className="guest-perk">
-                        <span className="guest-perk-num">0€</span>
-                        <span className="guest-perk-label">sans carte bancaire</span>
-                      </div>
-                    </div>
-                    <div className="guest-signup-actions">
-                      <Link to="/signup" className="guest-btn-primary guest-btn-lg">Créer un compte gratuit</Link>
-                      <Link to="/login" className="guest-btn-outline">Déjà un compte ? Se connecter</Link>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="result-actions">
-                  <button className="analyze-button secondary" onClick={resetForm}>
-                    Nouvelle analyse
-                  </button>
+                <div className="g-editor-footer">
+                  <span className="g-char-count">
+                    {inputText.length > 0 ? (
+                      <>
+                        {inputText.length.toLocaleString('fr-FR')} caractères
+                        {inputText.length > 10000 && (
+                          <span className="g-char-warn"> — limité à 10 000 en mode démo</span>
+                        )}
+                      </>
+                    ) : (
+                      'Limite démo : 10 000 caractères'
+                    )}
+                  </span>
+                  {/* Footnote-style PDF notice */}
+                  <span className="g-pdf-footnote">
+                    * Upload PDF disponible avec un <Link to="/signup">compte gratuit</Link>
+                  </span>
                 </div>
               </div>
-            )}
 
-            {/* Form — hidden once results are shown */}
-            {!result && !guestLimitReached && (
-              <>
-                {/* Sample contracts */}
-                {showSamples && (
-                  <div className="samples-section">
-                    <div className="samples-header">
-                      <h3>Choisissez un contrat d'exemple</h3>
-                      <button className="close-samples" onClick={() => setShowSamples(false)}>×</button>
-                    </div>
-                    <div className="samples-grid">
-                      {Object.entries(sampleContracts).map(([key, contract]) => (
-                        <button key={key} className="sample-card" onClick={() => loadSampleContract(key)}>
-                          <h4>{contract.title}</h4>
-                          <p>{contract.content.substring(0, 150)}...</p>
-                          <div className="sample-cta">Analyser cet exemple →</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="analyze-form">
-                  <div className="form-header">
-                    <h3>Votre contrat à analyser</h3>
-                    {!showSamples && (
-                      <button className="samples-toggle" onClick={() => setShowSamples(true)}>
-                        Essayer avec un exemple
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="text-input-section">
-                    <label>Copiez-collez votre contrat ici :</label>
-                    <textarea
-                      placeholder="Collez ici vos conditions générales, contrat de travail, bail, ou tout autre document juridique..."
-                      rows={12}
-                      value={inputText}
-                      onChange={(e) => setInputText(e.target.value)}
-                      className="contract-textarea"
+              {/* Progress bar (inline, shown while loading) */}
+              {loading && (
+                <div className="g-progress-wrap">
+                  <div className="g-progress-track">
+                    <div
+                      className="g-progress-fill"
+                      style={{ width: progress ? `${progress.percent}%` : '15%' }}
                     />
-                    {inputText.length > 0 && (
-                      <div className="text-stats">
-                        {inputText.length} caractères
-                        {inputText.length > 10000 && (
-                          <span className="text-stats-warn"> — tronqué à 10 000 car. en mode démo</span>
-                        )}
-                      </div>
-                    )}
                   </div>
-
-                  {/* Guest notice: PDF upload requires account */}
-                  <div className="guest-feature-notice">
-                    Upload PDF et OCR disponibles avec un compte gratuit.{' '}
-                    <Link to="/signup">Créer un compte →</Link>
-                  </div>
-
-                  <div className="submit-section">
-                    <button
-                      onClick={handleSubmit}
-                      disabled={loading || !inputText.trim()}
-                      className="analyze-button"
-                    >
-                      {loading ? 'Analyse en cours…' : 'Analyser avec l\'IA'}
-                    </button>
-
-                    {loading && (
-                      <div className="analysis-progress">
-                        {ocrStatus && <p className="progress-step-label">{ocrStatus}</p>}
-                        {progress && (
-                          <>
-                            <div className="progress-bar-track">
-                              <div className="progress-bar-fill" style={{ width: `${progress.percent}%` }} />
-                            </div>
-                            <p className="progress-step-label">{progress.message}</p>
-                          </>
-                        )}
-                      </div>
-                    )}
-
-                    {!inputText.trim() && (
-                      <p className="form-hint">Collez votre contrat dans la zone de texte ci-dessus</p>
-                    )}
-                  </div>
+                  <p className="g-progress-label">
+                    {ocrStatus || (progress ? progress.message : 'Analyse en cours…')}
+                  </p>
                 </div>
+              )}
 
-                {error && (
-                  <div className="error-message">
-                    <div className="error-content">
-                      <h4>Erreur lors de l'analyse</h4>
-                      <p>{error}</p>
-                      <button className="error-retry" onClick={() => setError('')}>Fermer</button>
-                    </div>
-                  </div>
+              {/* Submit */}
+              <div className="g-submit-row">
+                <button
+                  className="g-submit-btn"
+                  onClick={handleSubmit}
+                  disabled={loading || !inputText.trim()}
+                >
+                  {loading ? 'Analyse en cours…' : 'Analyser avec l\'IA'}
+                </button>
+                {!inputText.trim() && !loading && (
+                  <span className="g-submit-hint">Collez d'abord votre contrat ci-dessus</span>
                 )}
-              </>
-            )}
-          </div>
+              </div>
+
+              {/* Error */}
+              {error && (
+                <div className="g-error-bar">
+                  <span className="g-error-label">Erreur</span>
+                  <span className="g-error-msg">{error}</span>
+                  <button className="g-error-close" onClick={() => setError('')}>&#215;</button>
+                </div>
+              )}
+            </section>
+          )}
         </main>
       </div>
     );
