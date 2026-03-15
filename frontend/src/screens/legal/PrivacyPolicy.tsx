@@ -2,208 +2,224 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Legal.css';
 
-const PrivacyPolicy: React.FC = () => {
-  return (
-    <div className="legal-container">
-      <header className="legal-header">
-        <div className="container">
-          <Link to="/" className="back-link">← Retour à l'accueil</Link>
-          <h1>Politique de Confidentialité</h1>
-          <p className="last-updated">Dernière mise à jour : 13 mars 2026</p>
+const PrivacyPolicy: React.FC = () => (
+  <div className="legal-page">
+
+    {/* ── Masthead ─────────────────────────────────────────────────────── */}
+    <div className="legal-masthead">
+      <div className="legal-masthead-inner">
+        <Link to="/" className="legal-back">
+          <i className="legal-back-arrow">&#8592;</i> Retour
+        </Link>
+        <div className="legal-masthead-rule" />
+        <p className="legal-doc-type">Document légal</p>
+        <h1 className="legal-masthead-h1">Politique de<br />Confidentialité</h1>
+        <div className="legal-masthead-meta">
+          <span className="legal-meta-date">Dernière mise à jour : 13 mars 2026</span>
+          <span className="legal-meta-sep" />
+          <span className="legal-meta-tag">RGPD conforme</span>
+          <span className="legal-meta-sep" />
+          <span className="legal-meta-tag">EU AI Act Art. 13</span>
         </div>
-      </header>
-
-      <main className="legal-content">
-        <div className="container">
-          <section>
-            <h2>1. Introduction</h2>
-            <p>
-              TransparAI s'engage à protéger votre vie privée. Cette politique de confidentialité explique 
-              comment nous collectons, utilisons et protégeons vos informations personnelles lorsque vous 
-              utilisez notre service d'analyse de conditions générales d'abonnement par intelligence artificielle.
-            </p>
-          </section>
-
-          <section>
-            <h2>2. Informations que nous collectons</h2>
-            <h3>2.1 Informations d'inscription</h3>
-            <ul>
-              <li>Adresse e-mail</li>
-              <li>Nom d'utilisateur</li>
-              <li>Informations de facturation (pour les abonnements payants)</li>
-            </ul>
-            
-            <h3>2.2 Données d'utilisation</h3>
-            <ul>
-              <li>Documents analysés (stockés temporairement pour le traitement)</li>
-              <li>Historique des analyses (pour les comptes Premium)</li>
-              <li>Statistiques d'utilisation du service</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2>3. Comment nous utilisons vos informations</h2>
-            <ul>
-              <li><strong>Fourniture du service :</strong> Traitement et analyse de vos documents CGA</li>
-              <li><strong>Amélioration du service :</strong> Statistiques d'usage agrégées et anonymisées — vos documents ne sont jamais utilisés pour entraîner des modèles IA</li>
-              <li><strong>Communication :</strong> Envoi de notifications importantes sur votre compte</li>
-              <li><strong>Facturation :</strong> Gestion des abonnements et paiements</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2>4. Protection de vos données</h2>
-            <p>
-              Nous mettons en œuvre des mesures de sécurité appropriées pour protéger vos informations :
-            </p>
-            <ul>
-              <li>Chiffrement des données en transit (HTTPS/TLS)</li>
-              <li>Authentification sécurisée via Firebase Authentication</li>
-              <li>Suppression automatique des documents après analyse</li>
-              <li>Accès limité aux données par notre équipe</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2>5. Partage des données</h2>
-            <p>
-              Nous ne vendons, n'échangeons ni ne louons vos informations personnelles à des tiers. 
-              Nous pouvons partager vos données uniquement dans les cas suivants :
-            </p>
-            <ul>
-              <li>Avec votre consentement explicite</li>
-              <li>Pour respecter nos obligations légales</li>
-              <li>Avec nos fournisseurs de services sous contrat strict et DPA RGPD :
-                <ul>
-                  <li><strong>Firebase (Google)</strong> — authentification</li>
-                  <li><strong>Stripe</strong> — paiements sécurisés</li>
-                  <li><strong>Microsoft Azure OpenAI</strong> — traitement IA des documents (région UE, données non conservées)</li>
-                  <li><strong>Microsoft Azure</strong> — hébergement de l'infrastructure (région UE)</li>
-                </ul>
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2>6. Vos droits</h2>
-            <p>Conformément au RGPD, vous disposez des droits suivants :</p>
-            <ul>
-              <li><strong>Accès :</strong> Consulter les données que nous détenons sur vous</li>
-              <li><strong>Rectification :</strong> Corriger vos informations personnelles</li>
-              <li><strong>Suppression :</strong> Demander la suppression de votre compte</li>
-              <li><strong>Portabilité :</strong> Exporter vos données dans un format lisible</li>
-              <li><strong>Opposition :</strong> Vous opposer au traitement de vos données</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2>7. Gestion des Cookies et Technologies Similaires</h2>
-            
-            <h3>7.1 Qu'est-ce qu'un cookie ?</h3>
-            <p>
-              Les cookies sont de petits fichiers texte stockés sur votre appareil lorsque vous visitez notre site web. 
-              Ils nous permettent de vous reconnaître et d'améliorer votre expérience utilisateur.
-            </p>
-
-            <h3>7.2 Types de cookies utilisés</h3>
-            
-            <h4>Cookies strictement nécessaires (ne peuvent pas être désactivés)</h4>
-            <ul>
-              <li><strong>Cookies d'authentification Firebase :</strong>
-                <ul>
-                  <li>Nom : <code>__session</code>, <code>firebase-heartbeat-*</code></li>
-                  <li>Durée : Session navigateur (supprimés à la fermeture)</li>
-                  <li>Finalité : Maintenir votre connexion sécurisée</li>
-                  <li>Stockage : SessionStorage (pas de persistance locale)</li>
-                </ul>
-              </li>
-              <li><strong>Cookies de sécurité CSRF :</strong>
-                <ul>
-                  <li>Finalité : Protection contre les attaques de falsification de requêtes</li>
-                  <li>Durée : Session</li>
-                </ul>
-              </li>
-            </ul>
-
-            <h4>Cookies de performance et fonctionnalité</h4>
-            <ul>
-              <li><strong>Préférences utilisateur :</strong>
-                <ul>
-                  <li>Langue d'interface (français/anglais)</li>
-                  <li>Thème d'affichage</li>
-                  <li>Paramètres d'affichage du tableau de bord</li>
-                </ul>
-              </li>
-              <li><strong>Données de session :</strong>
-                <ul>
-                  <li>État de navigation dans l'application</li>
-                  <li>Données temporaires des analyses en cours</li>
-                </ul>
-              </li>
-            </ul>
-
-            <h3>7.3 Technologies complémentaires</h3>
-            <ul>
-              <li><strong>Local Storage :</strong> Paramètres d'interface non sensibles</li>
-              <li><strong>Session Storage :</strong> Données temporaires de session</li>
-              <li><strong>IndexedDB :</strong> Cache des résultats d'analyse (supprimé automatiquement)</li>
-            </ul>
-
-            <h3>7.4 Durée de conservation</h3>
-            <ul>
-              <li><strong>Cookies de session :</strong> Supprimés automatiquement à la fermeture du navigateur</li>
-              <li><strong>Cookies persistants :</strong> Maximum 30 jours pour les préférences</li>
-              <li><strong>Cache d'analyse :</strong> Supprimé immédiatement après traitement</li>
-            </ul>
-
-            <h3>7.5 Gestion de vos cookies</h3>
-            <p>Vous pouvez contrôler l'utilisation des cookies :</p>
-            <ul>
-              <li><strong>Dans votre navigateur :</strong> Paramètres → Confidentialité → Cookies</li>
-              <li><strong>Cookies essentiels :</strong> Ne peuvent pas être désactivés (fonctionnement du service)</li>
-              <li><strong>Cookies de préférence :</strong> Peuvent être supprimés (perte des paramètres personnalisés)</li>
-            </ul>
-
-            <h3>7.6 Cookies tiers</h3>
-            <p>Nous utilisons des services tiers qui peuvent déposer leurs propres cookies :</p>
-            <ul>
-              <li><strong>Stripe :</strong> Traitement sécurisé des paiements (cookies de sécurité)</li>
-              <li><strong>Firebase :</strong> Authentification et hébergement (cookies techniques)</li>
-            </ul>
-            <p>
-              Ces services respectent leurs propres politiques de confidentialité et nous n'avons pas 
-              accès aux données personnelles qu'ils collectent.
-            </p>
-
-            <h3>7.7 Mise à jour automatique</h3>
-            <p>
-              Cette section est mise à jour automatiquement en cas de modification de nos pratiques 
-              concernant les cookies. La date de dernière modification est indiquée en haut de cette page.
-            </p>
-          </section>
-
-          <section>
-            <h2>8. Contact</h2>
-            <p>
-              Pour toute question concernant cette politique de confidentialité ou pour exercer vos droits, 
-              contactez-nous à :
-            </p>
-            <p>
-              <strong>Email :</strong> ktaylconsult@gmail.com
-            </p>
-          </section>
-
-          <section>
-            <h2>9. Modifications</h2>
-            <p>
-              Nous nous réservons le droit de modifier cette politique de confidentialité. 
-              Les modifications importantes vous seront notifiées par e-mail.
-            </p>
-          </section>
-        </div>
-      </main>
+      </div>
     </div>
-  );
-};
+
+    {/* ── Body ─────────────────────────────────────────────────────────── */}
+    <div className="legal-body">
+
+      {/* Table of contents */}
+      <nav className="legal-toc" aria-label="Table des matières">
+        <p className="legal-toc-title">Sommaire</p>
+        <ol className="legal-toc-list">
+          <li><a href="#intro">1. Introduction</a></li>
+          <li><a href="#collecte">2. Informations collectées</a></li>
+          <li><a href="#usage">3. Utilisation</a></li>
+          <li><a href="#protection">4. Protection des données</a></li>
+          <li><a href="#partage">5. Partage des données</a></li>
+          <li><a href="#droits">6. Vos droits (RGPD)</a></li>
+          <li><a href="#cookies">7. Cookies</a></li>
+          <li><a href="#contact">8. Contact</a></li>
+          <li><a href="#modifs">9. Modifications</a></li>
+        </ol>
+      </nav>
+
+      {/* 1. Introduction */}
+      <section className="legal-section" id="intro">
+        <span className="legal-section-num">01</span>
+        <h2 className="legal-section-h2">Introduction</h2>
+        <p>
+          TransparAI s'engage à protéger votre vie privée. Cette politique de confidentialité
+          explique comment nous collectons, utilisons et protégeons vos informations personnelles
+          lorsque vous utilisez notre service d'analyse de documents contractuels par intelligence
+          artificielle.
+        </p>
+      </section>
+
+      {/* 2. Informations collectées */}
+      <section className="legal-section" id="collecte">
+        <span className="legal-section-num">02</span>
+        <h2 className="legal-section-h2">Informations que nous collectons</h2>
+
+        <h3 className="legal-section-h3">Données d'inscription</h3>
+        <ul className="legal-list">
+          <li>Adresse e-mail</li>
+          <li>Nom d'utilisateur</li>
+          <li>Informations de facturation (pour les abonnements payants)</li>
+        </ul>
+
+        <h3 className="legal-section-h3">Données d'utilisation</h3>
+        <ul className="legal-list">
+          <li>Documents analysés — stockés temporairement pour le traitement uniquement</li>
+          <li>Historique des analyses (pour les comptes payants)</li>
+          <li>Statistiques d'utilisation agrégées et anonymisées</li>
+        </ul>
+      </section>
+
+      {/* 3. Utilisation */}
+      <section className="legal-section" id="usage">
+        <span className="legal-section-num">03</span>
+        <h2 className="legal-section-h2">Comment nous utilisons vos informations</h2>
+        <ul className="legal-list">
+          <li><strong>Fourniture du service :</strong> traitement et analyse de vos documents</li>
+          <li><strong>Amélioration du service :</strong> statistiques d'usage — vos documents ne servent jamais à entraîner des modèles d'IA</li>
+          <li><strong>Communication :</strong> notifications importantes relatives à votre compte</li>
+          <li><strong>Facturation :</strong> gestion des abonnements et paiements via Stripe</li>
+        </ul>
+      </section>
+
+      {/* 4. Protection */}
+      <section className="legal-section" id="protection">
+        <span className="legal-section-num">04</span>
+        <h2 className="legal-section-h2">Protection de vos données</h2>
+        <p>Nous mettons en oeuvre des mesures de sécurité appropriées :</p>
+        <ul className="legal-list">
+          <li>Chiffrement des données en transit (HTTPS/TLS)</li>
+          <li>Authentification sécurisée via Firebase Authentication</li>
+          <li>Suppression automatique des documents après analyse</li>
+          <li>Accès aux données limité au strict nécessaire</li>
+        </ul>
+      </section>
+
+      {/* 5. Partage */}
+      <section className="legal-section" id="partage">
+        <span className="legal-section-num">05</span>
+        <h2 className="legal-section-h2">Partage des données</h2>
+        <p>
+          Nous ne vendons, n'échangeons ni ne louons vos informations personnelles.
+          Les données sont partagées uniquement avec nos sous-traitants sous contrat strict et DPA RGPD :
+        </p>
+        <table className="legal-third-party-table">
+          <thead>
+            <tr>
+              <th>Prestataire</th>
+              <th>Finalité</th>
+              <th>Région</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Firebase (Google)</strong></td>
+              <td>Authentification</td>
+              <td>UE</td>
+            </tr>
+            <tr>
+              <td><strong>Stripe</strong></td>
+              <td>Paiements sécurisés</td>
+              <td>UE / US</td>
+            </tr>
+            <tr>
+              <td><strong>Microsoft Azure OpenAI</strong></td>
+              <td>Traitement IA des documents — données non conservées</td>
+              <td>Europe Ouest</td>
+            </tr>
+            <tr>
+              <td><strong>Microsoft Azure</strong></td>
+              <td>Hébergement infrastructure</td>
+              <td>Europe Ouest</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      {/* 6. Droits RGPD */}
+      <section className="legal-section" id="droits">
+        <span className="legal-section-num">06</span>
+        <h2 className="legal-section-h2">Vos droits (RGPD)</h2>
+        <p>Conformément au Règlement Général sur la Protection des Données :</p>
+        <div className="legal-rights-grid">
+          <div className="legal-right-cell">
+            <p className="legal-right-title">Accès</p>
+            <p className="legal-right-desc">Consulter les données que nous détenons sur vous.</p>
+          </div>
+          <div className="legal-right-cell">
+            <p className="legal-right-title">Rectification</p>
+            <p className="legal-right-desc">Corriger vos informations personnelles.</p>
+          </div>
+          <div className="legal-right-cell">
+            <p className="legal-right-title">Suppression</p>
+            <p className="legal-right-desc">Demander la suppression de votre compte et de vos données.</p>
+          </div>
+          <div className="legal-right-cell">
+            <p className="legal-right-title">Portabilité</p>
+            <p className="legal-right-desc">Exporter vos données dans un format lisible par machine.</p>
+          </div>
+          <div className="legal-right-cell">
+            <p className="legal-right-title">Opposition</p>
+            <p className="legal-right-desc">Vous opposer au traitement de vos données personnelles.</p>
+          </div>
+          <div className="legal-right-cell">
+            <p className="legal-right-title">Limitation</p>
+            <p className="legal-right-desc">Restreindre le traitement dans certaines circonstances.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. Cookies */}
+      <section className="legal-section" id="cookies">
+        <span className="legal-section-num">07</span>
+        <h2 className="legal-section-h2">Gestion des cookies</h2>
+        <p>
+          Nous utilisons uniquement des cookies essentiels et fonctionnels.
+          Aucun cookie publicitaire ou de tracking marketing n'est déposé.
+          Consultez notre <Link to="/cookies">Politique de gestion des cookies</Link> pour le détail complet.
+        </p>
+
+        <h3 className="legal-section-h3">Technologies de stockage</h3>
+        <ul className="legal-list">
+          <li><strong>SessionStorage :</strong> authentification Firebase — supprimé à la fermeture du navigateur</li>
+          <li><strong>LocalStorage :</strong> préférences d'interface (langue, thème)</li>
+          <li><strong>IndexedDB :</strong> cache temporaire des résultats — supprimé après traitement</li>
+        </ul>
+      </section>
+
+      {/* 8. Contact */}
+      <section className="legal-section" id="contact">
+        <span className="legal-section-num">08</span>
+        <h2 className="legal-section-h2">Contact</h2>
+        <p>
+          Pour toute question ou pour exercer vos droits RGPD, contactez-nous :
+        </p>
+        <div className="legal-contact-block">
+          <span className="legal-contact-label">Délégué à la protection des données</span>
+          <a href="mailto:contact@transparai.com" className="legal-contact-email">
+            contact@transparai.com
+          </a>
+        </div>
+      </section>
+
+      {/* 9. Modifications */}
+      <section className="legal-section" id="modifs">
+        <span className="legal-section-num">09</span>
+        <h2 className="legal-section-h2">Modifications</h2>
+        <p>
+          Nous nous réservons le droit de modifier cette politique de confidentialité.
+          Les modifications importantes vous seront notifiées par e-mail au moins 30 jours
+          avant leur entrée en vigueur.
+        </p>
+      </section>
+
+    </div>
+  </div>
+);
 
 export default PrivacyPolicy;
