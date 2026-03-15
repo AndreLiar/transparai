@@ -1,100 +1,293 @@
-.upgrade-main {
-  flex-grow: 1;
-  padding: 3rem 2rem;
-  max-width: 1100px;
-  margin: 0 auto;
+/* Upgrade.css — matches landing page Pricing aesthetic */
+
+.up-main {
+  flex: 1;
+  padding: 48px 56px;
+  background: var(--bg);
+  overflow-y: auto;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+.up-header {
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.up-eyebrow {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+
+.up-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 8px;
+}
+
+.up-subtitle {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin: 0;
+  max-width: 520px;
+}
+
+/* ── Error ────────────────────────────────────────────────────────────── */
+.up-error {
+  padding: 12px 16px;
+  background: #fff5f5;
+  border-left: 3px solid var(--red);
+  font-size: 0.8125rem;
+  color: #7f1d1d;
+  margin-bottom: 28px;
+}
+
+/* ── Grid — newspaper column border style ─────────────────────────────── */
+.up-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+  .up-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────── */
+.up-card {
+  background: var(--white);
+  padding: 36px 28px;
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  position: relative;
+}
+
+.up-card:last-child { border-right: none; }
+
+/* Standard — highlighted (dark navy) */
+.up-card--highlight {
+  background: var(--navy);
+  color: #FAF8F4;
+}
+
+.up-card--highlight .up-plan-desc,
+.up-card--highlight .up-features li {
+  color: rgba(250, 248, 244, 0.65);
+}
+
+.up-card--highlight .up-plan-name,
+.up-card--highlight .up-amount {
+  color: #FAF8F4;
+}
+
+.up-card--highlight .up-freq {
+  color: rgba(250, 248, 244, 0.5);
+}
+
+.up-card--highlight .up-features {
+  border-top-color: rgba(250, 248, 244, 0.12);
+}
+
+.up-card--highlight .up-check-icon {
+  color: rgba(250, 248, 244, 0.55);
+}
+
+/* Enterprise — also dark navy */
+.up-card--enterprise {
+  background: var(--navy);
+  color: #FAF8F4;
+  border-right: none;
+}
+
+.up-card--enterprise .up-plan-desc,
+.up-card--enterprise .up-features li {
+  color: rgba(250, 248, 244, 0.65);
+}
+
+.up-card--enterprise .up-plan-name { color: #FAF8F4; }
+
+.up-card--enterprise .up-amount { color: var(--red); }
+
+.up-card--enterprise .up-freq {
+  color: rgba(250, 248, 244, 0.5);
+}
+
+.up-card--enterprise .up-features {
+  border-top-color: rgba(250, 248, 244, 0.12);
+}
+
+.up-card--enterprise .up-check-icon {
+  color: rgba(250, 248, 244, 0.55);
+}
+
+/* ── Badge ────────────────────────────────────────────────────────────── */
+.up-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+  border: 1px solid var(--red);
+  border-radius: 2px;
+  padding: 3px 8px;
+  margin-bottom: 14px;
+  width: fit-content;
+}
+
+.up-card--highlight .up-badge {
+  color: rgba(250, 248, 244, 0.7);
+  border-color: rgba(250, 248, 244, 0.35);
+}
+
+.up-card--enterprise .up-badge {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+/* ── Plan name ────────────────────────────────────────────────────────── */
+.up-plan-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+
+/* ── Price ────────────────────────────────────────────────────────────── */
+.up-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 16px 0 6px;
+}
+
+.up-amount {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1;
+}
+
+.up-freq {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* ── Plan desc ────────────────────────────────────────────────────────── */
+.up-plan-desc {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+/* ── Features ─────────────────────────────────────────────────────────── */
+.up-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  flex: 1;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.up-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.up-check-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--red);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+.up-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  border: 1px solid transparent;
+}
+
+.up-btn--primary {
+  background: var(--red);
+  color: #FAF8F4;
+  border-color: var(--red);
+}
+
+.up-btn--primary:hover:not(:disabled) {
+  background: #a00d24;
+  border-color: #a00d24;
+}
+
+.up-btn--outline {
+  background: transparent;
+  color: var(--navy);
+  border-color: var(--border);
+}
+
+.up-btn--outline:hover:not(:disabled) {
+  border-color: var(--navy);
+  background: var(--cream);
+}
+
+.up-card--enterprise .up-btn--outline {
+  border-color: rgba(250, 248, 244, 0.35);
+  color: #FAF8F4;
+}
+
+.up-card--enterprise .up-btn--outline:hover:not(:disabled) {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.up-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Note ─────────────────────────────────────────────────────────────── */
+.up-note {
+  font-size: 0.75rem;
+  color: var(--muted);
   text-align: center;
 }
 
-.upgrade-title {
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: #111827;
-}
-
-.upgrade-sub {
-  font-size: 1rem;
-  color: #6b7280;
-  margin-bottom: 2.5rem;
-}
-
-.plans-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  width: 100%;
-}
-
-.plan-card {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.2s ease;
-}
-
-.plan-card:hover {
-  transform: translateY(-4px);
-}
-
-.plan-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.plan-icon {
-  font-size: 1.5rem;
-}
-
-.plan-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.plan-desc {
-  font-size: 0.95rem;
-  color: #4b5563;
-  margin-bottom: 0.5rem;
-}
-
-.plan-price {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: #1f2937;
-}
-
-.plan-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-.plan-btn.standard {
-  background-color: #6366f1;
-  color: white;
-}
-
-.plan-btn.premium {
-  background-color: #10b981;
-  color: white;
-}
-
-.plan-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+/* ── Mobile ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .up-main { padding: 24px 16px; height: auto; }
+  .up-card { border-right: none; border-bottom: 1px solid var(--border); }
+  .up-card:last-child { border-bottom: none; }
 }
