@@ -2,69 +2,59 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from '@/components/Layout/Sidebar';
-import { 
-  getAISettings, 
-  updateAISettings, 
+import {
+  getAISettings,
+  updateAISettings,
   AISettings as AISettingsType,
   AIUsageStats,
   MODEL_INFO,
-  PLAN_FEATURES 
+  PLAN_FEATURES
 } from '../../services/aiSettingsService';
 import '@/styles/Layout.css';
 import './AISettings.css';
 
 const AISettings: React.FC = () => {
-  console.log('🚀 AISettings component rendered');
   const { user: currentUser } = useAuth();
-  console.log('👤 Current user:', !!currentUser, currentUser?.email);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  
+
   const [aiSettings, setAiSettings] = useState<AISettingsType | null>(null);
   const [usageStats, setUsageStats] = useState<AIUsageStats | null>(null);
   const [userPlan, setUserPlan] = useState<string>('free');
   const [planBudget, setPlanBudget] = useState<number>(0);
 
   useEffect(() => {
-    console.log('⚡ useEffect triggered, currentUser:', !!currentUser);
     fetchAISettings();
-    
+
     // Timeout to prevent infinite loading
     const timeout = setTimeout(() => {
       if (loading) {
-        console.log('⏰ Timeout reached, stopping loading');
         setLoading(false);
         setError('Timeout lors du chargement des paramètres IA');
       }
-    }, 10000); // 10 second timeout
-    
+    }, 10000);
+
     return () => clearTimeout(timeout);
   }, [currentUser]);
 
   const fetchAISettings = async () => {
-    console.log('🔍 fetchAISettings called, currentUser:', !!currentUser);
     if (!currentUser) {
-      console.log('❌ No current user, returning');
       return;
     }
-    
+
     try {
       setLoading(true);
-      console.log('🔄 Getting ID token...');
       const token = await currentUser.getIdToken();
-      console.log('✅ Token obtained, calling API...');
       const response = await getAISettings(token);
-      console.log('✅ API response received:', response);
-      
+
       setAiSettings(response.data.aiSettings);
       setUsageStats(response.data.aiUsageStats);
       setUserPlan(response.data.plan);
       setPlanBudget(response.data.planBudget);
-    } catch (error) {
-      console.error('❌ Error fetching AI settings:', error);
+    } catch (err) {
       setError('Erreur lors du chargement des paramètres IA');
     } finally {
       setLoading(false);
@@ -81,16 +71,15 @@ const AISettings: React.FC = () => {
 
       const token = await currentUser.getIdToken();
       await updateAISettings(token, newSettings);
-      
+
       // Update local state
       setAiSettings({ ...aiSettings, ...newSettings });
       setSuccess('Paramètres mis à jour avec succès');
-      
+
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000);
-    } catch (error) {
+    } catch (err) {
       setError('Erreur lors de la sauvegarde');
-      console.error('Error updating AI settings:', error);
     } finally {
       setSaving(false);
     }
@@ -107,177 +96,177 @@ const AISettings: React.FC = () => {
 
   return (
     <div className="dashboard-layout">
-      <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
+      <button className="hamburger-toggle ai-hamburger" onClick={() => setIsSidebarOpen(true)}>
+        <span className="ai-hamburger-bar" />
+        <span className="ai-hamburger-bar" />
+        <span className="ai-hamburger-bar" />
+      </button>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-      <main className="dashboard-main">
-        <div className="ai-settings-heading">
-          <h1>🤖 Paramètres IA</h1>
-          <p>Configurez vos préférences pour l'analyse de documents par intelligence artificielle</p>
+      <main className="dashboard-main ai-main">
+        <div className="ai-page-header">
+          <h1 className="ai-page-title">Paramètres IA</h1>
+          <p className="ai-page-subtitle">Configurez vos préférences pour l'analyse de documents par intelligence artificielle</p>
+          <div className="ai-header-rule" />
         </div>
 
         {error && (
-          <div className="alert alert-error">
-            <span>❌</span>
-            <span>{error}</span>
-          </div>
+          <div className="ai-alert ai-alert--error">{error}</div>
         )}
-
         {success && (
-          <div className="alert alert-success">
-            <span>✅</span>
-            <span>{success}</span>
-          </div>
+          <div className="ai-alert ai-alert--success">{success}</div>
         )}
 
         {loading ? (
-          <div className="ai-settings-loading">
-            <div className="spinner"></div>
-            <p>Chargement des paramètres IA...</p>
+          <div className="ai-loading">
+            <div className="ai-spinner" />
+            <p>Chargement des paramètres IA…</p>
           </div>
         ) : !aiSettings || !usageStats ? (
-          <div className="ai-settings-error">
+          <div className="ai-error-state">
             <h3>Erreur</h3>
             <p>{error || 'Impossible de charger les paramètres IA'}</p>
-            <button onClick={fetchAISettings} className="retry-btn">
-              Réessayer
-            </button>
+            <button onClick={fetchAISettings} className="ai-retry-btn">Réessayer</button>
           </div>
         ) : (
-          <div className="ai-settings-content">
-            {/* Budget Overview */}
-            <div className="ai-card">
-              <h2>💰 Budget IA Mensuel</h2>
-              <div className="budget-overview">
-                <div className="budget-stats">
-                  <div className="budget-stat">
-                    <span className="label">Alloué:</span>
-                    <span className="value">${aiSettings.monthlyAIBudget.allocated.toFixed(2)}</span>
-                  </div>
-                  <div className="budget-stat">
-                    <span className="label">Utilisé:</span>
-                    <span className="value">${aiSettings.monthlyAIBudget.used.toFixed(2)}</span>
-                  </div>
-                  <div className="budget-stat">
-                    <span className="label">Restant:</span>
-                    <span className="value">${aiSettings.monthlyAIBudget.remaining.toFixed(2)}</span>
-                  </div>
+          <div className="ai-content">
+
+            {/* Budget */}
+            <section className="ai-section">
+              <div className="ai-section-head">
+                <span className="ai-section-label">Budget IA Mensuel</span>
+                <div className="ai-section-rule" />
+              </div>
+              <div className="ai-budget-grid">
+                <div className="ai-budget-cell">
+                  <span className="ai-budget-cell-label">Alloué</span>
+                  <span className="ai-budget-cell-value">${aiSettings.monthlyAIBudget.allocated.toFixed(2)}</span>
                 </div>
-                
-                <div className="budget-bar">
-                  <div 
-                    className="budget-progress" 
+                <div className="ai-budget-cell">
+                  <span className="ai-budget-cell-label">Utilisé</span>
+                  <span className="ai-budget-cell-value">${aiSettings.monthlyAIBudget.used.toFixed(2)}</span>
+                </div>
+                <div className="ai-budget-cell">
+                  <span className="ai-budget-cell-label">Restant</span>
+                  <span className="ai-budget-cell-value">${aiSettings.monthlyAIBudget.remaining.toFixed(2)}</span>
+                </div>
+              </div>
+              <div className="ai-budget-bar-wrap">
+                <div className="ai-budget-bar">
+                  <div
+                    className={`ai-budget-fill ${getBudgetPercentage() > 80 ? 'ai-budget-fill--warn' : ''}`}
                     style={{ width: `${Math.min(getBudgetPercentage(), 100)}%` }}
-                  ></div>
+                  />
                 </div>
-                
-                <p className="budget-text">
-                  {getBudgetPercentage() < 80 ? '✅ Budget disponible' : 
-                   getBudgetPercentage() < 100 ? '⚠️ Budget presque épuisé' : '❌ Budget épuisé'}
-                </p>
+                <span className="ai-budget-status">
+                  {getBudgetPercentage() < 80 ? 'Budget disponible' :
+                   getBudgetPercentage() < 100 ? 'Budget presque épuisé' : 'Budget épuisé'}
+                </span>
               </div>
 
               {userPlan === 'free' && (
-                <div className="upgrade-prompt">
-                  <p>🚀 <strong>Passez à un plan payant</strong> pour débloquer l'IA premium!</p>
-                  <button className="upgrade-btn">Voir les plans</button>
+                <div className="ai-upgrade-notice">
+                  <p><strong>Passez à un plan payant</strong> pour débloquer l'IA premium et augmenter votre budget mensuel.</p>
+                  <a href="/upgrade" className="ai-upgrade-link">Voir les plans</a>
                 </div>
               )}
-            </div>
+            </section>
 
             {/* Model Selection */}
-            <div className="ai-card">
-              <h2>🎯 Modèle IA Préféré</h2>
-              <p>Choisissez le modèle IA utilisé pour l'analyse de vos documents</p>
-              
-              <div className="model-grid">
+            <section className="ai-section">
+              <div className="ai-section-head">
+                <span className="ai-section-label">Modèle IA Préféré</span>
+                <div className="ai-section-rule" />
+              </div>
+              <p className="ai-section-desc">Choisissez le modèle IA utilisé pour l'analyse de vos documents</p>
+              <div className="ai-model-grid">
                 {Object.entries(MODEL_INFO).map(([modelKey, info]) => {
                   const isAvailable = getAvailableModels().includes(modelKey as any);
                   const isSelected = aiSettings.preferredModel === modelKey;
-                  
                   return (
-                    <div 
+                    <div
                       key={modelKey}
-                      className={`model-card ${isSelected ? 'selected' : ''} ${!isAvailable ? 'disabled' : ''}`}
+                      className={`ai-model-card ${isSelected ? 'ai-model-card--selected' : ''} ${!isAvailable ? 'ai-model-card--disabled' : ''}`}
                       onClick={() => isAvailable && handleSaveSettings({ preferredModel: modelKey as any })}
                     >
-                      <div className="model-icon">{info.icon}</div>
-                      <h3>{info.name}</h3>
-                      <p>{info.description}</p>
-                      <div className="model-cost">{info.cost}</div>
-                      
-                      {!isAvailable && (
-                        <div className="upgrade-badge">
-                          Requiert plan supérieur
-                        </div>
-                      )}
-                      
-                      {isSelected && <div className="selected-badge">✓ Sélectionné</div>}
+                      {isSelected && <div className="ai-model-card-head">Sélectionné</div>}
+                      {!isAvailable && <div className="ai-model-card-head ai-model-card-head--locked">Plan supérieur requis</div>}
+                      <h3 className="ai-model-name">{info.name}</h3>
+                      <p className="ai-model-desc">{info.description}</p>
+                      <span className="ai-model-cost">{info.cost}</span>
                     </div>
                   );
                 })}
               </div>
-            </div>
+            </section>
 
-            {/* Usage Statistics */}
-            <div className="ai-card">
-              <h2>📊 Statistiques d'Usage</h2>
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <span className="stat-number">{usageStats.totalAnalyses}</span>
-                  <span className="stat-label">Analyses totales</span>
+            {/* Usage Stats */}
+            <section className="ai-section">
+              <div className="ai-section-head">
+                <span className="ai-section-label">Statistiques d'Usage</span>
+                <div className="ai-section-rule" />
+              </div>
+              <div className="ai-stats-grid">
+                <div className="ai-stat-cell">
+                  <span className="ai-stat-num">{usageStats.totalAnalyses}</span>
+                  <span className="ai-stat-label">Analyses totales</span>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-number">{usageStats.gpt4oAnalyses}</span>
-                  <span className="stat-label">Analyses GPT-4o</span>
+                <div className="ai-stat-cell">
+                  <span className="ai-stat-num">{usageStats.gpt4oAnalyses}</span>
+                  <span className="ai-stat-label">Analyses GPT-4o</span>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-number">{usageStats.gpt4oMiniAnalyses}</span>
-                  <span className="stat-label">Analyses GPT-4o Mini</span>
+                <div className="ai-stat-cell">
+                  <span className="ai-stat-num">{usageStats.gpt4oMiniAnalyses}</span>
+                  <span className="ai-stat-label">Analyses GPT-4o Mini</span>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-number">${usageStats.totalAICost.toFixed(2)}</span>
-                  <span className="stat-label">Coût total IA</span>
+                <div className="ai-stat-cell">
+                  <span className="ai-stat-num">${usageStats.totalAICost.toFixed(2)}</span>
+                  <span className="ai-stat-label">Coût total IA</span>
                 </div>
               </div>
-            </div>
+            </section>
 
             {/* Advanced Settings */}
-            <div className="ai-card">
-              <h2>⚙️ Paramètres Avancés</h2>
-              
-              <div className="setting-item">
-                <div className="setting-info">
-                  <h3>Autoriser l'IA Premium</h3>
-                  <p>Permet l'utilisation automatique des modèles GPT payants selon votre budget</p>
+            <section className="ai-section">
+              <div className="ai-section-head">
+                <span className="ai-section-label">Paramètres Avancés</span>
+                <div className="ai-section-rule" />
+              </div>
+              <div className="ai-setting-row">
+                <div className="ai-setting-info">
+                  <h3 className="ai-setting-title">Autoriser l'IA Premium</h3>
+                  <p className="ai-setting-desc">Permet l'utilisation automatique des modèles GPT payants selon votre budget</p>
                 </div>
-                <label className="toggle-switch">
-                  <input 
-                    type="checkbox" 
+                <label className="ai-toggle">
+                  <input
+                    type="checkbox"
                     checked={aiSettings.allowPremiumAI}
                     onChange={(e) => handleSaveSettings({ allowPremiumAI: e.target.checked })}
                     disabled={saving || userPlan === 'free'}
                   />
-                  <span className="toggle-slider"></span>
+                  <span className="ai-toggle-slider" />
                 </label>
               </div>
-            </div>
+            </section>
 
-            {/* Plan Information */}
-            <div className="ai-card">
-              <h2>📋 Votre Plan: {userPlan.charAt(0).toUpperCase() + userPlan.slice(1)}</h2>
-              <div className="plan-info">
-                <p><strong>Budget mensuel:</strong> ${planBudget}/mois</p>
-                <p><strong>Modèles disponibles:</strong></p>
-                <div className="available-models">
+            {/* Plan Info */}
+            <section className="ai-section">
+              <div className="ai-section-head">
+                <span className="ai-section-label">Votre Plan — {userPlan.charAt(0).toUpperCase() + userPlan.slice(1)}</span>
+                <div className="ai-section-rule" />
+              </div>
+              <div className="ai-plan-details">
+                <p className="ai-plan-row"><span className="ai-plan-key">Budget mensuel</span><span className="ai-plan-val">${planBudget}/mois</span></p>
+                <p className="ai-plan-row"><span className="ai-plan-key">Modèles disponibles</span></p>
+                <div className="ai-model-tags">
                   {getAvailableModels().map(model => (
-                    <span key={model} className="model-tag">
-                      {MODEL_INFO[model as keyof typeof MODEL_INFO].icon} {MODEL_INFO[model as keyof typeof MODEL_INFO].name}
+                    <span key={model} className="ai-model-tag">
+                      {MODEL_INFO[model as keyof typeof MODEL_INFO].name}
                     </span>
                   ))}
                 </div>
               </div>
-            </div>
+            </section>
           </div>
         )}
       </main>

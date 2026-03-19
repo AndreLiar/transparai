@@ -577,171 +577,193 @@ const AnalyzeEnhanced: React.FC = () => {
         />
       )}
       <EmailVerificationBanner />
-      <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
+      <button className="hamburger-toggle az-hamburger" onClick={() => setIsSidebarOpen(true)}>
+        <span className="az-hamburger-bar" />
+        <span className="az-hamburger-bar" />
+        <span className="az-hamburger-bar" />
+      </button>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-      <main className="analyze-main">
+      <main className="analyze-main az-main">
         {isFirstTime && (
-          <div className="first-time-banner">
-            <div className="banner-content">
-              <div className="banner-text">
-                <h2>Bienvenue dans l'analyse TransparAI !</h2>
-                <p>Choisissez un exemple ou uploadez votre propre contrat.</p>
-              </div>
-            </div>
+          <div className="az-welcome-banner">
+            <span className="az-welcome-eyebrow">Bienvenue</span>
+            <p className="az-welcome-text">Choisissez un exemple ou collez votre propre contrat pour commencer.</p>
           </div>
         )}
 
-        <div className="analyze-header">
-          <h1 className="analyze-title">Analyse de contrat</h1>
-          <p className="analyze-subtitle">Notre IA analyse votre document en 30 secondes et vous explique tout en français simple.</p>
+        <div className="az-page-header">
+          <h1 className="az-page-title">Analyse de contrat</h1>
+          <p className="az-page-subtitle">Notre IA analyse votre document en 30 secondes et vous explique tout en français simple.</p>
+          <div className="az-header-rule" />
         </div>
 
-        <div className="quota-and-samples">
-          <div className="quota-display">
-            <strong>{quota.used} / {quota.limit === -1 ? '∞' : quota.limit}</strong> analyses utilisées ce mois-ci
+        <div className="az-quota-row">
+          <div className="az-quota-block">
+            <span className="az-quota-label">Analyses ce mois</span>
+            <span className="az-quota-count">
+              <strong>{quota.used}</strong>
+              <span className="az-quota-sep">/</span>
+              <span>{quota.limit === -1 ? '∞' : quota.limit}</span>
+            </span>
+            {quota.limit !== -1 && (
+              <div className="az-quota-bar">
+                <div
+                  className={`az-quota-fill ${quota.used / quota.limit > 0.8 ? 'az-quota-fill--warn' : ''}`}
+                  style={{ width: `${Math.min((quota.used / quota.limit) * 100, 100)}%` }}
+                />
+              </div>
+            )}
           </div>
           {!showSamples && (
-            <button className="samples-toggle" onClick={() => setShowSamples(true)}>
-              Essayer avec un exemple
+            <button className="az-samples-toggle" onClick={() => setShowSamples(true)}>
+              Essayer un exemple
             </button>
           )}
         </div>
 
         {showSamples && (
-          <div className="samples-section">
-            <div className="samples-header">
-              <h3>Choisissez un contrat d'exemple</h3>
-              <button className="close-samples" onClick={() => setShowSamples(false)}>×</button>
+          <div className="az-samples-section">
+            <div className="az-samples-head">
+              <span className="az-samples-label">Contrats d'exemple</span>
+              <button className="az-samples-close" onClick={() => setShowSamples(false)}>&#215;</button>
             </div>
-            <div className="samples-grid">
+            <div className="az-samples-grid">
               {Object.entries(sampleContracts).map(([key, contract]) => (
-                <button key={key} className="sample-card" onClick={() => loadSampleContract(key)}>
-                  <h4>{contract.title}</h4>
-                  <p>{contract.content.substring(0, 150)}...</p>
-                  <div className="sample-cta">Analyser cet exemple →</div>
+                <button key={key} className="az-sample-card" onClick={() => loadSampleContract(key)}>
+                  <h4 className="az-sample-title">{contract.title}</h4>
+                  <p className="az-sample-excerpt">{contract.content.substring(0, 150)}…</p>
+                  <span className="az-sample-cta">Analyser cet exemple &#8594;</span>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        <div className="analyze-form">
-          <div className="form-header">
-            <h3>Votre contrat à analyser</h3>
-            <div className="source-toggle">
-              <button className={`toggle-btn ${sourceType === 'text' ? 'active' : ''}`} onClick={() => setSourceType('text')}>
+        <div className="az-form">
+          <div className="az-form-header">
+            <h3 className="az-form-label">Document à analyser</h3>
+            <div className="az-source-tabs">
+              <button
+                className={`az-source-tab ${sourceType === 'text' ? 'az-source-tab--active' : ''}`}
+                onClick={() => setSourceType('text')}
+              >
                 Texte
               </button>
-              <button className={`toggle-btn ${sourceType === 'file' ? 'active' : ''}`} onClick={() => setSourceType('file')}>
+              <button
+                className={`az-source-tab ${sourceType === 'file' ? 'az-source-tab--active' : ''}`}
+                onClick={() => setSourceType('file')}
+              >
                 Fichier
               </button>
             </div>
           </div>
+          <div className="az-form-rule" />
 
           {sourceType === 'text' && (
-            <div className="text-input-section">
-              <label>Copiez-collez votre contrat ici :</label>
+            <div className="az-text-section">
               <textarea
                 placeholder="Collez ici les conditions générales, contrat de travail, bail, ou tout autre document juridique..."
                 rows={12}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                className="contract-textarea"
+                className="az-textarea"
               />
               {inputText.length > 0 && (
-                <div className="text-stats">
-                  {inputText.length} caractères • {Math.ceil(inputText.split(' ').length / 200)} min de lecture
+                <div className="az-text-stats">
+                  {inputText.length.toLocaleString('fr-FR')} caractères &bull; {Math.ceil(inputText.split(' ').length / 200)} min de lecture
                 </div>
               )}
             </div>
           )}
 
           {sourceType === 'file' && (
-            <div className="file-input-section">
-              <label>Uploadez votre document (PDF ou image) :</label>
-              <div className="file-upload-area">
+            <div className="az-file-section">
+              <div className="az-file-drop">
                 <input
                   type="file"
                   accept=".pdf,image/*"
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="file-input"
-                  id="file-upload"
+                  className="az-file-input"
+                  id="az-file-upload"
                 />
-                <label htmlFor="file-upload" className="file-upload-label">
+                <label htmlFor="az-file-upload" className="az-file-label">
                   {file ? (
-                    <>{file.name}<span className="file-change">Cliquer pour changer</span></>
+                    <>
+                      <span className="az-file-name">{file.name}</span>
+                      <span className="az-file-change">Cliquer pour changer</span>
+                    </>
                   ) : (
-                    <>Cliquez pour choisir un fichier<span className="file-formats">PDF, JPG, PNG acceptés</span></>
+                    <>
+                      <span className="az-file-prompt">Cliquez pour choisir un fichier</span>
+                      <span className="az-file-formats">PDF, JPG, PNG acceptés</span>
+                    </>
                   )}
                 </label>
               </div>
-              {file && <div className="file-info">Fichier: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</div>}
+              {file && <div className="az-file-info">{file.name} &mdash; {(file.size / 1024 / 1024).toFixed(2)} MB</div>}
             </div>
           )}
 
-          <div className="submit-section">
+          <div className="az-submit-section">
             <button
               onClick={handleSubmit}
               disabled={loading || (sourceType === 'text' && !inputText.trim()) || (sourceType === 'file' && !file)}
-              className="analyze-button"
+              className="az-analyze-btn"
             >
               {loading ? 'Analyse en cours…' : 'Analyser avec l\'IA'}
             </button>
 
             {loading && (
-              <div className="analysis-progress">
-                {ocrStatus && <p className="progress-step-label">{ocrStatus}</p>}
+              <div className="az-progress">
+                {ocrStatus && <p className="az-progress-label">{ocrStatus}</p>}
                 {progress && (
                   <>
-                    <div className="progress-bar-track">
-                      <div className="progress-bar-fill" style={{ width: `${progress.percent}%` }} />
+                    <div className="az-progress-track">
+                      <div className="az-progress-fill" style={{ width: `${progress.percent}%` }} />
                     </div>
-                    <p className="progress-step-label">{progress.message}</p>
+                    <p className="az-progress-label">{progress.message}</p>
                   </>
                 )}
               </div>
             )}
 
-            {sourceType === 'text' && !inputText.trim() && (
-              <p className="form-hint">Collez votre contrat dans la zone de texte ci-dessus</p>
+            {sourceType === 'text' && !inputText.trim() && !loading && (
+              <p className="az-form-hint">Collez votre contrat dans la zone de texte ci-dessus</p>
             )}
-            {sourceType === 'file' && !file && (
-              <p className="form-hint">Sélectionnez un fichier PDF ou image à analyser</p>
+            {sourceType === 'file' && !file && !loading && (
+              <p className="az-form-hint">Sélectionnez un fichier PDF ou image à analyser</p>
             )}
           </div>
         </div>
 
         {quotaError && (
-          <div className="quota-error-message">
-            <div className="error-content">
-              <h4>Quota atteint</h4>
-              <p>{quotaError.message}</p>
-              {quotaError.upgradeRequired && (
-                <div className="error-actions">
-                  <button className="upgrade-btn" onClick={() => window.location.href = '/upgrade'}>Voir les plans</button>
-                  <button className="error-retry" onClick={() => setQuotaError(null)}>Fermer</button>
-                </div>
-              )}
-            </div>
+          <div className="az-quota-error">
+            <h4 className="az-quota-error-title">Quota atteint</h4>
+            <p className="az-quota-error-body">{quotaError.message}</p>
+            {quotaError.upgradeRequired && (
+              <div className="az-quota-error-actions">
+                <button className="az-analyze-btn" onClick={() => window.location.href = '/upgrade'}>Voir les plans</button>
+                <button className="az-outline-btn" onClick={() => setQuotaError(null)}>Fermer</button>
+              </div>
+            )}
           </div>
         )}
 
         {error && (
-          <div className="error-message">
-            <div className="error-content">
-              <h4>Erreur lors de l'analyse</h4>
-              <p>{error}</p>
-              <button className="error-retry" onClick={() => setError('')}>Réessayer</button>
-            </div>
+          <div className="az-error-bar">
+            <h4 className="az-error-title">Erreur lors de l'analyse</h4>
+            <p className="az-error-body">{error}</p>
+            <button className="az-outline-btn" onClick={() => setError('')}>Réessayer</button>
           </div>
         )}
 
         {result && (
-          <div className="analyze-result">
-            <div className="result-header">
-              <h2>Analyse terminée</h2>
-              <p>Voici ce que notre IA a découvert dans votre contrat :</p>
+          <div className="az-result">
+            <div className="az-result-header">
+              <span className="az-result-eyebrow">Analyse terminée</span>
+              <div className="az-header-rule" />
+              <h2 className="az-result-title">Ce que notre IA a découvert</h2>
             </div>
 
             <AIDisclaimer
@@ -752,59 +774,51 @@ const AnalyzeEnhanced: React.FC = () => {
               jurisdiction={result.jurisdiction}
             />
 
-            <div className="result-grid">
-              <div className="result-card score-card">
-                <h3>Score de transparence</h3>
-                <div className="score-display">
-                  <span className={`score-badge score-${result.score.toLowerCase()}`}>{result.score}</span>
+            <div className="az-result-grid">
+              <div className="az-result-card az-result-card--score">
+                <p className="az-result-card-label">Score de transparence</p>
+                <div className="az-score-display">
+                  <span className={`az-score-badge az-score-${result.score.toLowerCase().replace(/é/g, 'e').replace(/î/g, 'i')}`}>{result.score}</span>
                 </div>
-                <p className="score-explanation">
+                <p className="az-score-explanation">
                   {result.score === 'Excellent' && 'Ce contrat est très favorable et transparent.'}
                   {result.score === 'Bon' && "Ce contrat est globalement équilibré avec quelques points d'attention."}
                   {result.score === 'Moyen' && 'Ce contrat présente quelques clauses à surveiller.'}
                   {result.score === 'Médiocre' && 'Ce contrat contient plusieurs clauses défavorables.'}
-                  {result.score === 'Problématique' && 'Attention ! Ce contrat présente des risques importants.'}
+                  {result.score === 'Problématique' && 'Attention — ce contrat présente des risques importants.'}
                 </p>
               </div>
 
-              <div className="result-card summary-card">
-                <h3>Résumé en français simple</h3>
-                <div className="summary-content">{result.summary}</div>
+              <div className="az-result-card az-result-card--summary">
+                <p className="az-result-card-label">Résumé en français simple</p>
+                <div className="az-result-body">{result.summary}</div>
               </div>
 
-              <div className="result-card clauses-card">
-                <h3>Points d'attention</h3>
-                <ul className="clauses-list">
+              <div className="az-result-card az-result-card--clauses">
+                <p className="az-result-card-label">Points d'attention</p>
+                <ul className="az-clauses-list">
                   {result.clauses.map((clause, i) => (
-                    <li key={i}><span className="clause-bullet">•</span>{clause}</li>
+                    <li key={i} className="az-clause-item">
+                      <span className="az-clause-marker" />
+                      {clause}
+                    </li>
                   ))}
                 </ul>
               </div>
             </div>
 
-            <div className="value-reinforcement">
-              <div className="value-header">
-                <h3>Vous venez de gagner du temps et de l'argent</h3>
+            <div className="az-value-row">
+              <div className="az-value-cell">
+                <span className="az-value-num">2–3h</span>
+                <span className="az-value-label">économisées sur la lecture</span>
               </div>
-              <div className="value-benefits">
-                <div className="value-benefit">
-                  <div className="benefit-text">
-                    <strong>2–3 heures économisées</strong>
-                    <p>Vous avez évité de lire tout le document juridique complexe</p>
-                  </div>
-                </div>
-                <div className="value-benefit">
-                  <div className="benefit-text">
-                    <strong>Risques identifiés</strong>
-                    <p>Clauses cachées découvertes qui auraient pu vous coûter cher</p>
-                  </div>
-                </div>
-                <div className="value-benefit">
-                  <div className="benefit-text">
-                    <strong>Pouvoir de négociation</strong>
-                    <p>Vous pouvez maintenant discuter en connaissance de cause</p>
-                  </div>
-                </div>
+              <div className="az-value-cell">
+                <span className="az-value-num">{result.clauses.length}</span>
+                <span className="az-value-label">risques identifiés</span>
+              </div>
+              <div className="az-value-cell">
+                <span className="az-value-num">100%</span>
+                <span className="az-value-label">pouvoir de négociation</span>
               </div>
             </div>
 
@@ -812,12 +826,12 @@ const AnalyzeEnhanced: React.FC = () => {
               <UpgradePrompt context="enhanced_features" />
             )}
 
-            <div className="result-actions">
-              <button className="analyze-button secondary" onClick={resetForm}>
+            <div className="az-result-actions">
+              <button className="az-outline-btn" onClick={resetForm}>
                 Nouvelle analyse
               </button>
               {result.canExportPdf && (
-                <button className="analyze-button outline" onClick={handleExportPdf}>
+                <button className="az-outline-btn" onClick={handleExportPdf}>
                   Télécharger en PDF
                 </button>
               )}

@@ -32,16 +32,16 @@ const Account: React.FC = () => {
 
   const loadAccountData = async () => {
     if (!user) return;
-    
+
     try {
       const token = await user.getIdToken(true);
-      
+
       // Load both info and profile data
       const [infos, profile] = await Promise.all([
         fetchDashboardData(token),
         getProfile(token)
       ]);
-      
+
       setData(infos);
       setProfileData(profile);
       setFormData({
@@ -103,112 +103,103 @@ const Account: React.FC = () => {
 
   return (
     <div className="dashboard-layout">
-      <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(true)}>☰</button>
+      <button className="hamburger-toggle ac-hamburger" onClick={() => setIsSidebarOpen(true)}>
+        <span className="ac-hamburger-bar" />
+        <span className="ac-hamburger-bar" />
+        <span className="ac-hamburger-bar" />
+      </button>
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-      <main className="account-main">
-        <div className="account-heading">
-          <h1>{t('account.title')}</h1>
-          <p>{t('account.subtitle')}</p>
+      <main className="account-main ac-main">
+        <div className="ac-page-header">
+          <h1 className="ac-page-title">Mon compte</h1>
+          <p className="ac-page-subtitle">{t('account.subtitle')}</p>
+          <div className="ac-header-rule" />
         </div>
 
-        {error && <div className="account-error">{error}</div>}
-        {success && <div className="account-success">{success}</div>}
-        
+        {error && <div className="ac-alert ac-alert--error">{error}</div>}
+        {success && <div className="ac-alert ac-alert--success">{success}</div>}
+
         {loading ? (
-          <p className="account-loading">{t('account.loading')}</p>
+          <p className="ac-loading">{t('account.loading')}</p>
         ) : (
           <>
-            {/* Account Information Section */}
-            <section className="account-card">
-              <h2>👤 {t('account.account_info')}</h2>
-              <div className="account-field">
-                <span className="field-label">📧 {t('account.email')}</span>
-                <span>{user?.email}</span>
+            {/* Account Information */}
+            <section className="ac-section">
+              <div className="ac-section-head">
+                <span className="ac-section-label">Informations du compte</span>
+                <div className="ac-section-rule" />
+              </div>
+              <div className="ac-field-row">
+                <span className="ac-field-label">{t('account.email')}</span>
+                <span className="ac-field-value">{user?.email}</span>
               </div>
             </section>
 
-            {/* Subscription Information Section */}
+            {/* Subscription */}
             {data && (
-              <section className="account-card">
-                <h2>💳 {t('account.subscription')}</h2>
-                <div className="account-field">
-                  <span className="field-label">🪪 {t('account.plan')}</span>
-                  <div className="plan-info">
-                    <span className={`plan-badge plan-${data.plan}`}>
-                      {(data.plan === 'free' || data.plan === 'starter') && '🆓 Gratuit'}
-                      {data.plan === 'standard' && '⭐ Standard'}
-                      {data.plan === 'premium' && '👑 Premium'}
-                      {data.plan === 'enterprise' && '🏢 Enterprise'}
+              <section className="ac-section">
+                <div className="ac-section-head">
+                  <span className="ac-section-label">Abonnement</span>
+                  <div className="ac-section-rule" />
+                </div>
+
+                <div className="ac-field-row">
+                  <span className="ac-field-label">{t('account.plan')}</span>
+                  <div className="ac-plan-info">
+                    <span className={`ac-plan-badge ac-plan-badge--${data.plan}`}>
+                      {(data.plan === 'free' || data.plan === 'starter') && 'Gratuit'}
+                      {data.plan === 'standard' && 'Standard'}
+                      {data.plan === 'premium' && 'Premium'}
+                      {data.plan === 'enterprise' && 'Enterprise'}
                     </span>
-                    {data.plan === 'standard' && (
-                      <span className="feature-badge priority-support">
-                        🚀 Support prioritaire
-                      </span>
-                    )}
-                    {data.plan === 'premium' && (
-                      <span className="feature-badge unlimited">
-                        ♾️ Analyses illimitées
-                      </span>
-                    )}
-                    {data.plan === 'enterprise' && (
-                      <>
-                        <span className="feature-badge unlimited">
-                          ♾️ Analyses illimitées
-                        </span>
-                        <span className="feature-badge enterprise">
-                          👥 Multi-utilisateurs
-                        </span>
-                      </>
-                    )}
                   </div>
                 </div>
-                <div className="account-field">
-                  <span className="field-label">📊 {t('account.quota')}</span>
-                  <span>
+
+                <div className="ac-field-row">
+                  <span className="ac-field-label">{t('account.quota')}</span>
+                  <span className="ac-field-value">
                     {data.quota.used} /{' '}
                     {data.quota.limit === -1 ? `∞ (${t('account.unlimited')})` : `${data.quota.limit} ${t('account.this_month')}`}
                   </span>
                 </div>
-                
-                {/* Plan Features */}
-                <div className="plan-features">
-                  <h3>Fonctionnalités incluses :</h3>
-                  <ul className="features-list">
+
+                <div className="ac-features">
+                  <span className="ac-features-label">Fonctionnalités incluses</span>
+                  <ul className="ac-features-list">
                     {(data.plan === 'free' || data.plan === 'starter') && (
                       <>
-                        <li>✅ 20 analyses par mois</li>
-                        <li>❌ Pas de sauvegarde d'historique</li>
-                        <li>❌ Pas d'export PDF</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> 20 analyses par mois</li>
+                        <li className="ac-feature ac-feature--no"><span className="ac-feature-mark">&#8212;</span> Pas de sauvegarde d'historique</li>
+                        <li className="ac-feature ac-feature--no"><span className="ac-feature-mark">&#8212;</span> Pas d'export PDF</li>
                       </>
                     )}
                     {data.plan === 'standard' && (
                       <>
-                        <li>✅ 40 analyses par mois</li>
-                        <li>✅ Historique des analyses sauvegardé</li>
-                        <li>✅ Export PDF des analyses</li>
-                        <li>✅ Support prioritaire par email</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> 40 analyses par mois</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Historique des analyses sauvegardé</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Export PDF des analyses</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Support prioritaire par email</li>
                       </>
                     )}
                     {data.plan === 'premium' && (
                       <>
-                        <li>✅ Analyses illimitées</li>
-                        <li>✅ Historique complet sauvegardé</li>
-                        <li>✅ Export PDF et JSON</li>
-                        <li>✅ Support dédié prioritaire</li>
-                        <li>✅ Accès anticipé aux nouvelles fonctionnalités</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Analyses illimitées</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Historique complet sauvegardé</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Export PDF et JSON</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Support dédié prioritaire</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Accès anticipé aux nouvelles fonctionnalités</li>
                       </>
                     )}
                     {data.plan === 'enterprise' && (
                       <>
-                        <li>✅ Analyses illimitées</li>
-                        <li>✅ Gestion multi-utilisateurs avec rôles</li>
-                        <li>✅ Système d'invitations & permissions granulaires</li>
-                        <li>✅ Analyse comparative multi-documents (jusqu'à 5)</li>
-                        <li>✅ Tableaux de bord analytiques avancés</li>
-                        <li>✅ Journal d'audit complet avec traçabilité</li>
-                        <li>✅ Personnalisation de la marque</li>
-                        <li>✅ Support technique dédié & formation équipe</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Analyses illimitées</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Gestion multi-utilisateurs avec rôles</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Système d'invitations &amp; permissions granulaires</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Analyse comparative multi-documents</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Tableaux de bord analytiques avancés</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Journal d'audit complet avec traçabilité</li>
+                        <li className="ac-feature ac-feature--ok"><span className="ac-feature-mark">&#10003;</span> Support technique dédié &amp; formation équipe</li>
                       </>
                     )}
                   </ul>
@@ -216,14 +207,18 @@ const Account: React.FC = () => {
               </section>
             )}
 
-            {/* Profile Management Section */}
-            <section className="account-card">
-              <h2>✏️ {t('account.profile_info')}</h2>
-              <form onSubmit={handleSubmit} className="account-form">
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="firstName">{t('account.first_name')} *</label>
+            {/* Profile */}
+            <section className="ac-section">
+              <div className="ac-section-head">
+                <span className="ac-section-label">{t('account.profile_info')}</span>
+                <div className="ac-section-rule" />
+              </div>
+              <form onSubmit={handleSubmit} className="ac-form">
+                <div className="ac-form-row">
+                  <div className="ac-form-group">
+                    <label className="ac-input-label" htmlFor="firstName">{t('account.first_name')} *</label>
                     <input
+                      className="ac-input"
                       type="text"
                       id="firstName"
                       name="firstName"
@@ -233,10 +228,10 @@ const Account: React.FC = () => {
                       placeholder={t('account.first_name_placeholder')}
                     />
                   </div>
-
-                  <div className="form-group">
-                    <label htmlFor="lastName">{t('account.last_name')} *</label>
+                  <div className="ac-form-group">
+                    <label className="ac-input-label" htmlFor="lastName">{t('account.last_name')} *</label>
                     <input
+                      className="ac-input"
                       type="text"
                       id="lastName"
                       name="lastName"
@@ -247,11 +242,11 @@ const Account: React.FC = () => {
                     />
                   </div>
                 </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="phone">{t('account.phone')}</label>
+                <div className="ac-form-row">
+                  <div className="ac-form-group">
+                    <label className="ac-input-label" htmlFor="phone">{t('account.phone')}</label>
                     <input
+                      className="ac-input"
                       type="tel"
                       id="phone"
                       name="phone"
@@ -260,15 +255,9 @@ const Account: React.FC = () => {
                       placeholder={t('account.phone_placeholder')}
                     />
                   </div>
-
-                  <div className="form-group">
-                    <label htmlFor="country">{t('account.country')}</label>
-                    <select
-                      id="country"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleChange}
-                    >
+                  <div className="ac-form-group">
+                    <label className="ac-input-label" htmlFor="country">{t('account.country')}</label>
+                    <select className="ac-input" id="country" name="country" value={formData.country} onChange={handleChange}>
                       <option value="">{t('account.select_country')}</option>
                       <option value="FR">France</option>
                       <option value="BE">Belgique</option>
@@ -283,32 +272,24 @@ const Account: React.FC = () => {
                     </select>
                   </div>
                 </div>
-
-                <div className="form-actions">
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary"
-                    disabled={saving}
-                  >
+                <div className="ac-form-actions">
+                  <button type="submit" className="ac-save-btn" disabled={saving}>
                     {saving ? t('account.saving') : t('account.save_profile')}
                   </button>
                 </div>
               </form>
             </section>
 
-
-            {/* Account Actions Section */}
-            <section className="account-card account-danger">
-              <h2>⚠️ {t('account.danger_zone')}</h2>
-              <p className="danger-description">{t('account.danger_description')}</p>
-              <div className="account-actions">
-                <button 
-                  onClick={handleDelete}
-                  className="btn-danger"
-                >
-                  🗑 {t('account.delete_account')}
-                </button>
+            {/* Danger zone */}
+            <section className="ac-section ac-section--danger">
+              <div className="ac-section-head">
+                <span className="ac-section-label ac-section-label--danger">{t('account.danger_zone')}</span>
+                <div className="ac-section-rule ac-section-rule--danger" />
               </div>
+              <p className="ac-danger-desc">{t('account.danger_description')}</p>
+              <button onClick={handleDelete} className="ac-delete-btn">
+                {t('account.delete_account')}
+              </button>
             </section>
           </>
         )}
