@@ -95,20 +95,32 @@ const fetchTextFromUrl = async (url) => {
 
 /**
  * Start the background scheduler.
- * Called once from index.js.
+ * Called once from index.js. Waits for the Mongoose connection to be open
+ * before running the first tick so the DB is guaranteed to be ready.
  */
 const startWatcherCron = () => {
   if (process.env.NODE_ENV === 'test') return; // Never run in tests
 
-  logger.info(`WatcherCron: started — ticking every ${TICK_MS / 1000 / 60 / 60}h`);
+  const mongoose = require('mongoose');
 
-  // Run once immediately at startup (catches any missed checks after deploy)
-  runWatcherTick().catch((err) => logger.error('WatcherCron: startup tick failed', { error: err.message }));
+  const start = () => {
+    logger.info(`WatcherCron: started — ticking every ${TICK_MS / 1000 / 60 / 60}h`);
 
-  // Then repeat on interval
-  setInterval(() => {
-    runWatcherTick().catch((err) => logger.error('WatcherCron: tick failed', { error: err.message }));
-  }, TICK_MS);
+    // Run once immediately at startup (catches any missed checks after deploy)
+    runWatcherTick().catch((err) => logger.error('WatcherCron: startup tick failed', { error: err.message }));
+
+    // Then repeat on interval
+    setInterval(() => {
+      runWatcherTick().catch((err) => logger.error('WatcherCron: tick failed', { error: err.message }));
+    }, TICK_MS);
+  };
+
+  // If already connected, start immediately; otherwise wait for the open event
+  if (mongoose.connection.readyState === 1) {
+    start();
+  } else {
+    mongoose.connection.once('open', start);
+  }
 };
 
 module.exports = { startWatcherCron, runWatcherTick };
