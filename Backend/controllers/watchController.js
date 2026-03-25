@@ -11,7 +11,9 @@ const {
 // POST /api/watch — start watching a document
 const createWatch = async (req, res) => {
   try {
-    const { name, analysisId, text, url, checkFrequency } = req.body;
+    const {
+      name, analysisId, text, url, checkFrequency,
+    } = req.body;
 
     if (!name || !analysisId || !text) {
       return res.status(400).json({ message: 'name, analysisId et text sont requis.' });
@@ -95,4 +97,6 @@ const manualCheck = async (req, res) => {
   }
 };
 
-module.exports = { createWatch, getWatches, removeWatch, patchWatch, getHistory, manualCheck };
+module.exports = {
+  createWatch, getWatches, removeWatch, patchWatch, getHistory, manualCheck,
+};

@@ -19,7 +19,9 @@ const preprocessText = (text) => text.replace(/\s+/g, ' ').replace(/\n\s*\n/g, '
  * Start watching a document after it has been analyzed.
  * Called from the analyze flow when user clicks "Watch".
  */
-const watchDocument = async ({ firebaseUid, name, analysisId, text, url = null, checkFrequency = 'weekly' }) => {
+const watchDocument = async ({
+  firebaseUid, name, analysisId, text, url = null, checkFrequency = 'weekly',
+}) => {
   const processedText = preprocessText(text);
   const hash = sha256(processedText);
 
@@ -48,9 +50,7 @@ const watchDocument = async ({ firebaseUid, name, analysisId, text, url = null, 
 /**
  * List all watched documents for a user.
  */
-const listWatches = async (firebaseUid) => {
-  return WatchedDocument.find({ firebaseUid }).sort({ createdAt: -1 }).lean();
-};
+const listWatches = async (firebaseUid) => WatchedDocument.find({ firebaseUid }).sort({ createdAt: -1 }).lean();
 
 /**
  * Delete a watch.
@@ -72,7 +72,7 @@ const updateWatch = async (firebaseUid, watchId, updates) => {
   return WatchedDocument.findOneAndUpdate(
     { _id: watchId, firebaseUid },
     { $set: allowed },
-    { new: true }
+    { new: true },
   ).lean();
 };
 
@@ -196,7 +196,9 @@ const checkForChanges = async ({ watchId, firebaseUid, newText }) => {
 /**
  * Ask the AI to summarize what changed between two versions.
  */
-const runDiffAnalysis = async ({ user, previousSummary, newSummary, previousClauses, newClauses, previousScore, newScore }) => {
+const runDiffAnalysis = async ({
+  user, previousSummary, newSummary, previousClauses, newClauses, previousScore, newScore,
+}) => {
   // Simple heuristic diff on clauses
   const prevSet = new Set(previousClauses.map((c) => c.toLowerCase().trim()));
   const newSet = new Set(newClauses.map((c) => c.toLowerCase().trim()));
@@ -206,7 +208,9 @@ const runDiffAnalysis = async ({ user, previousSummary, newSummary, previousClau
   const modifiedClauses = [];
 
   // Determine risk level based on score change and clause count
-  const scoreRank = { 'Excellent': 5, 'Bon': 4, 'Moyen': 3, 'Médiocre': 2, 'Problématique': 1 };
+  const scoreRank = {
+    Excellent: 5, Bon: 4, Moyen: 3, Médiocre: 2, Problématique: 1,
+  };
   const prevRank = scoreRank[previousScore] || 3;
   const newRank = scoreRank[newScore] || 3;
   const scoreDelta = prevRank - newRank; // positive = got worse
@@ -216,12 +220,18 @@ const runDiffAnalysis = async ({ user, previousSummary, newSummary, previousClau
   else if (scoreDelta === 1 || addedClauses.length >= 2) riskLevel = 'high';
   else if (addedClauses.length >= 1) riskLevel = 'medium';
 
-  const diffSummary = buildDiffSummary({ addedClauses, removedClauses, riskLevel, previousScore, newScore });
+  const diffSummary = buildDiffSummary({
+    addedClauses, removedClauses, riskLevel, previousScore, newScore,
+  });
 
-  return { diffSummary, addedClauses, removedClauses, modifiedClauses, riskLevel };
+  return {
+    diffSummary, addedClauses, removedClauses, modifiedClauses, riskLevel,
+  };
 };
 
-const buildDiffSummary = ({ addedClauses, removedClauses, riskLevel, previousScore, newScore }) => {
+const buildDiffSummary = ({
+  addedClauses, removedClauses, riskLevel, previousScore, newScore,
+}) => {
   const parts = [];
   if (previousScore !== newScore) {
     parts.push(`Le score est passé de ${previousScore} à ${newScore}.`);

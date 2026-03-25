@@ -132,10 +132,10 @@ app.get('/', (_req, res) => {
 // ✅ Basic Health check with uptime
 app.get('/health', (_req, res) => {
   logger.info('Basic health check accessed');
-  
+
   const uptimeSeconds = process.uptime();
   const uptimeFormatted = `${Math.floor(uptimeSeconds / 3600)}h ${Math.floor((uptimeSeconds % 3600) / 60)}m ${Math.floor(uptimeSeconds % 60)}s`;
-  
+
   res.json({
     status: 'healthy',
     message: '✅ TransparAI Backend API is running',

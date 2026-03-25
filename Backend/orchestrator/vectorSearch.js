@@ -67,7 +67,9 @@ const embedText = async (text) => {
  * @param {string} opts.summary        1–2 sentence AI summary
  * @param {string[]} opts.topClauses   Top 3 clause descriptions
  */
-const storeEmbedding = async ({ firebaseUid, text, industry, score, summary, topClauses }) => {
+const storeEmbedding = async ({
+  firebaseUid, text, industry, score, summary, topClauses,
+}) => {
   const inputHash = sha256(text);
 
   // Skip if we already stored an embedding for identical input
@@ -179,7 +181,9 @@ const findSimilar = async ({ text, industry, limit = 3 }) => {
  * - Returns cached context string if this exact document was already embedded
  * - Falls back to full vector search on cache miss
  */
-const findSimilarOrCached = async ({ text, plan, inputHash, limit = 3 }) => {
+const findSimilarOrCached = async ({
+  text, plan, inputHash, limit = 3,
+}) => {
   if (plan === 'free' || plan === 'starter') return [];
 
   if (!process.env.VOYAGE_API_KEY) return [];
@@ -200,4 +204,6 @@ const findSimilarOrCached = async ({ text, plan, inputHash, limit = 3 }) => {
   return findSimilar({ text, limit });
 };
 
-module.exports = { embedText, storeEmbedding, findSimilar, findSimilarOrCached };
+module.exports = {
+  embedText, storeEmbedding, findSimilar, findSimilarOrCached,
+};

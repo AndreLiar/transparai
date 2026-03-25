@@ -42,9 +42,9 @@ const SERVICE = {
 // "http" has no ECS equivalent — map it to "debug".
 const ECS_LEVEL = {
   error: 'error',
-  warn:  'warn',
-  info:  'info',
-  http:  'debug',
+  warn: 'warn',
+  info: 'info',
+  http: 'debug',
   debug: 'debug',
 };
 
@@ -155,7 +155,9 @@ const ecsFormat = winston.format((info) => {
 const devConsoleFormat = winston.format.combine(
   winston.format.colorize({ all: true }),
   winston.format.timestamp({ format: 'HH:mm:ss' }),
-  winston.format.printf(({ timestamp, level, message, error, labels, user, http: h }) => {
+  winston.format.printf(({
+    timestamp, level, message, error, labels, user, http: h,
+  }) => {
     let out = `${timestamp} [${level}] ${message}`;
     if (user?.id) out += ` | user=${user.id}`;
     if (h?.response?.status_code) out += ` | status=${h.response.status_code}`;
@@ -215,11 +217,11 @@ if (process.env.SLACK_WEBHOOK_URL && process.env.NODE_ENV === 'production') {
       attachments: [{
         color: 'danger',
         fields: [
-          { title: 'Error',       value: info.message,               short: false },
-          { title: 'Level',       value: info['log.level'] || 'error', short: true },
-          { title: 'Timestamp',   value: info['@timestamp'],          short: true },
-          { title: 'Service',     value: info.service?.name,          short: true },
-          { title: 'Environment', value: info.service?.environment,   short: true },
+          { title: 'Error', value: info.message, short: false },
+          { title: 'Level', value: info['log.level'] || 'error', short: true },
+          { title: 'Timestamp', value: info['@timestamp'], short: true },
+          { title: 'Service', value: info.service?.name, short: true },
+          { title: 'Environment', value: info.service?.environment, short: true },
         ],
       }],
     }),
@@ -227,8 +229,12 @@ if (process.env.SLACK_WEBHOOK_URL && process.env.NODE_ENV === 'production') {
 }
 
 // ── Logger instance ───────────────────────────────────────────────────────────
-const customLevels = { error: 0, warn: 1, info: 2, http: 3, debug: 4 };
-winston.addColors({ error: 'red', warn: 'yellow', info: 'green', http: 'magenta', debug: 'white' });
+const customLevels = {
+  error: 0, warn: 1, info: 2, http: 3, debug: 4,
+};
+winston.addColors({
+  error: 'red', warn: 'yellow', info: 'green', http: 'magenta', debug: 'white',
+});
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
@@ -260,7 +266,9 @@ logger.logRequest = (req, res, duration) => {
 
 logger.logError = (error, req = null, additionalInfo = {}) => {
   const data = {
-    error: { message: error.message, stack: error.stack, type: error.name, code: error.code },
+    error: {
+      message: error.message, stack: error.stack, type: error.name, code: error.code,
+    },
     event: { category: 'web', action: 'error', outcome: 'failure' },
     ...additionalInfo,
   };

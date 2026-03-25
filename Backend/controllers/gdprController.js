@@ -21,7 +21,9 @@ const exportUserData = async (req, res) => {
 
     const analyses = await Analysis.find(
       { firebaseUid: uid },
-      { _id: 1, source: 1, score: 1, summary: 1, createdAt: 1 },
+      {
+        _id: 1, source: 1, score: 1, summary: 1, createdAt: 1,
+      },
     ).lean();
 
     const userData = {

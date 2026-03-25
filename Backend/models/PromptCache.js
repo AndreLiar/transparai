@@ -14,32 +14,34 @@ const mongoose = require('mongoose');
 
 const promptCacheSchema = new mongoose.Schema({
   // Cache key — SHA-256 of preprocessed text + prompt version string
-  cacheKey:   { type: String, required: true, unique: true, index: true },
+  cacheKey: {
+    type: String, required: true, unique: true, index: true,
+  },
 
   // Original input fingerprint (for debugging / audit)
-  inputHash:     { type: String, required: true },
+  inputHash: { type: String, required: true },
   promptVersion: { type: String, required: true },
 
   // Full analysis result — everything the service layer needs to build a response
   result: {
-    resume:    { type: String, required: true },
-    score:     { type: String, required: true },
-    clauses:   { type: [String], default: [] },
+    resume: { type: String, required: true },
+    score: { type: String, required: true },
+    clauses: { type: [String], default: [] },
     modelUsed: { type: String, required: true },
 
     // EU AI Act Art. 13 metadata
-    confidenceLevel:     { type: String },
+    confidenceLevel: { type: String },
     requiresHumanReview: { type: Boolean, default: false },
-    disclaimerVersion:   { type: String },
-    jurisdiction:        { type: String, default: 'FR' },
-    promptVersion:       { type: String },
+    disclaimerVersion: { type: String },
+    jurisdiction: { type: String, default: 'FR' },
+    promptVersion: { type: String },
   },
 
   // How many times this cache entry has been served (analytics)
   hitCount: { type: Number, default: 0 },
 
-  createdAt:   { type: Date, default: Date.now, immutable: true },
-  lastHitAt:   { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now, immutable: true },
+  lastHitAt: { type: Date, default: Date.now },
 });
 
 // TTL: 90 days — contracts change, we don't want stale legal analysis

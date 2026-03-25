@@ -5,7 +5,9 @@
 
 const crypto = require('crypto');
 const AIDecisionLog = require('../models/AIDecisionLog');
-const { validateInput, validateOutput, detectInjection, sanitizeInjection } = require('./guardrails');
+const {
+  validateInput, validateOutput, detectInjection, sanitizeInjection,
+} = require('./guardrails');
 const { buildFallbackChain, buildLLM, MODEL_COSTS } = require('./modelRouter');
 const { parseSingleAnalysis, parseComparativeAnalysis } = require('./outputParser');
 const {
@@ -166,20 +168,20 @@ const analyseDocument = async ({ user, text, plan }) => {
   if (cachedResult) {
     console.log(`[Orchestrator] Prompt cache hit — inputHash: ${inputHash.substring(0, 12)}…`);
     return enforceDisclaimer({
-      resume:  cachedResult.resume,
-      score:   cachedResult.score,
+      resume: cachedResult.resume,
+      score: cachedResult.score,
       clauses: [...(cachedResult.clauses || [])], // copy so we don't mutate cached entry
       _meta: {
-        modelUsed:           cachedResult.modelUsed,
-        actualCost:          0,
-        promptVersion:       cachedResult.promptVersion || PROMPT_VERSION,
-        confidenceLevel:     cachedResult.confidenceLevel,
+        modelUsed: cachedResult.modelUsed,
+        actualCost: 0,
+        promptVersion: cachedResult.promptVersion || PROMPT_VERSION,
+        confidenceLevel: cachedResult.confidenceLevel,
         requiresHumanReview: cachedResult.requiresHumanReview,
-        disclaimerVersion:   cachedResult.disclaimerVersion || DISCLAIMER_VERSION,
-        jurisdiction:        cachedResult.jurisdiction || 'FR',
-        analysisDepth:       PLAN_DEPTH[effectivePlan]?.complexity || 'standard',
-        chunked:             false,
-        fromPromptCache:     true,
+        disclaimerVersion: cachedResult.disclaimerVersion || DISCLAIMER_VERSION,
+        jurisdiction: cachedResult.jurisdiction || 'FR',
+        analysisDepth: PLAN_DEPTH[effectivePlan]?.complexity || 'standard',
+        chunked: false,
+        fromPromptCache: true,
       },
     });
   }
@@ -209,8 +211,13 @@ const analyseDocument = async ({ user, text, plan }) => {
   // ── Chunking pipeline for large documents ────────────────────────────────
   if (needsChunking(processedText, effectivePlan)) {
     return analyseDocumentChunked({
-      user, processedText, inputHash, inputGuardrail,
-      depth, extraCriteria, effectivePlan,
+      user,
+      processedText,
+      inputHash,
+      inputGuardrail,
+      depth,
+      extraCriteria,
+      effectivePlan,
     });
   }
 
@@ -225,8 +232,9 @@ const analyseDocument = async ({ user, text, plan }) => {
   });
 
   // 5. Run through model fallback chain
-  const { rawText, modelUsed, selectedEntry, actualCost, fallbackChain, latencyMs } =
-    await runWithFallback(formattedPrompt, user, processedText.length);
+  const {
+    rawText, modelUsed, selectedEntry, actualCost, fallbackChain, latencyMs,
+  } = await runWithFallback(formattedPrompt, user, processedText.length);
 
   // 6. Parse and validate output schema
   const parsed = parseSingleAnalysis(rawText);
@@ -252,15 +260,15 @@ const analyseDocument = async ({ user, text, plan }) => {
 
   // 9. Store in global prompt cache (non-blocking) — future users get this for free
   setCached(inputHash, PROMPT_VERSION, {
-    resume:              parsed.resume,
-    score:               parsed.score,
-    clauses:             parsed.clauses,
+    resume: parsed.resume,
+    score: parsed.score,
+    clauses: parsed.clauses,
     modelUsed,
-    confidenceLevel:     guardrailResult.confidenceLevel,
+    confidenceLevel: guardrailResult.confidenceLevel,
     requiresHumanReview: guardrailResult.requiresHumanReview,
-    disclaimerVersion:   DISCLAIMER_VERSION,
-    jurisdiction:        'FR',
-    promptVersion:       PROMPT_VERSION,
+    disclaimerVersion: DISCLAIMER_VERSION,
+    jurisdiction: 'FR',
+    promptVersion: PROMPT_VERSION,
   }).catch((err) => console.error('[Orchestrator] PromptCache store failed:', err.message));
 
   // 10. Store embedding (non-blocking, fire-and-forget)
@@ -335,7 +343,8 @@ const analyseDocumentChunked = async ({
     let chunkParsed;
     try {
       const cleaned = result.rawText.trim()
-        .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
+        .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '')
+        .trim();
       const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
       chunkParsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleaned);
     } catch {
@@ -391,15 +400,15 @@ const analyseDocumentChunked = async ({
 
   // Store in global prompt cache — chunked large docs also benefit future users
   setCached(inputHash, PROMPT_VERSION, {
-    resume:              parsed.resume,
-    score:               parsed.score,
-    clauses:             parsed.clauses,
-    modelUsed:           lastModelUsed,
-    confidenceLevel:     guardrailResult.confidenceLevel,
+    resume: parsed.resume,
+    score: parsed.score,
+    clauses: parsed.clauses,
+    modelUsed: lastModelUsed,
+    confidenceLevel: guardrailResult.confidenceLevel,
     requiresHumanReview: guardrailResult.requiresHumanReview,
-    disclaimerVersion:   DISCLAIMER_VERSION,
-    jurisdiction:        'FR',
-    promptVersion:       PROMPT_VERSION,
+    disclaimerVersion: DISCLAIMER_VERSION,
+    jurisdiction: 'FR',
+    promptVersion: PROMPT_VERSION,
   }).catch((err) => console.error('[Orchestrator] PromptCache store failed:', err.message));
 
   storeEmbedding({
@@ -452,7 +461,7 @@ const analyseComparative = async ({ user, documents, industry = 'default' }) => 
 
   // Truncate combined text
   const truncated = documentsText.length > 100000
-    ? documentsText.substring(0, 100000) + '...'
+    ? `${documentsText.substring(0, 100000)}...`
     : documentsText;
 
   // Injection sanitization + PII redaction on combined text
@@ -465,8 +474,8 @@ const analyseComparative = async ({ user, documents, industry = 'default' }) => 
 
   const inputGuardrail = validateInput(processedText);
 
-  const criteriaList = template.criteria.map(c => `- ${c}`).join('\n');
-  const complianceList = template.compliance.map(c => `- ${c}`).join('\n');
+  const criteriaList = template.criteria.map((c) => `- ${c}`).join('\n');
+  const complianceList = template.compliance.map((c) => `- ${c}`).join('\n');
 
   const formattedPrompt = await comparativeAnalysisPrompt.format({
     industry_name: template.name,
@@ -477,8 +486,9 @@ const analyseComparative = async ({ user, documents, industry = 'default' }) => 
 
   const maxTokens = user.plan === 'enterprise' ? 8192 : 4096;
 
-  const { rawText, modelUsed, selectedEntry, actualCost, fallbackChain, latencyMs } =
-    await runWithFallback(formattedPrompt, user, processedText.length, maxTokens);
+  const {
+    rawText, modelUsed, selectedEntry, actualCost, fallbackChain, latencyMs,
+  } = await runWithFallback(formattedPrompt, user, processedText.length, maxTokens);
 
   const parsed = parseComparativeAnalysis(rawText);
   const guardrailResult = validateOutput(parsed, rawText);

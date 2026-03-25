@@ -103,13 +103,13 @@ const validateInput = (text) => {
 
   // Check for at least minimal legal content
   const lower = trimmed.toLowerCase();
-  const hasLegalContent = LEGAL_KEYWORDS.some(kw => lower.includes(kw));
+  const hasLegalContent = LEGAL_KEYWORDS.some((kw) => lower.includes(kw));
   if (!hasLegalContent) {
     reasons.push('Text does not appear to contain legal/contract content');
   }
 
   return {
-    passed: reasons.filter(r => !r.includes('truncated')).length === 0,
+    passed: reasons.filter((r) => !r.includes('truncated')).length === 0,
     reasons,
   };
 };
@@ -159,4 +159,6 @@ const validateOutput = (parsed, rawText) => {
   };
 };
 
-module.exports = { validateInput, validateOutput, detectInjection, sanitizeInjection };
+module.exports = {
+  validateInput, validateOutput, detectInjection, sanitizeInjection,
+};

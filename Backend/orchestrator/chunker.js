@@ -4,14 +4,14 @@
 
 // Hard limits by plan — characters (not tokens; ~3 chars per token estimate)
 const PLAN_LIMITS = {
-  free:       50_000,  // hard cap — no chunking, text truncated
-  starter:    50_000,  // hard cap — no chunking, text truncated
-  standard:  100_000,  // up to 2 chunks of 50k
-  premium:   150_000,  // up to 3 chunks of 50k
+  free: 50_000, // hard cap — no chunking, text truncated
+  starter: 50_000, // hard cap — no chunking, text truncated
+  standard: 100_000, // up to 2 chunks of 50k
+  premium: 150_000, // up to 3 chunks of 50k
   enterprise: 200_000, // up to 4 chunks of 50k
 };
 
-const CHUNK_SIZE   = 50_000; // characters per chunk
+const CHUNK_SIZE = 50_000; // characters per chunk
 const CHUNK_OVERLAP = 1_000; // overlap to preserve clause continuity at boundaries
 
 /**
@@ -45,9 +45,9 @@ const chunkText = (text) => {
     if (end < text.length) {
       // Try to split on a paragraph boundary within the last 2k chars of the chunk
       const searchWindow = text.substring(end - 2_000, end);
-      const lastNewline  = searchWindow.lastIndexOf('\n\n');
-      const lastPeriod   = searchWindow.lastIndexOf('. ');
-      const boundary     = lastNewline !== -1 ? lastNewline : lastPeriod;
+      const lastNewline = searchWindow.lastIndexOf('\n\n');
+      const lastPeriod = searchWindow.lastIndexOf('. ');
+      const boundary = lastNewline !== -1 ? lastNewline : lastPeriod;
 
       if (boundary !== -1) {
         end = end - 2_000 + boundary + 1;
@@ -73,4 +73,6 @@ const needsChunking = (text, plan) => {
   return text.length > CHUNK_SIZE;
 };
 
-module.exports = { applyPlanLimit, chunkText, needsChunking, CHUNK_SIZE, PLAN_LIMITS };
+module.exports = {
+  applyPlanLimit, chunkText, needsChunking, CHUNK_SIZE, PLAN_LIMITS,
+};

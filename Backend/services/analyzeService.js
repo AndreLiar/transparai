@@ -3,7 +3,9 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const Analysis = require('../models/Analysis');
 const { analyseDocument } = require('../orchestrator');
-const { syncAIBudgetWithPlan, canAnalyze, getMonthlyLimit, hasFeature } = require('../utils/planUtils');
+const {
+  syncAIBudgetWithPlan, canAnalyze, getMonthlyLimit, hasFeature,
+} = require('../utils/planUtils');
 
 const sha256 = (text) => crypto.createHash('sha256').update(text).digest('hex');
 
@@ -134,7 +136,9 @@ const processAnalysis = async ({
     throw new Error(`Erreur d'analyse IA: ${aiError.message}`);
   }
 
-  const { resume, score, clauses, _meta } = aiResult;
+  const {
+    resume, score, clauses, _meta,
+  } = aiResult;
   const isFree = user.plan === 'free';
   const isUnlimited = user.monthlyQuota.limit === -1;
 

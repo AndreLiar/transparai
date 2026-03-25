@@ -4,6 +4,7 @@ require('dotenv').config();
 // Initialise Application Insights FIRST — must be before any other require
 // so the SDK can auto-instrument Express, Mongoose, and outbound HTTP calls.
 const { initAppInsights } = require('./config/appInsights');
+
 initAppInsights();
 
 // Validate environment variables before starting the application

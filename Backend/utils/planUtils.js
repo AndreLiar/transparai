@@ -23,22 +23,22 @@ const PLAN_CONFIG = {
   free: {
     name: 'Gratuit',
     priceEur: 0,
-    monthlyAnalyses: 5,       // was 20 — real scarcity to drive upgrades
+    monthlyAnalyses: 5, // was 20 — real scarcity to drive upgrades
     aiBudget: 0,
     features: {
-      basicAnalysis:    true,
-      sampleContracts:  true,
-      textInput:        true,
-      fileUpload:       false, // free plan: text paste only (reduces abuse + costs)
-      ocrProcessing:    false, // OCR is a premium differentiator
-      pdfExport:        false,
-      history:          false,
-      prioritySupport:  false,
+      basicAnalysis: true,
+      sampleContracts: true,
+      textInput: true,
+      fileUpload: false, // free plan: text paste only (reduces abuse + costs)
+      ocrProcessing: false, // OCR is a premium differentiator
+      pdfExport: false,
+      history: false,
+      prioritySupport: false,
       advancedAnalysis: false,
       comparativeAnalysis: false,
-      teamFeatures:     false,
-      apiAccess:        false,
-      premiumAI:        false, // gpt-4o-mini only with capped budget
+      teamFeatures: false,
+      apiAccess: false,
+      premiumAI: false, // gpt-4o-mini only with capped budget
       historyRetentionDays: 0,
     },
   },
@@ -51,91 +51,91 @@ const PLAN_CONFIG = {
     monthlyAnalyses: 5,
     aiBudget: 0,
     features: {
-      basicAnalysis:    true,
-      sampleContracts:  true,
-      textInput:        true,
-      fileUpload:       false,
-      ocrProcessing:    false,
-      pdfExport:        false,
-      history:          false,
-      prioritySupport:  false,
+      basicAnalysis: true,
+      sampleContracts: true,
+      textInput: true,
+      fileUpload: false,
+      ocrProcessing: false,
+      pdfExport: false,
+      history: false,
+      prioritySupport: false,
       advancedAnalysis: false,
       comparativeAnalysis: false,
-      teamFeatures:     false,
-      apiAccess:        false,
-      premiumAI:        false,
+      teamFeatures: false,
+      apiAccess: false,
+      premiumAI: false,
       historyRetentionDays: 0,
     },
   },
 
   standard: {
     name: 'Standard',
-    priceEur: 14.99,          // was €9.99 — still below market, more sustainable
-    monthlyAnalyses: 100,     // was 40 — removes churn pressure at this price point
-    aiBudget: 3.0,            // was $2 — covers 100 gpt-4o-mini analyses comfortably
+    priceEur: 14.99, // was €9.99 — still below market, more sustainable
+    monthlyAnalyses: 100, // was 40 — removes churn pressure at this price point
+    aiBudget: 3.0, // was $2 — covers 100 gpt-4o-mini analyses comfortably
     features: {
-      basicAnalysis:    true,
-      sampleContracts:  true,
-      textInput:        true,
-      fileUpload:       true,
-      ocrProcessing:    true,
-      pdfExport:        true,
-      history:          true,
-      prioritySupport:  false,
+      basicAnalysis: true,
+      sampleContracts: true,
+      textInput: true,
+      fileUpload: true,
+      ocrProcessing: true,
+      pdfExport: true,
+      history: true,
+      prioritySupport: false,
       advancedAnalysis: false,
       comparativeAnalysis: false, // comparative is Premium+
-      teamFeatures:     false,
-      apiAccess:        false,
-      premiumAI:        true,  // gpt-4o-mini
+      teamFeatures: false,
+      apiAccess: false,
+      premiumAI: true, // gpt-4o-mini
       historyRetentionDays: 90,
     },
   },
 
   premium: {
     name: 'Premium',
-    priceEur: 29.99,          // was €19.99 — matches Grammarly/Notion tier
-    monthlyAnalyses: -1,      // Unlimited
-    aiBudget: 15.0,           // was $10 — covers ~1000 gpt-4o-mini or ~300 gpt-4o analyses
+    priceEur: 29.99, // was €19.99 — matches Grammarly/Notion tier
+    monthlyAnalyses: -1, // Unlimited
+    aiBudget: 15.0, // was $10 — covers ~1000 gpt-4o-mini or ~300 gpt-4o analyses
     features: {
-      basicAnalysis:    true,
-      sampleContracts:  true,
-      textInput:        true,
-      fileUpload:       true,
-      ocrProcessing:    true,
-      pdfExport:        true,
-      history:          true,
-      prioritySupport:  true,
+      basicAnalysis: true,
+      sampleContracts: true,
+      textInput: true,
+      fileUpload: true,
+      ocrProcessing: true,
+      pdfExport: true,
+      history: true,
+      prioritySupport: true,
       advancedAnalysis: true,
       comparativeAnalysis: true,
-      teamFeatures:     false,
-      apiAccess:        true,
-      premiumAI:        true,  // gpt-4o
+      teamFeatures: false,
+      apiAccess: true,
+      premiumAI: true, // gpt-4o
       historyRetentionDays: 730, // 2 years
     },
   },
 
   enterprise: {
     name: 'Enterprise',
-    priceEur: 199,            // was €99 — still 10× below legal SaaS market rate
-    monthlyAnalyses: -1,      // Unlimited
-    aiBudget: 75.0,           // was $50 — covers a full team's heavy usage
+    priceEur: 199, // was €99 — still 10× below legal SaaS market rate
+    monthlyAnalyses: -1, // Unlimited
+    aiBudget: 75.0, // was $50 — covers a full team's heavy usage
     features: {
-      basicAnalysis:    true,
-      sampleContracts:  true,
-      textInput:        true,
-      fileUpload:       true,
-      ocrProcessing:    true,
-      pdfExport:        true,
-      history:          true,
-      prioritySupport:  true,
+      basicAnalysis: true,
+      sampleContracts: true,
+      textInput: true,
+      fileUpload: true,
+      ocrProcessing: true,
+      pdfExport: true,
+      history: true,
+      prioritySupport: true,
       advancedAnalysis: true,
       comparativeAnalysis: true,
-      teamFeatures:     true,
-      apiAccess:        true,
-      premiumAI:        true,  // gpt-4o priority routing
+      teamFeatures: true,
+      apiAccess: true,
+      premiumAI: true, // gpt-4o priority routing
       historyRetentionDays: 730,
-      slaGuarantee:     true,
-      customBranding:   true,
+      slaGuarantee: true,
+      customBranding: true,
       dedicatedSupport: true,
     },
   },

@@ -11,7 +11,9 @@
 const User = require('../models/User');
 const Analysis = require('../models/Analysis');
 const { analyseDocument } = require('../orchestrator');
-const { syncAIBudgetWithPlan, canAnalyze, getMonthlyLimit, hasFeature } = require('../utils/planUtils');
+const {
+  syncAIBudgetWithPlan, canAnalyze, getMonthlyLimit, hasFeature,
+} = require('../utils/planUtils');
 
 const preprocessText = (text) => {
   let cleaned = text.replace(/\s+/g, ' ').replace(/\n\s*\n/g, '\n').trim();
@@ -44,20 +46,26 @@ const analyzeStream = async (req, res) => {
   };
 
   try {
-    const { text, source, documentName, originalName, fileType, sizeBytes, pageCount, ocrConfidence } = req.body;
+    const {
+      text, source, documentName, originalName, fileType, sizeBytes, pageCount, ocrConfidence,
+    } = req.body;
 
     if (!text || !source) {
       return done({ type: 'error', message: 'Champ manquant (text ou source).', status: 400 });
     }
 
     // ── Step 1: Load user ─────────────────────────────────────────────────
-    emit(res, { type: 'progress', step: 'loading', message: 'Chargement du profil utilisateur…', percent: 5 });
+    emit(res, {
+      type: 'progress', step: 'loading', message: 'Chargement du profil utilisateur…', percent: 5,
+    });
 
     const user = await User.findOne({ firebaseUid: req.user.uid });
     if (!user) return done({ type: 'error', message: 'Utilisateur introuvable', status: 404 });
 
     // ── Step 2: Guards (consent, quota, features) ─────────────────────────
-    emit(res, { type: 'progress', step: 'validating', message: 'Vérification des droits d\'accès…', percent: 10 });
+    emit(res, {
+      type: 'progress', step: 'validating', message: 'Vérification des droits d\'accès…', percent: 10,
+    });
 
     if (!user.consent?.aiProcessing) {
       return done({
@@ -112,7 +120,9 @@ const analyzeStream = async (req, res) => {
     }
 
     // ── Step 3: Preprocess text ───────────────────────────────────────────
-    emit(res, { type: 'progress', step: 'preprocessing', message: 'Préparation du document…', percent: 15 });
+    emit(res, {
+      type: 'progress', step: 'preprocessing', message: 'Préparation du document…', percent: 15,
+    });
 
     const processedText = preprocessText(text);
     const isLargeDoc = processedText.length > 50000;
@@ -120,25 +130,37 @@ const analyzeStream = async (req, res) => {
 
     // ── Step 4: RAG / vector search ───────────────────────────────────────
     if (!isFree) {
-      emit(res, { type: 'progress', step: 'rag', message: 'Recherche d\'analyses similaires…', percent: 25 });
+      emit(res, {
+        type: 'progress', step: 'rag', message: 'Recherche d\'analyses similaires…', percent: 25,
+      });
     }
 
     // ── Step 5: LLM call ──────────────────────────────────────────────────
     if (isLargeDoc && !isFree) {
-      emit(res, { type: 'progress', step: 'chunking', message: `Document long détecté (${Math.round(processedText.length / 1000)}k car.) — analyse par parties…`, percent: 35 });
+      emit(res, {
+        type: 'progress', step: 'chunking', message: `Document long détecté (${Math.round(processedText.length / 1000)}k car.) — analyse par parties…`, percent: 35,
+      });
     } else {
-      emit(res, { type: 'progress', step: 'analysing', message: 'Analyse IA en cours…', percent: 40 });
+      emit(res, {
+        type: 'progress', step: 'analysing', message: 'Analyse IA en cours…', percent: 40,
+      });
     }
 
     const aiResult = await analyseDocument({ user, text: processedText, plan: user.plan });
 
     // ── Step 6: Parsing / guardrails (already done inside orchestrator) ───
-    emit(res, { type: 'progress', step: 'guardrails', message: 'Validation des résultats…', percent: 80 });
+    emit(res, {
+      type: 'progress', step: 'guardrails', message: 'Validation des résultats…', percent: 80,
+    });
 
     // ── Step 7: Save results ──────────────────────────────────────────────
-    emit(res, { type: 'progress', step: 'saving', message: 'Enregistrement de l\'analyse…', percent: 90 });
+    emit(res, {
+      type: 'progress', step: 'saving', message: 'Enregistrement de l\'analyse…', percent: 90,
+    });
 
-    const { resume, score, clauses, _meta } = aiResult;
+    const {
+      resume, score, clauses, _meta,
+    } = aiResult;
     const isUnlimited = user.monthlyQuota.limit === -1;
 
     // Atomic stats + quota update
@@ -181,7 +203,9 @@ const analyzeStream = async (req, res) => {
     const usedAfter = user.monthlyQuota.used + 1;
 
     // ── Step 8: Done ──────────────────────────────────────────────────────
-    emit(res, { type: 'progress', step: 'done', message: 'Analyse terminée !', percent: 100 });
+    emit(res, {
+      type: 'progress', step: 'done', message: 'Analyse terminée !', percent: 100,
+    });
 
     done({
       type: 'result',

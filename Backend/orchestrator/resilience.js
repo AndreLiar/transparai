@@ -7,13 +7,13 @@
 //   OPEN     — too many failures, calls blocked immediately
 //   HALF_OPEN — one trial call allowed to test if the service recovered
 
-const TIMEOUT_MS      = 25000; // 25s — LLM calls on large docs can be slow
-const MAX_RETRIES     = 2;     // 3 total attempts (1 original + 2 retries)
-const RETRY_BASE_MS   = 500;   // exponential backoff base: 500ms, 1000ms
+const TIMEOUT_MS = 25000; // 25s — LLM calls on large docs can be slow
+const MAX_RETRIES = 2; // 3 total attempts (1 original + 2 retries)
+const RETRY_BASE_MS = 500; // exponential backoff base: 500ms, 1000ms
 
 // Circuit breaker config per model
-const CB_FAILURE_THRESHOLD = 3;    // open after 3 consecutive failures
-const CB_RESET_MS          = 60000; // try again after 60s
+const CB_FAILURE_THRESHOLD = 3; // open after 3 consecutive failures
+const CB_RESET_MS = 60000; // try again after 60s
 
 // In-process state — one entry per model name
 const circuitState = {};
@@ -21,7 +21,7 @@ const circuitState = {};
 const getCircuit = (modelName) => {
   if (!circuitState[modelName]) {
     circuitState[modelName] = {
-      state: 'CLOSED',      // CLOSED | OPEN | HALF_OPEN
+      state: 'CLOSED', // CLOSED | OPEN | HALF_OPEN
       failures: 0,
       openedAt: null,
     };

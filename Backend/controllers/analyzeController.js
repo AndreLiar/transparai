@@ -14,8 +14,14 @@ const analyzeText = async (req, res) => {
 
     const result = await processAnalysis({
       firebaseUid: req.user.uid,
-      text, source, documentName, originalName,
-      fileType, sizeBytes, pageCount, ocrConfidence,
+      text,
+      source,
+      documentName,
+      originalName,
+      fileType,
+      sizeBytes,
+      pageCount,
+      ocrConfidence,
     });
 
     return res.status(result.status).json(result.body);

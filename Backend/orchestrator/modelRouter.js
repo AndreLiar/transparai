@@ -21,28 +21,28 @@ const { AzureChatOpenAI } = require('@langchain/openai');
 // ── Cost per 1K tokens (input + output blended estimate) ─────────────────────
 // Azure pricing matches OpenAI pricing for the same models.
 const MODEL_COSTS = {
-  'gpt-4o':       0.005,  // $5/1M input + $15/1M output → ~$0.005/1k blended
-  'gpt-4o-mini':  0.0003, // $0.15/1M input + $0.60/1M output → ~$0.0003/1k blended
+  'gpt-4o': 0.005, // $5/1M input + $15/1M output → ~$0.005/1k blended
+  'gpt-4o-mini': 0.0003, // $0.15/1M input + $0.60/1M output → ~$0.0003/1k blended
 };
 
 // ── Monthly AI budget by plan (USD) ──────────────────────────────────────────
 // Must stay in sync with PLAN_CONFIG.aiBudget in planUtils.js
 // Free/starter use gpt-4o-mini (lowest cost Azure model) within a tight budget cap.
 const PLAN_AI_BUDGETS = {
-  free:       0.5,   // small Azure budget — gpt-4o-mini only, 5 analyses/mo
-  starter:    0.5,
-  standard:   3.0,   // covers ~100 gpt-4o-mini analyses
-  premium:   15.0,   // covers ~300 gpt-4o or ~16k gpt-4o-mini analyses
-  enterprise: 75.0,  // covers a full legal team
+  free: 0.5, // small Azure budget — gpt-4o-mini only, 5 analyses/mo
+  starter: 0.5,
+  standard: 3.0, // covers ~100 gpt-4o-mini analyses
+  premium: 15.0, // covers ~300 gpt-4o or ~16k gpt-4o-mini analyses
+  enterprise: 75.0, // covers a full legal team
 };
 
 // ── Azure Foundry config (resolved once at startup) ───────────────────────────
-const AZURE_ENDPOINT    = process.env.AZURE_OPENAI_ENDPOINT;    // e.g. https://my-resource.openai.azure.com/
-const AZURE_API_KEY     = process.env.AZURE_OPENAI_API_KEY;
+const AZURE_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT; // e.g. https://my-resource.openai.azure.com/
+const AZURE_API_KEY = process.env.AZURE_OPENAI_API_KEY;
 const AZURE_API_VERSION = process.env.AZURE_OPENAI_API_VERSION || '2024-08-01-preview';
 
 // Deployment names — default to model names, overridable per environment
-const AZURE_DEPLOY_GPT4O      = process.env.AZURE_OPENAI_DEPLOYMENT_GPT4O      || 'gpt-4o';
+const AZURE_DEPLOY_GPT4O = process.env.AZURE_OPENAI_DEPLOYMENT_GPT4O || 'gpt-4o';
 const AZURE_DEPLOY_GPT4O_MINI = process.env.AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI || 'gpt-4o-mini';
 
 if (!AZURE_ENDPOINT || !AZURE_API_KEY) {
@@ -66,7 +66,7 @@ const estimateCost = (modelName, textLength) =>
 //
 // Token thresholds in characters (×3 chars/token estimate):
 const LENGTH_TIER = {
-  GPT4O_MAX_CHARS: 15_000,  // 5,000 tokens × 3 — above this, cap at gpt-4o-mini
+  GPT4O_MAX_CHARS: 15_000, // 5,000 tokens × 3 — above this, cap at gpt-4o-mini
 };
 
 /**
@@ -99,16 +99,18 @@ const applyLengthTier = (preferredModel, textLength) => {
  * Returns { modelName, estimatedCost, reason, downgrades[] }
  */
 const selectAffordableModel = (user, textLength) => {
-  const plan            = user.plan || 'free';
-  const budget          = user.aiSettings?.monthlyAIBudget || { allocated: 0, used: 0 };
+  const plan = user.plan || 'free';
+  const budget = user.aiSettings?.monthlyAIBudget || { allocated: 0, used: 0 };
   const remainingBudget = budget.allocated - budget.used;
-  const userPreference  = user.aiSettings?.preferredModel || 'auto';
-  const allowPremiumAI  = user.aiSettings?.allowPremiumAI !== false;
-  const downgrades      = [];
+  const userPreference = user.aiSettings?.preferredModel || 'auto';
+  const allowPremiumAI = user.aiSettings?.allowPremiumAI !== false;
+  const downgrades = [];
 
   // Free/starter — gpt-4o-mini only (within their small budget cap)
   if (plan === 'free' || plan === 'starter') {
-    return { modelName: 'gpt-4o-mini', estimatedCost: estimateCost('gpt-4o-mini', textLength), reason: 'free-plan-mini-only', downgrades };
+    return {
+      modelName: 'gpt-4o-mini', estimatedCost: estimateCost('gpt-4o-mini', textLength), reason: 'free-plan-mini-only', downgrades,
+    };
   }
 
   // Helper: try a candidate model through both cost and length guardrails
@@ -139,7 +141,9 @@ const selectAffordableModel = (user, textLength) => {
   if (downgrades.length > 0) {
     downgrades.push({ to: 'gpt-4o-mini', reason: 'cost-or-length-guardrail-fallback' });
   }
-  return { modelName: 'gpt-4o-mini', estimatedCost: estimateCost('gpt-4o-mini', textLength), reason: 'gpt4o-mini-fallback', downgrades };
+  return {
+    modelName: 'gpt-4o-mini', estimatedCost: estimateCost('gpt-4o-mini', textLength), reason: 'gpt4o-mini-fallback', downgrades,
+  };
 };
 
 /**
@@ -176,13 +180,15 @@ const buildLLM = (modelName, maxTokens = 2048) => {
 
   const deploymentName = modelName === 'gpt-4o' ? AZURE_DEPLOY_GPT4O : AZURE_DEPLOY_GPT4O_MINI;
   return new AzureChatOpenAI({
-    azureOpenAIApiKey:            AZURE_API_KEY,
-    azureOpenAIApiInstanceName:   AZURE_ENDPOINT.replace('https://', '').replace('.openai.azure.com/', '').replace('.openai.azure.com', ''),
+    azureOpenAIApiKey: AZURE_API_KEY,
+    azureOpenAIApiInstanceName: AZURE_ENDPOINT.replace('https://', '').replace('.openai.azure.com/', '').replace('.openai.azure.com', ''),
     azureOpenAIApiDeploymentName: deploymentName,
-    azureOpenAIApiVersion:        AZURE_API_VERSION,
+    azureOpenAIApiVersion: AZURE_API_VERSION,
     maxTokens,
     temperature: 0.2,
   });
 };
 
-module.exports = { buildFallbackChain, buildLLM, selectAffordableModel, estimateCost, MODEL_COSTS, PLAN_AI_BUDGETS };
+module.exports = {
+  buildFallbackChain, buildLLM, selectAffordableModel, estimateCost, MODEL_COSTS, PLAN_AI_BUDGETS,
+};

@@ -39,20 +39,30 @@ const guestAnalyzeStream = async (req, res) => {
       return done({ type: 'error', message: 'Champ manquant (text).', status: 400 });
     }
 
-    emit(res, { type: 'progress', step: 'preprocessing', message: 'Préparation du document…', percent: 15 });
+    emit(res, {
+      type: 'progress', step: 'preprocessing', message: 'Préparation du document…', percent: 15,
+    });
 
     const processedText = preprocessText(text);
 
-    emit(res, { type: 'progress', step: 'analysing', message: 'Analyse IA en cours…', percent: 40 });
+    emit(res, {
+      type: 'progress', step: 'analysing', message: 'Analyse IA en cours…', percent: 40,
+    });
 
     // Guest analyses use a minimal free-tier user-like object — no DB record
     const guestUser = { plan: 'free', aiSettings: { preferredModel: 'auto', monthlyAIBudget: { limit: 5, used: 0 } } };
     const aiResult = await analyseDocument({ user: guestUser, text: processedText, plan: 'free' });
 
-    emit(res, { type: 'progress', step: 'guardrails', message: 'Validation des résultats…', percent: 80 });
-    emit(res, { type: 'progress', step: 'done', message: 'Analyse terminée !', percent: 100 });
+    emit(res, {
+      type: 'progress', step: 'guardrails', message: 'Validation des résultats…', percent: 80,
+    });
+    emit(res, {
+      type: 'progress', step: 'done', message: 'Analyse terminée !', percent: 100,
+    });
 
-    const { resume, score, clauses, _meta } = aiResult;
+    const {
+      resume, score, clauses, _meta,
+    } = aiResult;
 
     done({
       type: 'result',

@@ -39,13 +39,13 @@ const initAppInsights = () => {
     appInsights
       .setup(connectionString)
       // Auto-collect all telemetry types
-      .setAutoCollectRequests(true)          // HTTP request tracking
+      .setAutoCollectRequests(true) // HTTP request tracking
       .setAutoCollectPerformance(true, true) // CPU, memory, gc
-      .setAutoCollectExceptions(true)        // Uncaught exceptions + rejections
-      .setAutoCollectDependencies(true)      // MongoDB, HTTP, Redis calls
-      .setAutoCollectConsole(true, true)     // console.log → traces
-      .setAutoCollectHeartbeat(true)         // Instance heartbeat
-      .setSendLiveMetrics(true)              // Live Metrics stream in portal
+      .setAutoCollectExceptions(true) // Uncaught exceptions + rejections
+      .setAutoCollectDependencies(true) // MongoDB, HTTP, Redis calls
+      .setAutoCollectConsole(true, true) // console.log → traces
+      .setAutoCollectHeartbeat(true) // Instance heartbeat
+      .setSendLiveMetrics(true) // Live Metrics stream in portal
       .setDistributedTracingMode(appInsights.DistributedTracingModes.AI_AND_W3C)
       .start();
 
