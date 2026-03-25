@@ -1,0 +1,46 @@
+# Dependencies (reinstalled inside image)
+node_modules
+
+# Environment secrets — never bake into image
+.env
+.env.*
+!.env.example
+
+# Test & dev tooling
+test/
+**/__tests__/
+**/*.test.js
+**/*.spec.js
+coverage/
+jest.config.*
+babel.config.*
+.eslintrc*
+.eslintignore
+
+# Local scripts / backups
+scripts/
+backups/
+
+# Git / editor
+.git
+.gitignore
+.gitattributes
+.editorconfig
+.vscode/
+.idea/
+
+# CI/CD config (not needed at runtime)
+.github/
+
+# Docker itself
+Dockerfile
+.dockerignore
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,12 +1,11 @@
 services:
   - type: web
     name: transparai-backend
-    runtime: node
+    runtime: docker
+    dockerfilePath: ./Backend/Dockerfile
+    dockerContext: ./Backend
     region: frankfurt  # EU — GDPR aligned
     plan: free
-    rootDir: Backend
-    buildCommand: npm ci --legacy-peer-deps
-    startCommand: npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -19,6 +18,16 @@ services:
       - key: FIREBASE_SERVICE_ACCOUNT_JSON
         sync: false
       - key: GEMINI_API_KEY
+        sync: false
+      - key: AZURE_OPENAI_ENDPOINT
+        sync: false
+      - key: AZURE_OPENAI_API_KEY
+        sync: false
+      - key: AZURE_OPENAI_API_VERSION
+        sync: false
+      - key: AZURE_OPENAI_DEPLOYMENT_GPT4O
+        sync: false
+      - key: AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI
         sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
