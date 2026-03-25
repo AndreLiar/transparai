@@ -2,63 +2,106 @@ name: Dependency Update Check
 
 on:
   schedule:
-    # Run every Monday at 9 AM UTC
+    # Every Monday at 9 AM UTC
     - cron: '0 9 * * 1'
-  workflow_dispatch: # Allow manual triggers
+  workflow_dispatch:
 
 jobs:
   check-dependencies:
-    name: Check for Dependency Updates
+    name: Check for dependency updates
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4.4.0
         with:
-          node-version: '18'
+          node-version: '20'
 
-      - name: Check Backend dependencies
+      - name: Check Backend outdated packages
         working-directory: ./Backend
         run: |
-          echo "## 📦 Backend Dependencies" >> ../dependency-report.md
-          echo "### Outdated packages:" >> ../dependency-report.md
-          npm outdated --long >> ../dependency-report.md || echo "No outdated packages" >> ../dependency-report.md
+          echo "## Backend — outdated packages" >> ../dependency-report.md
+          OUTDATED=$(npm outdated --long 2>/dev/null || true)
+          if [ -n "$OUTDATED" ]; then
+            echo "$OUTDATED" >> ../dependency-report.md
+            echo "BACKEND_OUTDATED=true" >> $GITHUB_ENV
+          else
+            echo "All packages up to date." >> ../dependency-report.md
+          fi
           echo "" >> ../dependency-report.md
 
-      - name: Check Frontend dependencies
+      - name: Check Frontend outdated packages
         working-directory: ./frontend
         run: |
-          echo "## 🎨 Frontend Dependencies" >> ../dependency-report.md
-          echo "### Outdated packages:" >> ../dependency-report.md
-          npm outdated --long >> ../dependency-report.md || echo "No outdated packages" >> ../dependency-report.md
+          echo "## Frontend — outdated packages" >> ../dependency-report.md
+          OUTDATED=$(npm outdated --long 2>/dev/null || true)
+          if [ -n "$OUTDATED" ]; then
+            echo "$OUTDATED" >> ../dependency-report.md
+            echo "FRONTEND_OUTDATED=true" >> $GITHUB_ENV
+          else
+            echo "All packages up to date." >> ../dependency-report.md
+          fi
           echo "" >> ../dependency-report.md
 
-      - name: Check for security vulnerabilities
+      - name: Backend security audit
+        working-directory: ./Backend
         run: |
-          echo "## 🔒 Security Audit" >> dependency-report.md
-          echo "### Backend vulnerabilities:" >> dependency-report.md
-          cd Backend && npm audit --audit-level=moderate >> ../dependency-report.md || echo "No vulnerabilities found" >> ../dependency-report.md
-          echo "" >> dependency-report.md
-          echo "### Frontend vulnerabilities:" >> dependency-report.md
-          cd ../frontend && npm audit --audit-level=moderate >> ../dependency-report.md || echo "No vulnerabilities found" >> ../dependency-report.md
+          echo "## Backend — security audit" >> ../dependency-report.md
+          AUDIT=$(npm audit --audit-level=moderate --legacy-peer-deps 2>/dev/null || true)
+          if echo "$AUDIT" | grep -q "vulnerabilities"; then
+            echo "$AUDIT" >> ../dependency-report.md
+            echo "BACKEND_VULNS=true" >> $GITHUB_ENV
+          else
+            echo "No vulnerabilities found." >> ../dependency-report.md
+          fi
+          echo "" >> ../dependency-report.md
 
-      - name: Create issue if updates needed
+      - name: Frontend security audit
+        working-directory: ./frontend
+        run: |
+          echo "## Frontend — security audit" >> ../dependency-report.md
+          AUDIT=$(npm audit --audit-level=moderate 2>/dev/null || true)
+          if echo "$AUDIT" | grep -q "vulnerabilities"; then
+            echo "$AUDIT" >> ../dependency-report.md
+            echo "FRONTEND_VULNS=true" >> $GITHUB_ENV
+          else
+            echo "No vulnerabilities found." >> ../dependency-report.md
+          fi
+
+      - name: Open GitHub issue if action needed
+        if: |
+          env.BACKEND_OUTDATED == 'true' ||
+          env.FRONTEND_OUTDATED == 'true' ||
+          env.BACKEND_VULNS == 'true' ||
+          env.FRONTEND_VULNS == 'true'
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const report = fs.readFileSync('dependency-report.md', 'utf8');
-            
-            // Check if there are any updates needed
-            if (report.includes('outdated') || report.includes('vulnerabilities')) {
-              await github.rest.issues.create({
+            const today = new Date().toISOString().split('T')[0];
+
+            // Close any previous open dependency issues to avoid spam
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'dependencies',
+              state: 'open',
+            });
+            for (const issue of issues) {
+              await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                title: `🔄 Weekly Dependency Update - ${new Date().toISOString().split('T')[0]}`,
-                body: `# Dependency Update Report\n\n${report}\n\n---\n\n**Action Required:** Please review and update dependencies as needed.\n\nGenerated automatically by GitHub Actions.`,
-                labels: ['dependencies', 'maintenance']
+                issue_number: issue.number,
+                state: 'closed',
               });
             }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Dependency update needed — ${today}`,
+              body: `# Weekly dependency report\n\n${report}\n\n---\nGenerated automatically by GitHub Actions.`,
+              labels: ['dependencies', 'maintenance'],
+            });
