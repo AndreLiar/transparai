@@ -43,14 +43,17 @@ class ErrorTrackingTransport extends Transport {
         tags: info.tags || [],
       };
 
-      // Save to database asynchronously
-      ErrorLog.create(errorLogData)
-        .then(() => {
-          console.log(`[ErrorTrackingTransport] Saved error log: ${errorId}`);
-        })
-        .catch((dbErr) => {
-          console.error('[ErrorTrackingTransport] Failed to save error log:', dbErr);
-        });
+      // Save to database asynchronously — only when connection is ready
+      const mongoose = require('mongoose');
+      if (mongoose.connection.readyState === 1) {
+        ErrorLog.create(errorLogData)
+          .then(() => {
+            console.log(`[ErrorTrackingTransport] Saved error log: ${errorId}`);
+          })
+          .catch((dbErr) => {
+            console.error('[ErrorTrackingTransport] Failed to save error log:', dbErr);
+          });
+      }
 
       // Send alerts for critical errors
       if (this.shouldAlert(info)) {

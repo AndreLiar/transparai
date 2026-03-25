@@ -224,16 +224,17 @@ const strictLimiter = rateLimit({
 
 // Create a rate limiter with custom options
 const createCustomLimiter = (options = {}) => {
+  const { prefix, ...restOptions } = options;
   const defaultOptions = {
     windowMs: 15 * 60 * 1000,
     max: 100,
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: createKeyGenerator(options.prefix || 'custom'),
+    keyGenerator: createKeyGenerator(prefix || 'custom'),
     handler,
   };
 
-  return rateLimit({ ...defaultOptions, ...options });
+  return rateLimit({ ...defaultOptions, ...restOptions });
 };
 
 module.exports = {
