@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: transparai-backend
+    runtime: node
+    region: frankfurt  # EU — GDPR aligned
+    plan: free
+    rootDir: Backend
+    buildCommand: npm ci --legacy-peer-deps
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # ── Set these in the Render dashboard (never commit secrets) ──
+      - key: MONGO_URI
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_STANDARD
+        sync: false
+      - key: STRIPE_PRICE_PREMIUM
+        sync: false
+      - key: STRIPE_PRICE_ENTERPRISE
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      # ── Optional monitoring ──
+      - key: APPLICATIONINSIGHTS_CONNECTION_STRING
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: NEW_RELIC_LICENSE_KEY
+        sync: false
+      - key: SLACK_WEBHOOK_URL
+        sync: false
