@@ -88,8 +88,36 @@ jobs:
     environment: production
 
     steps:
-      - name: Trigger Render deploy hook
+      - name: Trigger deploy and wait for live
         run: |
-          curl -s --fail -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
-            -o /dev/null \
-            -w "HTTP status: %{http_code}\n"
+          SERVICE_ID="srv-d1gnffbipnbc73avheog"
+          API_KEY="${{ secrets.RENDER_API_KEY }}"
+
+          # Trigger the deploy
+          DEPLOY=$(curl -s -X POST "https://api.render.com/v1/services/${SERVICE_ID}/deploys" \
+            -H "Authorization: Bearer ${API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d '{}')
+
+          DEPLOY_ID=$(echo "$DEPLOY" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+          echo "Deploy triggered: $DEPLOY_ID"
+
+          # Poll every 15s, max 10 minutes (40 attempts)
+          for i in $(seq 1 40); do
+            sleep 15
+            STATUS=$(curl -s "https://api.render.com/v1/services/${SERVICE_ID}/deploys/${DEPLOY_ID}" \
+              -H "Authorization: Bearer ${API_KEY}" \
+              | python3 -c "import sys,json; print(json.load(sys.stdin)['status'])")
+            echo "[$i/40] Status: $STATUS"
+            if [ "$STATUS" = "live" ]; then
+              echo "✅ Deploy is live!"
+              exit 0
+            fi
+            if [ "$STATUS" = "failed" ] || [ "$STATUS" = "canceled" ]; then
+              echo "❌ Deploy $STATUS"
+              exit 1
+            fi
+          done
+
+          echo "❌ Timeout: deploy did not go live within 10 minutes"
+          exit 1
