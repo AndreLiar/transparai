@@ -24,6 +24,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 const app = require('./app');
+const { startWatcherCron } = require('./services/watcherCron');
 
 const PORT = process.env.PORT || 5000;
 
@@ -33,6 +34,7 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`   Port: ${PORT}`);
   console.log(`   Frontend URL: ${process.env.FRONTEND_URL}`);
   console.log('✅ Application startup completed successfully');
+  startWatcherCron();
 });
 
 // Handle server errors

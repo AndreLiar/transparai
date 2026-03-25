@@ -28,6 +28,7 @@ const userRoutes = require('./routes/userRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const aiSettingsRoutes = require('./routes/aiSettingsRoutes');
 const gdprRoutes = require('./routes/gdprRoutes');
+const watchRoutes = require('./routes/watchRoutes');
 
 const app = express();
 
@@ -114,6 +115,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/ai-settings', aiSettingsRoutes);
 app.use('/api/gdpr', gdprRoutes);
+app.use('/api/watch', watchRoutes);
 
 // ✅ Root route for health checks
 app.get('/', (_req, res) => {

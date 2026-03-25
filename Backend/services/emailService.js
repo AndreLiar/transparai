@@ -196,8 +196,130 @@ const testEmailConnection = async () => {
   }
 };
 
+// ── Watch Alert Email ─────────────────────────────────────────────────────────
+
+const RISK_COLORS = {
+  low: '#16a34a',
+  medium: '#d97706',
+  high: '#dc2626',
+  critical: '#7c3aed',
+};
+
+const RISK_LABELS = {
+  low: '🟢 Faible',
+  medium: '🟡 Modéré',
+  high: '🔴 Élevé',
+  critical: '🟣 Critique',
+};
+
+const getWatchAlertEmailTemplate = ({
+  documentName,
+  riskLevel,
+  diffSummary,
+  addedClauses,
+  newScore,
+  previousScore,
+  watchUrl,
+}) => {
+  const riskColor = RISK_COLORS[riskLevel] || RISK_COLORS.medium;
+  const riskLabel = RISK_LABELS[riskLevel] || RISK_LABELS.medium;
+
+  const clausesList = addedClauses.length > 0
+    ? `<ul>${addedClauses.map((c) => `<li style="margin:6px 0;">${c}</li>`).join('')}</ul>`
+    : '<p style="color:#6b7280;">Aucune nouvelle clause identifiée.</p>';
+
+  const scoreChange = previousScore && previousScore !== newScore
+    ? `<p>Score : <strong>${previousScore}</strong> → <strong>${newScore}</strong></p>`
+    : `<p>Score actuel : <strong>${newScore}</strong></p>`;
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"></head>
+    <body style="font-family:Arial,sans-serif;line-height:1.6;color:#333;margin:0;padding:0;">
+      <div style="max-width:600px;margin:0 auto;padding:20px;">
+
+        <div style="background:linear-gradient(135deg,#4f46e5 0%,#3b82f6 100%);color:white;padding:30px;border-radius:10px 10px 0 0;text-align:center;">
+          <h1 style="margin:0;font-size:24px;">🧠 TransparAI</h1>
+          <h2 style="margin:10px 0 0;font-size:18px;">Modification détectée dans un document surveillé</h2>
+        </div>
+
+        <div style="background:#f8fafc;padding:30px;border-radius:0 0 10px 10px;">
+
+          <div style="background:white;padding:24px;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:20px;">
+            <h3 style="margin-top:0;">📄 ${documentName}</h3>
+
+            <div style="display:inline-block;background:${riskColor}20;color:${riskColor};border:1px solid ${riskColor};padding:6px 16px;border-radius:20px;font-weight:bold;margin-bottom:16px;">
+              Niveau de risque : ${riskLabel}
+            </div>
+
+            ${scoreChange}
+
+            <h4>Résumé des changements</h4>
+            <p style="background:#f0f9ff;padding:12px;border-left:4px solid #3b82f6;border-radius:4px;">${diffSummary}</p>
+
+            <h4>Nouvelles clauses détectées</h4>
+            ${clausesList}
+          </div>
+
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${watchUrl}" style="display:inline-block;background:linear-gradient(135deg,#4f46e5 0%,#3b82f6 100%);color:white;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:15px;">
+              Voir l'analyse complète
+            </a>
+          </div>
+
+          <p style="color:#6b7280;font-size:13px;text-align:center;">
+            Vous recevez cet email car vous surveillez ce document sur TransparAI.<br>
+            Pour modifier vos alertes, rendez-vous dans <strong>Mes documents surveillés</strong>.
+          </p>
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+const sendWatchAlertEmail = async ({
+  firebaseUid,
+  documentName,
+  riskLevel,
+  diffSummary,
+  addedClauses,
+  newScore,
+  previousScore,
+  watchId,
+}) => {
+  const User = require('../models/User');
+  const user = await User.findOne({ firebaseUid }).lean();
+  if (!user || !user.email) return;
+
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const watchUrl = `${frontendUrl}/watch/${watchId}`;
+
+  const mailOptions = {
+    from: { name: 'TransparAI', address: 'kanmegnea@gmail.com' },
+    to: user.email,
+    subject: `⚠️ Modification détectée : ${documentName}`,
+    html: getWatchAlertEmailTemplate({
+      documentName,
+      riskLevel,
+      diffSummary,
+      addedClauses,
+      newScore,
+      previousScore,
+      watchUrl,
+    }),
+  };
+
+  const result = await transporter.sendMail(mailOptions);
+  console.log(`✅ Watch alert email sent to ${user.email}:`, result.messageId);
+  return result;
+};
+
 module.exports = {
   sendInvitationEmail,
   sendInvitationConfirmationEmail,
   testEmailConnection,
+  sendWatchAlertEmail,
 };
