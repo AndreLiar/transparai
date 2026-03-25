@@ -1,10 +1,8 @@
 // Backend/orchestrator/modelRouter.js
-// Plan-aware model selection with Azure AI Foundry support.
+// Plan-aware model selection via Azure AI Foundry.
 //
-// Provider resolution order:
-//   1. Azure AI Foundry  — if AZURE_OPENAI_API_KEY + AZURE_OPENAI_ENDPOINT are set
-//   2. Direct OpenAI     — if OPENAI_API_KEY is set (local dev / fallback)
-//   3. gpt-4o-mini       — final error-recovery fallback (Azure)
+// All AI traffic routes exclusively through Azure OpenAI — no direct OpenAI fallback.
+// This ensures user data stays within the platform owner's Azure tenant.
 //
 // Azure AI Foundry gives you:
 //   - Infrastructure-level health routing between deployments
@@ -18,7 +16,7 @@
 // These can be overridden with AZURE_OPENAI_DEPLOYMENT_GPT4O and
 // AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI env vars.
 
-const { AzureChatOpenAI, ChatOpenAI } = require('@langchain/openai');
+const { AzureChatOpenAI } = require('@langchain/openai');
 
 // ── Cost per 1K tokens (input + output blended estimate) ─────────────────────
 // Azure pricing matches OpenAI pricing for the same models.
@@ -47,13 +45,11 @@ const AZURE_API_VERSION = process.env.AZURE_OPENAI_API_VERSION || '2024-08-01-pr
 const AZURE_DEPLOY_GPT4O      = process.env.AZURE_OPENAI_DEPLOYMENT_GPT4O      || 'gpt-4o';
 const AZURE_DEPLOY_GPT4O_MINI = process.env.AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI || 'gpt-4o-mini';
 
-const useAzure = !!(AZURE_ENDPOINT && AZURE_API_KEY);
-
-if (useAzure) {
-  console.log(`[ModelRouter] Azure AI Foundry enabled — endpoint: ${AZURE_ENDPOINT}`);
-} else {
-  console.log('[ModelRouter] Azure AI Foundry not configured — using direct OpenAI (dev mode)');
+if (!AZURE_ENDPOINT || !AZURE_API_KEY) {
+  throw new Error('[ModelRouter] AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY are required. All AI traffic must route through Azure.');
 }
+
+console.log(`[ModelRouter] Azure AI Foundry enabled — endpoint: ${AZURE_ENDPOINT}`);
 
 // ── Token estimation ──────────────────────────────────────────────────────────
 // GPT-4o family: ~4 chars/token. Gemini: similar. We use 3 for a safe upper bound.
@@ -171,32 +167,19 @@ const buildFallbackChain = (user, textLength) => {
 };
 
 /**
- * Instantiate a LangChain LLM for a given model name.
- *   - Azure AI Foundry if AZURE_OPENAI_API_KEY + AZURE_OPENAI_ENDPOINT are set
- *   - Direct OpenAI otherwise (local dev fallback)
+ * Instantiate a LangChain LLM for a given model name via Azure AI Foundry.
  */
 const buildLLM = (modelName, maxTokens = 2048) => {
   if (modelName !== 'gpt-4o' && modelName !== 'gpt-4o-mini') {
     throw new Error(`Unknown model: ${modelName}`);
   }
 
-  if (useAzure) {
-    const deploymentName = modelName === 'gpt-4o' ? AZURE_DEPLOY_GPT4O : AZURE_DEPLOY_GPT4O_MINI;
-    return new AzureChatOpenAI({
-      azureOpenAIApiKey:            AZURE_API_KEY,
-      azureOpenAIApiInstanceName:   AZURE_ENDPOINT.replace('https://', '').replace('.openai.azure.com/', '').replace('.openai.azure.com', ''),
-      azureOpenAIApiDeploymentName: deploymentName,
-      azureOpenAIApiVersion:        AZURE_API_VERSION,
-      maxTokens,
-      temperature: 0.2,
-    });
-  }
-
-  // Direct OpenAI fallback (local dev / if no Azure config)
-  if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY not configured (and no Azure Foundry config found)');
-  return new ChatOpenAI({
-    model: modelName,
-    apiKey: process.env.OPENAI_API_KEY,
+  const deploymentName = modelName === 'gpt-4o' ? AZURE_DEPLOY_GPT4O : AZURE_DEPLOY_GPT4O_MINI;
+  return new AzureChatOpenAI({
+    azureOpenAIApiKey:            AZURE_API_KEY,
+    azureOpenAIApiInstanceName:   AZURE_ENDPOINT.replace('https://', '').replace('.openai.azure.com/', '').replace('.openai.azure.com', ''),
+    azureOpenAIApiDeploymentName: deploymentName,
+    azureOpenAIApiVersion:        AZURE_API_VERSION,
     maxTokens,
     temperature: 0.2,
   });

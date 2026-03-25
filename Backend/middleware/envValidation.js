@@ -28,12 +28,6 @@ const validateEnvironmentVariables = () => {
       condition: process.env.ALERT_SLACK_ENABLED === 'true',
       vars: ['SLACK_BOT_TOKEN', 'SLACK_ALERT_CHANNEL', 'SLACK_WEBHOOK_URL'],
     },
-    // OpenAI configuration (optional for premium features)
-    openai: {
-      condition: process.env.OPENAI_ENABLED !== 'false',
-      vars: ['OPENAI_API_KEY'],
-      optional: true,
-    },
   };
 
   const missingVars = [];
@@ -137,8 +131,6 @@ const validateEnvironmentVariables = () => {
   const configuredFeatures = [];
   if (process.env.ALERT_EMAIL_ENABLED === 'true') configuredFeatures.push('Email Alerts');
   if (process.env.ALERT_SLACK_ENABLED === 'true') configuredFeatures.push('Slack Alerts');
-  if (process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY.startsWith('your_')) configuredFeatures.push('OpenAI');
-
   logger.info('Environment validation passed', {
     nodeEnv: process.env.NODE_ENV,
     configuredFeatures,
