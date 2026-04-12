@@ -16,9 +16,5 @@ build/
 *.md
 !README.md
 
-# Terraform secrets — never commit
-infra/terraform.tfvars
-infra/*.tfstate
-infra/*.tfstate.backup
-infra/.terraform/
-infra/.terraform.lock.hcl
+# Claude Code / Cursor agent instructions (local or machine-specific)
+CLAUDE.md

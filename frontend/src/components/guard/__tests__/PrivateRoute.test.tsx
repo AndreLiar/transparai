@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import PrivateRoute from '../PrivateRoute';
 
 const authMock = vi.fn();
@@ -16,16 +17,19 @@ vi.mock('react-router-dom', async () => {
 });
 
 describe('PrivateRoute', () => {
+  const renderWithRouter = (ui: JSX.Element) =>
+    render(<MemoryRouter>{ui}</MemoryRouter>);
+
   beforeEach(() => {
     authMock.mockReset();
   });
 
   it('shows loader while auth state is loading', () => {
     authMock.mockReturnValue({ loading: true, user: null });
-    render(
+    renderWithRouter(
       <PrivateRoute>
         <div>Protected</div>
-      </PrivateRoute>,
+      </PrivateRoute>
     );
 
     expect(screen.getByText('Chargement...')).toBeInTheDocument();
@@ -33,10 +37,10 @@ describe('PrivateRoute', () => {
 
   it('redirects to login when no user is present', () => {
     authMock.mockReturnValue({ loading: false, user: null });
-    render(
+    renderWithRouter(
       <PrivateRoute>
         <div>Protected</div>
-      </PrivateRoute>,
+      </PrivateRoute>
     );
 
     expect(screen.getByTestId('navigate')).toHaveTextContent('redirect:/login');
@@ -48,10 +52,10 @@ describe('PrivateRoute', () => {
       user: { emailVerified: false },
     });
 
-    render(
+    renderWithRouter(
       <PrivateRoute requireEmailVerified>
         <div>Protected</div>
-      </PrivateRoute>,
+      </PrivateRoute>
     );
 
     expect(screen.getByTestId('navigate')).toHaveTextContent('redirect:/verify-email');
@@ -63,10 +67,10 @@ describe('PrivateRoute', () => {
       user: { emailVerified: true },
     });
 
-    render(
+    renderWithRouter(
       <PrivateRoute requireEmailVerified>
         <div>Protected content</div>
-      </PrivateRoute>,
+      </PrivateRoute>
     );
 
     expect(screen.getByText('Protected content')).toBeInTheDocument();

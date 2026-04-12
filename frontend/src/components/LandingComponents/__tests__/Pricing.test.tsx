@@ -19,6 +19,6 @@ describe('Pricing component', () => {
     const hrefs = links.map((link) => link.getAttribute('href'));
     expect(hrefs).toEqual(expect.arrayContaining(['/signup', '/analyze']));
 
-    expect(screen.getByText(/Essayez TransparAI Gratuitement/i)).toBeInTheDocument();
+    expect(screen.getByText(/Simple et transparent/i)).toBeInTheDocument();
   });
 });

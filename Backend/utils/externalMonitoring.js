@@ -1,7 +1,6 @@
 // Backend/utils/externalMonitoring.js
 const logger = require('./logger');
 
-// Check external service health
 const checkExternalServices = async () => {
   const results = {
     timestamp: new Date().toISOString(),
@@ -9,39 +8,35 @@ const checkExternalServices = async () => {
     overall: 'healthy',
   };
 
-  // Check Azure AI Foundry
   try {
-    const azureStartTime = Date.now();
-    // Lightweight check — verify env vars are present
-    if (!process.env.AZURE_OPENAI_ENDPOINT || !process.env.AZURE_OPENAI_API_KEY) {
-      throw new Error('Azure AI Foundry not configured');
+    const t0 = Date.now();
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OpenAI not configured');
     }
-    const azureLatency = Date.now() - azureStartTime;
+    const latency = Date.now() - t0;
 
-    results.services.azureAI = {
+    results.services.openai = {
       status: 'healthy',
-      latency: azureLatency,
+      latency,
       lastChecked: new Date().toISOString(),
     };
 
-    logger.logExternalService('azureAI', 'health_check', true, azureLatency);
+    logger.logExternalService('openai', 'health_check', true, latency);
   } catch (error) {
-    results.services.azureAI = {
+    results.services.openai = {
       status: 'unhealthy',
       error: error.message,
       lastChecked: new Date().toISOString(),
     };
     results.overall = 'degraded';
 
-    logger.logExternalService('azureAI', 'health_check', false, 0, error);
+    logger.logExternalService('openai', 'health_check', false, 0, error);
   }
 
-  // Check Stripe API
   try {
     const stripeStartTime = Date.now();
     const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-    // Simple API call to check Stripe health
     if (process.env.STRIPE_SECRET_KEY) {
       await stripe.balance.retrieve();
       const stripeLatency = Date.now() - stripeStartTime;
@@ -71,15 +66,12 @@ const checkExternalServices = async () => {
     logger.logExternalService('stripe', 'health_check', false, 0, error);
   }
 
-  // Check Firebase Admin
   try {
     const firebaseStartTime = Date.now();
     const admin = require('firebase-admin');
 
-    // Simple Firebase Admin check
     if (admin.apps.length > 0) {
-      // Just verify the app is initialized
-      const app = admin.app();
+      admin.app();
       const firebaseLatency = Date.now() - firebaseStartTime;
 
       results.services.firebase = {
@@ -107,13 +99,11 @@ const checkExternalServices = async () => {
     logger.logExternalService('firebase', 'health_check', false, 0, error);
   }
 
-  // Check MongoDB
   try {
     const mongoStartTime = Date.now();
     const mongoose = require('mongoose');
 
     if (mongoose.connection.readyState === 1) {
-      // Connection is open, do a simple query
       await mongoose.connection.db.admin().ping();
       const mongoLatency = Date.now() - mongoStartTime;
 
@@ -152,7 +142,6 @@ const checkExternalServices = async () => {
     logger.logExternalService('mongodb', 'health_check', false, 0, error);
   }
 
-  // Determine overall health
   const serviceStatuses = Object.values(results.services).map((service) => service.status);
   if (serviceStatuses.includes('unhealthy')) {
     results.overall = 'unhealthy';
@@ -163,7 +152,6 @@ const checkExternalServices = async () => {
   return results;
 };
 
-// UptimeRobot configuration helper
 const generateUptimeRobotConfig = () => {
   const baseUrl = process.env.BASE_URL || 'https://your-api-domain.com';
 
@@ -173,21 +161,21 @@ const generateUptimeRobotConfig = () => {
         name: 'TransparAI API Health',
         url: `${baseUrl}/health`,
         type: 'HTTP',
-        interval: 300, // 5 minutes
+        interval: 300,
         expectedStatusCode: 200,
       },
       {
         name: 'TransparAI API Detailed Health',
         url: `${baseUrl}/health/detailed`,
         type: 'HTTP',
-        interval: 600, // 10 minutes
+        interval: 600,
         expectedStatusCode: 200,
       },
       {
         name: 'TransparAI API Documentation',
         url: `${baseUrl}/docs`,
         type: 'HTTP',
-        interval: 3600, // 1 hour
+        interval: 3600,
         expectedStatusCode: 200,
       },
     ],
@@ -204,13 +192,12 @@ const generateUptimeRobotConfig = () => {
     settings: {
       alertWhenDown: true,
       alertWhenUp: true,
-      downAlertAfter: 2, // Alert after 2 failed checks
-      upAlertAfter: 1, // Alert after 1 successful check when recovering
+      downAlertAfter: 2,
+      upAlertAfter: 1,
     },
   };
 };
 
-// Setup monitoring alerts
 const setupMonitoringAlerts = () => {
   logger.info('Setting up monitoring alerts', {
     uptimeRobotConfig: generateUptimeRobotConfig(),
@@ -228,15 +215,13 @@ const setupMonitoringAlerts = () => {
   };
 };
 
-// Performance monitoring integration
 const trackPerformanceMetrics = (req, res, next) => {
   const startTime = process.hrtime.bigint();
 
   res.on('finish', () => {
     const endTime = process.hrtime.bigint();
-    const duration = Number(endTime - startTime) / 1000000; // Convert to milliseconds
+    const duration = Number(endTime - startTime) / 1000000;
 
-    // Log performance data
     logger.info('Performance Metric', {
       method: req.method,
       url: req.originalUrl,
@@ -247,8 +232,7 @@ const trackPerformanceMetrics = (req, res, next) => {
       userId: req.user?.uid,
     });
 
-    // Track slow requests
-    if (duration > 5000) { // 5 seconds
+    if (duration > 5000) {
       logger.warn('Slow Request Detected', {
         method: req.method,
         url: req.originalUrl,

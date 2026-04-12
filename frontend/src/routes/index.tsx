@@ -19,6 +19,7 @@ import PrivacyPolicy from '@/screens/legal/PrivacyPolicy';
 import TermsOfService from '@/screens/legal/TermsOfService';
 import CookiePolicy from '@/screens/legal/CookiePolicy';
 import About from '@/screens/About/About';
+import Watch from '@/screens/Watch/Watch';
 
 const AppRoutes = () => {
   return (
@@ -47,6 +48,10 @@ const AppRoutes = () => {
       <Route path="/upgrade" element={<PrivateRoute><Upgrade /></PrivateRoute>} />
       <Route path="/upgrade-success" element={<UpgradeSuccess />} />
       <Route path="/upgrade-cancel" element={<UpgradeCancel />} />
+
+      {/* Watch dashboard */}
+      <Route path="/watch" element={<PrivateRoute><Watch /></PrivateRoute>} />
+      <Route path="/watch/:watchId" element={<PrivateRoute><Watch /></PrivateRoute>} />
 
       {/* Legal — required */}
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />

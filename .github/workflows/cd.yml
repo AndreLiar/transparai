@@ -26,9 +26,11 @@ jobs:
         working-directory: ./Backend
         run: npm ci --legacy-peer-deps
 
-      - name: Lint (non-blocking — warnings only)
+      - name: Lint (blocking on regressions)
         working-directory: ./Backend
-        run: npm run lint || true
+        env:
+          BACKEND_LINT_ERROR_BUDGET: '78'
+        run: npm run lint:baseline
 
       - name: Run tests
         working-directory: ./Backend
@@ -90,7 +92,7 @@ jobs:
     steps:
       - name: Trigger deploy and wait for live
         run: |
-          SERVICE_ID="srv-d1gnffbipnbc73avheog"
+          SERVICE_ID="${{ secrets.RENDER_SERVICE_ID }}"
           API_KEY="${{ secrets.RENDER_API_KEY }}"
 
           # Trigger the deploy

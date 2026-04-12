@@ -1,6 +1,14 @@
 // Backend/middleware/rateLimiter.js
 const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const logger = require('../utils/logger');
+const MongoRateLimitStore = require('./mongoRateLimitStore');
+
+const RATE_LIMIT_STORE = process.env.RATE_LIMIT_STORE || 'memory';
+
+const createStore = (prefix, windowMs) => {
+  if (RATE_LIMIT_STORE !== 'mongo') return undefined;
+  return new MongoRateLimitStore({ prefix: `rl:${prefix}:`, windowMs });
+};
 
 // Custom key generator that includes user ID when available
 const createKeyGenerator = (prefix = '') => (req, res) => {
@@ -30,6 +38,7 @@ const handler = (req, res, options) => {
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 1000, // Limit each IP to 1000 requests per windowMs
+  store: createStore('api', 15 * 60 * 1000),
   message: {
     success: false,
     error: {
@@ -54,6 +63,7 @@ const apiLimiter = rateLimit({
 const analysisBurstLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 10,
+  store: createStore('analysis-burst', 60 * 1000),
   message: {
     success: false,
     error: {
@@ -72,6 +82,7 @@ const analysisBurstLimiter = rateLimit({
 // Analysis endpoint rate limiter (more restrictive)
 const analysisLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
+  store: createStore('analysis', 60 * 60 * 1000),
   max: (req) => {
     // Different limits based on user plan
     const userPlan = req.user?.plan || 'free';
@@ -113,6 +124,7 @@ const analysisLimiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // Limit each IP to 10 login requests per windowMs
+  store: createStore('auth', 15 * 60 * 1000),
   message: {
     success: false,
     error: {
@@ -132,6 +144,7 @@ const authLimiter = rateLimit({
 const passwordResetLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3, // Limit each IP to 3 password reset requests per hour
+  store: createStore('password-reset', 60 * 60 * 1000),
   message: {
     success: false,
     error: {
@@ -150,6 +163,7 @@ const passwordResetLimiter = rateLimit({
 // File upload rate limiter
 const uploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
+  store: createStore('upload', 60 * 60 * 1000),
   max: (req) => {
     const userPlan = req.user?.plan || 'free';
     const limits = {
@@ -178,6 +192,7 @@ const uploadLimiter = rateLimit({
 // Export rate limiter
 const exportLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  store: createStore('export', 24 * 60 * 60 * 1000),
   max: (req) => {
     const userPlan = req.user?.plan || 'free';
     const limits = {
@@ -207,6 +222,7 @@ const exportLimiter = rateLimit({
 const strictLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5, // Very restrictive
+  store: createStore('strict', 60 * 60 * 1000),
   message: {
     success: false,
     error: {
@@ -228,6 +244,7 @@ const createCustomLimiter = (options = {}) => {
   const defaultOptions = {
     windowMs: 15 * 60 * 1000,
     max: 100,
+    store: createStore(prefix || 'custom', 15 * 60 * 1000),
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: createKeyGenerator(prefix || 'custom'),

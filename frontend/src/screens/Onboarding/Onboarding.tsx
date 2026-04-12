@@ -17,7 +17,7 @@ const STEPS = [
     icon: '🤖',
     title: "L'IA analyse en 30 secondes",
     description:
-      'Azure OpenAI GPT-4o parcourt chaque clause, détecte les risques et produit un score de transparence de A+ à F.',
+      'OpenAI GPT-4o parcourt chaque clause, détecte les risques et produit un score de transparence de A+ à F.',
     tip: 'Vos documents ne quittent jamais l\'Union Européenne et ne sont jamais utilisés pour entraîner des modèles IA.',
   },
   {

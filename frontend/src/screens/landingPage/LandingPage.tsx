@@ -69,7 +69,7 @@ const FEATURES = [
 ];
 
 const TRUST = [
-  { label: 'Hébergement UE', sub: 'Microsoft Azure — Europe Ouest' },
+  { label: 'Hébergement UE', sub: 'Prestataires cloud certifiés — Europe' },
   { label: 'Conforme RGPD', sub: 'Vos documents ne servent jamais à entraîner l\'IA' },
   { label: 'Chiffrement bout-en-bout', sub: 'AES-256 au repos, TLS 1.3 en transit' },
   { label: 'Avis IA · pas juridique', sub: 'TransparAI assiste, ne remplace pas un avocat' },
@@ -130,7 +130,7 @@ const LandingPage: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.55 }}
           >
-            TransparAI analyse vos contrats, CGU et CGV grâce à Azure OpenAI GPT-4o —
+            TransparAI analyse vos contrats, CGU et CGV grâce à OpenAI GPT-4o —
             résumé en langage clair, score de transparence A–F, et détection des clauses à risque.
           </motion.p>
 
@@ -233,7 +233,7 @@ const LandingPage: React.FC = () => {
                 </ul>
 
                 <div className="lp-demo-footer">
-                  <span className="lp-demo-model">Azure OpenAI GPT-4o</span>
+                  <span className="lp-demo-model">OpenAI GPT-4o</span>
                   <span className="lp-demo-time">analysé en 24s</span>
                 </div>
               </div>

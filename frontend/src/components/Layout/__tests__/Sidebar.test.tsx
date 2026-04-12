@@ -20,10 +20,6 @@ vi.mock('@/components/Layout/ThemeSwitcher', () => ({
   default: () => <div data-testid="theme-switcher-mock" />,
 }));
 
-vi.mock('@/components/common/UpgradePrompt', () => ({
-  default: () => <div data-testid="upgrade-prompt-mock" />,
-}));
-
 const translationMap: Record<string, string> = {
   'sidebar.account': 'Compte',
   'sidebar.analyze': 'Analyser',
@@ -61,6 +57,9 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: () => navigateMock,
     useLocation: () => ({ pathname: '/dashboard' }),
+    Link: ({ children, to, ...props }: { children: React.ReactNode; to: string }) => (
+      <a href={to} {...props}>{children}</a>
+    ),
   };
 });
 
@@ -81,7 +80,7 @@ describe('Sidebar', () => {
   it('renders brand, nav items, and controls', async () => {
     await renderSidebar('free');
 
-    expect(screen.getByText('🧠 TransparAI')).toBeInTheDocument();
+    expect(screen.getByText('TransparAI')).toBeInTheDocument();
     expect(screen.getByText(/Analyser/i)).toBeInTheDocument();
     expect(screen.getByText(/Compte/i)).toBeInTheDocument();
     expect(screen.getByText(/Déconnexion/i)).toBeInTheDocument();
@@ -92,7 +91,8 @@ describe('Sidebar', () => {
   it('shows upgrade prompt for free plan users', async () => {
     await renderSidebar('free');
 
-    expect(screen.getByTestId('upgrade-prompt-mock')).toBeInTheDocument();
+    expect(screen.getByText('Plan Gratuit')).toBeInTheDocument();
+    expect(screen.getByText(/Passer à Standard/i)).toBeInTheDocument();
   });
 
   it('navigates to analyze on click and closes sidebar', async () => {

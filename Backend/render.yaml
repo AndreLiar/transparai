@@ -19,15 +19,9 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
-      - key: AZURE_OPENAI_ENDPOINT
+      - key: OPENAI_API_KEY
         sync: false
-      - key: AZURE_OPENAI_API_KEY
-        sync: false
-      - key: AZURE_OPENAI_API_VERSION
-        sync: false
-      - key: AZURE_OPENAI_DEPLOYMENT_GPT4O
-        sync: false
-      - key: AZURE_OPENAI_DEPLOYMENT_GPT4O_MINI
+      - key: OPENAI_BASE_URL
         sync: false
       - key: STRIPE_SECRET_KEY
         sync: false
@@ -47,9 +41,9 @@ services:
         sync: false
       - key: FRONTEND_URL
         sync: false
+      - key: RATE_LIMIT_STORE
+        value: mongo
       # ── Optional monitoring ──
-      - key: APPLICATIONINSIGHTS_CONNECTION_STRING
-        sync: false
       - key: SENTRY_DSN
         sync: false
       - key: NEW_RELIC_LICENSE_KEY

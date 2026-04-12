@@ -1,0 +1,48 @@
+/* WatchButton.css */
+.watch-button-container {
+  margin-top: 12px;
+}
+
+.watch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.watch-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.watch-btn:disabled {
+  cursor: default;
+}
+
+.watch-btn--active {
+  background: #16a34a;
+}
+
+.watch-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.watch-message {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #16a34a;
+}
+
+.watch-message--error {
+  color: #dc2626;
+}

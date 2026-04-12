@@ -11,7 +11,7 @@ const Footer: React.FC = () => (
         <p className="lp-footer-tagline">
           L'intelligence artificielle au service<br />de la transparence contractuelle.
         </p>
-        <p className="lp-footer-host">Données hébergées en UE · Microsoft Azure</p>
+        <p className="lp-footer-host">Données hébergées en UE · infrastructure cloud certifiée</p>
       </div>
 
       <div className="lp-footer-links">

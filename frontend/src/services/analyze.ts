@@ -1,9 +1,6 @@
 // src/services/analyze.ts
 
-const API_BASE = () =>
-  import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_API_URL ||
-  'http://localhost:5001';
+import { API_BASE_URL } from '@/config/api';
 
 export type AnalysisProgress = {
   type: 'progress';
@@ -57,7 +54,7 @@ export const analyzeCGAStream = (
   return new Promise(async (resolve, reject) => {
     let response: Response;
     try {
-      response = await fetch(`${API_BASE()}/api/analyze/stream`, {
+      response = await fetch(`${API_BASE_URL}/api/analyze/stream`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -136,7 +133,7 @@ export const analyzeGuestStream = (
   return new Promise(async (resolve, reject) => {
     let response: Response;
     try {
-      response = await fetch(`${API_BASE()}/api/analyze/guest`, {
+      response = await fetch(`${API_BASE_URL}/api/analyze/guest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
@@ -194,7 +191,7 @@ export const analyzeGuestStream = (
 
 // Legacy non-streaming endpoint — kept for fallback
 export const analyzeCGA = async (token: string, text: string, source: 'upload' | 'ocr') => {
-  const response = await fetch(`${API_BASE()}/api/analyze`, {
+  const response = await fetch(`${API_BASE_URL}/api/analyze`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,

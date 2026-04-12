@@ -1,185 +1,140 @@
+# TransparAI — Analyse IA de CGU / CGA et contrats (SaaS)
 
+Analyse intelligente et transparente des **conditions générales**, **CGU/CGV** et contrats grand public.
 
-````markdown
-# 📘 TransparAI – AI CGA Analyzer (SaaS)
-
-> Analyse intelligente et transparente des **Conditions Générales d’Abonnement (CGA)** pour tous.
-
-Version : SaaS 1.0 
-Date : Avril 2025  
-Auteur :Kanmegne Tabouguie Andre yvan
+**Version :** SaaS 1.0 · **Mise à jour doc :** avril 2026 · **Auteur :** Kanmegne Tabouguie Andre Yvan
 
 ---
 
-## 🚀 Objectif
+## Objectif
 
-**TransparAI** est une plateforme SaaS qui permet aux utilisateurs d’analyser automatiquement leurs CGA (PDF, texte, ou scan), de détecter des clauses sensibles, et de recevoir un rapport clair et exploitable.
+**TransparAI** permet d’analyser automatiquement des documents (PDF, texte, scan) : résumé clair, score de transparence, clauses sensibles signalées, export PDF selon le plan.
 
-Fonctionnalités clés :
-- 🔍 Analyse IA (via **Gemini 2.0 Flash** + **GPT modèles premium**)
-- 🤖 **Paramètres IA avancés** avec sélection de modèles intelligente
-- 💰 **Gestion budgétaire IA** avec tracking des coûts et usage
-- 📊 **Statistiques d'utilisation** détaillées (GPT vs Gemini)
-- 📄 OCR intégré (Tesseract.js)
-- 📊 Score de transparence (0–100 ou A–F)
-- 🧠 Résumé intelligent
-- 🚩 Détection des clauses abusives
-- 📥 Export PDF
-- 🔐 Auth complète avec **Firebase Authentication**
-- 💳 Abonnement via **Stripe**
-- 🧾 Historique lié à l'UID Firebase
-- 🔒 Conforme RGPD
-- 🔍 Analyse IA via **Gemini 2.0 Flash** produisant résumé, score et clauses détectées
-- 📄 Support texte, PDF et images : extraction natif ou OCR (pdf.js + Tesseract)
-- 📊 Quotas quotidiens par plan (2, 10 ou illimité) remis à zéro automatiquement
-- 🧾 Historique des analyses et export PDF pour les abonnés payants
-- 💳 Abonnement via **Stripe** (Checkout + webhooks) avec mise à jour du plan
-- 🔐 Authentification Firebase (email, magic link, reset, vérif. email) avec déconnexion synchronisée entre onglets
-- 🗑 Suppression de compte dans Firebase et MongoDB
-- 🔒 Routes protégées nécessitant un email vérifié
-- 🏠 Tableau de bord React pour accéder à Analyse, Infos, Historique et Upgrade
-- ✅ Conforme RGPD
+### Fonctionnalités principales
+
+- Analyse IA via **OpenAI** (**GPT-4o** / **GPT-4o mini**) orchestrée côté serveur (LangChain), avec budgets et repli automatique vers le modèle le plus économique quand c’est nécessaire
+- Analyse **streaming SSE** pour utilisateurs connectés (`/api/analyze/stream`) et invités (`/api/analyze/guest`)
+- Paramètres IA (préférences, budget mensuel, opt-in premium) et statistiques d’usage
+- OCR côté client (**Tesseract.js**) et PDF (**pdf.js**) avant envoi du texte à l’API
+- Authentification **Firebase**, données métier **MongoDB** (profil, quotas, historique lié à l’UID Firebase)
+- Paiements et abonnements **Stripe** (Checkout + webhooks)
+- Suivi de documents (“Watch”): création, historique des changements, vérification manuelle, vérification planifiée
+- Interface **React / TypeScript / Vite**, **i18next** (français prioritaire, anglais)
+- Conformité RGPD : consentements, politique de confidentialité, suppression de compte
+
+### API actuellement montée (backend)
+
+`/api/dashboard`, `/api/analyze`, `/api/stripe`, `/api/export`, `/api/user`, `/api/profile`, `/api/ai-settings`, `/api/gdpr`, `/api/watch`, `/api/webhook` (+ `/health`, `/health/detailed`, `/docs`)
 
 ---
 
-## 👤 Utilisateurs Cibles
+## Utilisateurs cibles
 
-- Consommateurs abonnés (streaming, télécom, SaaS…)
+- Consommateurs (streaming, télécom, SaaS…)
 - Étudiants et travailleurs nomades
-- Indépendants, TPE/PME, juristes
+- TPE/PME, indépendants, professionnels du droit (outil d’aide, pas un avis juridique)
 
 ---
 
-## 🧩 Fonctionnalités Auth (Firebase)
+## Auth (Firebase)
 
 | Fonction | Inclus |
-|---------|--------|
-| Email / Mot de passe | ✅ |
-| Mot de passe oublié | ✅ |
-| Vérification d’email | ✅ |
-| Connexion anonyme | ✅ |
-| Magic Link | ✅ |
-| JWT & Règles de sécurité | ✅ |
-| Déconnexion | ✅ |
+|----------|--------|
+| Email / mot de passe | Oui |
+| Mot de passe oublié | Oui |
+| Vérification d’email | Oui |
+| Magic link | Oui |
+| Déconnexion | Oui |
 
-> 🔗 L'UID Firebase est utilisé comme identifiant unique dans MongoDB pour lier les quotas, analyses et paiements.
+L’**UID Firebase** est l’identifiant principal dans MongoDB (quotas, analyses, facturation).
 
 ---
 
-## 💳 Plans & Tarification
+## Plans (vue d’ensemble)
 
-| Plan | Prix | Requêtes / jour | Budget IA | Modèles IA | Fonctions incluses |
-|------|------|------------------|-----------|------------|---------------------|
-| Free | Gratuit | 10 | $0/mois | Gemini uniquement | Analyse, OCR, export |
-| Standard | 2€/mois | 40 | $2/mois | Gemini + GPT-3.5 | + Historique, support, IA premium |
-| Premium | 10€/mois | ∞ | $10/mois | Tous modèles | + GPT-4, analyses illimitées |
-| Enterprise | 50€/mois | ∞ | $50/mois | Tous modèles | + Support prioritaire, API |
+Les limites exactes (quotas, budgets IA, fonctionnalités) sont définies dans le code (`Backend/utils/planUtils.js`, `Backend/orchestrator/modelRouter.js`) et peuvent évoluer. En résumé :
 
-### 🤖 Fonctionnalités IA Avancées
-- **Sélection automatique** de modèle basée sur la complexité du document
-- **Budget mensuel** dédié aux modèles GPT premium
-- **Statistiques d'usage** détaillées (coûts, analyses, modèles utilisés)
-- **Fallback intelligent** vers Gemini si budget épuisé
-- **Paramètres personnalisables** pour autoriser/interdire l'IA premium
+| Plan | Rôle typique | IA documentaire |
+|------|----------------|-----------------|
+| **Free** / **Starter** (legacy) | Découverte | **GPT-4o mini** avec budget serré |
+| **Standard** | Usage régulier | **GPT-4o mini** avec budget plus large ; **GPT-4o** possible selon préférences et budget |
+| **Premium** / **Enterprise** | Équipes, volume | **GPT-4o** privilégié quand le budget le permet ; repli **GPT-4o mini** |
 
-- Paiement via **Stripe Checkout**
-- Suivi automatisé via **webhooks**
-- Quotas gérés par `firebaseUid` dans MongoDB
+Stripe gère l’abonnement ; les webhooks mettent à jour le plan en base.
 
 ---
 
-## 🧱 Stack Technique
+## Stack technique
 
-| Composant | Stack |
-|----------|-------|
-| Frontend | React.js + TypeScript + Bootstrap |
-| Backend | Node.js + Express.js |
-| IA | Gemini 2.0 Flash + GPT-4/3.5 Turbo |
-| Gestion IA | Sélection automatique + Budget tracking |
-| OCR | Tesseract.js |
-| Auth | Firebase Authentication |
-| DB | MongoDB (User profiles + AI settings) |
-| Paiement | Stripe SDK + Webhooks |
-| Hébergement | Vercel (Front) + Render (API) |
+| Composant | Technologie |
+|-----------|-------------|
+| Frontend | React 19, TypeScript, Vite, Bootstrap, Firebase SDK, i18next |
+| Backend | Node.js, Express, Mongoose, Firebase Admin, Stripe |
+| Analyse documentaire | OpenAI API (**GPT-4o**, **GPT-4o mini**) via LangChain |
+| OCR / PDF client | Tesseract.js, pdf.js |
+| Base de données | MongoDB (Atlas ou tout cluster compatible `mongodb://` / `mongodb+srv://`) |
+| Paiement | Stripe |
+| Hébergement typique | **Vercel** (front) + **Render** (API) — autres fournisseurs possibles |
 
 ---
 
-## 🧪 Parcours Utilisateur
+## Variables d’environnement (rappel)
 
-1. 🔐 Authentification (Firebase)
-2. 🤖 **Configuration IA** (sélection modèle, budget)
-3. 🧾 Upload de CGA (PDF / texte / OCR)
-4. ⚙️ Analyse IA intelligente (auto-sélection modèle)
-5. 📊 Résultats (score, résumé, alertes + coût IA)
-6. 📥 Export PDF
-7. 📁 Historique (selon forfait)
-8. 📈 **Statistiques d'usage IA** (analyses, coûts, modèles)
-9. 👤 Gestion du compte
-10. ⬆️ Mise à niveau du plan via Stripe
-11. 👤 Gestion et suppression du compte
+**Backend** (voir `Backend/.env.example`) : au minimum `MONGO_URI`, `FIREBASE_SERVICE_ACCOUNT_JSON`, **`OPENAI_API_KEY`**, secrets Stripe, `JWT_SECRET`, `ENCRYPTION_KEY`, `SESSION_SECRET`, `FRONTEND_URL`. Optionnel : `OPENAI_BASE_URL`, `VOYAGE_API_KEY`, monitoring, etc.
+
+`RUN_WATCHER_CRON=true` active la tâche planifiée de surveillance documentaire; à configurer sur une seule instance en production.
+`RATE_LIMIT_STORE=mongo` active un stockage distribué des quotas de rate limit (recommandé en multi-instance).
+
+**Frontend** (voir `frontend/.env.example`) : `VITE_API_BASE_URL`, clés `VITE_FIREBASE_*`.
+
+> En production, `VITE_API_BASE_URL` doit être défini explicitement (pas de fallback implicite vers localhost).
 
 ---
 
-## 🤖 Paramètres IA Avancés (Nouveau!)
-
-### 💰 Gestion Budgétaire Intelligente
-- **Budget mensuel** alloué selon le plan d'abonnement
-- **Tracking en temps réel** des coûts d'utilisation IA
-- **Alertes automatiques** quand le budget approche de la limite
-- **Reset mensuel** automatique du budget utilisé
-
-### 🎯 Sélection de Modèles IA
-- **Auto (Recommandé)** : Sélection automatique selon la complexité
-- **Gemini 2.0 Flash** : Gratuit et rapide pour analyses basiques
-- **GPT-3.5 Turbo** : Équilibré performance/coût ($0.003/1K tokens)
-- **GPT-4 Turbo** : Le plus avancé pour documents complexes ($0.015/1K tokens)
-
-### 📊 Algorithme de Sélection Intelligente
-1. **Analyse de complexité** : Termes juridiques, structure, conditionnels
-2. **Vérification budget** : Coût estimé vs budget restant
-3. **Préférences utilisateur** : Modèle choisi + autorisation premium
-4. **Fallback automatique** : Gemini si budget insuffisant
-
-### 📈 Statistiques d'Usage
-- **Analyses totales** et répartition par modèle (GPT vs Gemini)
-- **Coûts détaillés** avec coût moyen par analyse
-- **Historique d'utilisation** et tendances mensuelles
-- **Performance budgétaire** avec pourcentage utilisé
-
----
-
-## 🔒 Sécurité & RGPD
-
-- Aucun texte CGA n’est conservé sans consentement explicite
-- Sessions sécurisées avec Firebase
-
-
----
-## 🛠️ Installation Locale (dev)
+## Installation locale
 
 ```bash
-# Cloner le repo
-git clone https://github.com/zkerkeb-class/projet-final-back-AndreLiar
+git clone <url-de-votre-depot>
+cd transparai
 
 # Frontend
 cd frontend
 npm install
 npm run dev
 
-# Backend
-cd ../backend
+# Backend (autre terminal)
+cd ../Backend
 npm install
 npm run dev
+```
 
-# Configurer .env avec Firebase + Mongo + Stripe
-````
+Configurer les fichiers `.env` à partir des `.env.example` de chaque dossier. L’API écoute en général le port **5000** en dev ; le front **5173** (ajuster `VITE_API_BASE_URL` si besoin).
+
+### Commandes utiles
+
+```bash
+# Backend
+cd Backend
+npm test
+npm run lint
+
+# Frontend
+cd frontend
+npm run test:run
+npm run build
+npm run lint
+npm run test:e2e
+```
 
 ---
 
+## Sécurité et RGPD
 
-## © Licence
-
-Distribué sous licence **MIT**.
-Utilisation, modification et redistribution autorisées avec attribution.
+- Traitement des documents avec consentement explicite pour l’IA (voir flux produit et politique de confidentialité).
+- Auth et sessions gérées via Firebase ; pas de stockage arbitraire du texte des contrats sans politique claire.
 
 ---
+
+## Licence
+
+**MIT** — utilisation, modification et redistribution possibles avec mention de la paternité.

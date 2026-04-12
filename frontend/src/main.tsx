@@ -9,7 +9,6 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { initAppInsights } from '@/config/appInsights';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 
-// Initialise Application Insights before the React tree renders
 initAppInsights();
 
 createRoot(document.getElementById('root')!).render(

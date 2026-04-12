@@ -226,7 +226,7 @@ const options = {
                     },
                   },
                 },
-                azureAI: {
+                openai: {
                   type: 'object',
                   properties: {
                     status: {

@@ -14,6 +14,7 @@ import { sampleContracts, getSampleContract } from '@/utils/sampleContracts';
 import UpgradePrompt from '@/components/common/UpgradePrompt';
 import AIDisclaimer from '@/components/common/AIDisclaimer';
 import AIConsentModal from '@/components/common/AIConsentModal';
+import WatchButton from '@/components/Watch/WatchButton';
 import './Analyze.css';
 
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.mjs';
@@ -310,7 +311,7 @@ const AnalyzeEnhanced: React.FC = () => {
                 <div className="g-demo-card">
                   <div className="g-demo-card-head">
                     <span className="g-demo-card-label">TransparAI — Exemple de résultat</span>
-                    <span className="g-demo-card-model">Azure OpenAI GPT-4o</span>
+                    <span className="g-demo-card-model">OpenAI GPT-4o</span>
                   </div>
                   <div className="g-demo-card-rule" />
                   <div className="g-demo-score-row">
@@ -836,6 +837,14 @@ const AnalyzeEnhanced: React.FC = () => {
                 </button>
               )}
             </div>
+
+            {result.analysisId && !result.isGuest && (
+              <WatchButton
+                analysisId={result.analysisId}
+                documentName={file?.name || 'Document analysé'}
+                text={inputText}
+              />
+            )}
           </div>
         )}
       </main>

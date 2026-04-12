@@ -1,0 +1,36 @@
+name: Frontend Smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/15 * * * *'
+
+jobs:
+  smoke:
+    name: Smoke checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate required secrets
+        env:
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        run: |
+          if [ -z "$FRONTEND_URL" ] || [ -z "$BACKEND_URL" ]; then
+            echo "Missing FRONTEND_URL or BACKEND_URL GitHub repository secret."
+            exit 1
+          fi
+
+      - name: Check homepage
+        env:
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+        run: curl -fsS "${FRONTEND_URL}/" > /dev/null
+
+      - name: Check login page
+        env:
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+        run: curl -fsS "${FRONTEND_URL}/login" > /dev/null
+
+      - name: Check backend health
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        run: curl -fsS "${BACKEND_URL}/health" > /dev/null

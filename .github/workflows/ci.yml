@@ -5,10 +5,29 @@ on:
     branches: [main]
 
 jobs:
-  # Validates the frontend builds cleanly before a PR can be merged.
-  # Backend PRs are covered by cd.yml on merge to main.
+  backend-checks:
+    name: Backend tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - uses: actions/setup-node@v4.4.0
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: Backend/package-lock.json
+
+      - name: Install
+        working-directory: ./Backend
+        run: npm ci --legacy-peer-deps
+
+      - name: Test
+        working-directory: ./Backend
+        run: npm test
+
   build-frontend:
-    name: Frontend build check
+    name: Frontend checks
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +42,10 @@ jobs:
       - name: Install
         working-directory: ./frontend
         run: npm ci
+
+      - name: Test
+        working-directory: ./frontend
+        run: npm run test:run -- --pool=forks --reporter=basic
 
       - name: Build
         working-directory: ./frontend
