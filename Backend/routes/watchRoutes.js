@@ -10,10 +10,14 @@ const {
   patchWatch,
   getHistory,
   manualCheck,
+  getStatus,
 } = require('../controllers/watchController');
 const { securityLogger, sanitizeInput, noSQLInjectionProtection } = require('../middleware/security');
 
 const applyBaseMiddleware = [securityLogger, sanitizeInput, noSQLInjectionProtection, authenticate];
+
+// Cron status (no auth — frontend uses this before user loads watches)
+router.get('/status', getStatus);
 
 // List all watches
 router.get('/', applyBaseMiddleware, getWatches);

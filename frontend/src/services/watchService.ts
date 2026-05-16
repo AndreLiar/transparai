@@ -38,6 +38,12 @@ const authHeaders = (token: string) => ({
   'Content-Type': 'application/json',
 });
 
+export const getWatchStatus = async (): Promise<{ cronEnabled: boolean }> => {
+  const res = await fetch(`${API_BASE_URL}/api/watch/status`);
+  if (!res.ok) return { cronEnabled: false };
+  return res.json();
+};
+
 export const startWatch = async (
   token: string,
   payload: { name: string; analysisId: string; text: string; url?: string; checkFrequency?: 'weekly' | 'monthly' }
