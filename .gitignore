@@ -18,3 +18,11 @@ build/
 
 # Claude Code / Cursor agent instructions (local or machine-specific)
 CLAUDE.md
+
+# IDE and AI tool config directories
+.claude/
+.codex/
+.cursor/
+.gemini/
+.vscode/
+.zed/
