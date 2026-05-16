@@ -97,6 +97,9 @@ const manualCheck = async (req, res) => {
   }
 };
 
+// GET /api/watch/status — reports whether the auto-check cron is running
+const getStatus = (req, res) => res.json({ cronEnabled: process.env.RUN_WATCHER_CRON === 'true' });
+
 module.exports = {
-  createWatch, getWatches, removeWatch, patchWatch, getHistory, manualCheck,
+  createWatch, getWatches, removeWatch, patchWatch, getHistory, manualCheck, getStatus,
 };
