@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import Sidebar from '@/components/Layout/Sidebar';
 import {
   getWatches,
+  getWatchStatus,
   deleteWatch,
   updateWatch,
   getWatchHistory,
@@ -36,6 +37,7 @@ const Watch: React.FC = () => {
   const [selectedWatch, setSelectedWatch] = useState<string | null>(null);
   const [history, setHistory] = useState<DocumentChange[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [cronEnabled, setCronEnabled] = useState<boolean | null>(null);
 
   const loadWatches = async () => {
     if (!user) return;
@@ -53,6 +55,7 @@ const Watch: React.FC = () => {
 
   useEffect(() => {
     loadWatches();
+    getWatchStatus().then((s) => setCronEnabled(s.cronEnabled));
   }, [user]);
 
   const loadHistory = async (watchId: string) => {
@@ -124,8 +127,16 @@ const Watch: React.FC = () => {
       <main className="watch-main">
         <h1 className="watch-title">👁️ Documents Surveillés</h1>
         <p className="watch-subtitle">
-          TransparAI surveille ces documents et vous alerte dès qu'une modification est détectée.
+          {cronEnabled
+            ? 'TransparAI surveille ces documents et vous alerte dès qu\'une modification est détectée.'
+            : 'Utilisez la vérification manuelle pour détecter les modifications de vos documents.'}
         </p>
+
+        {cronEnabled === false && (
+          <div className="alert alert-warning">
+            ⚠️ Les vérifications automatiques sont actuellement désactivées. Seules les vérifications manuelles (re-téléchargement du document) sont actives. Contactez l'administrateur pour activer la surveillance automatique.
+          </div>
+        )}
 
         {error && <div className="alert alert-danger">{error}</div>}
 
