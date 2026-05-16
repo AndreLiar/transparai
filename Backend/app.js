@@ -144,7 +144,7 @@ app.get('/health', (_req, res) => {
     environment: process.env.NODE_ENV,
     uptime: uptimeFormatted,
     monitoring: {
-      appInsights: process.env.APPLICATIONINSIGHTS_CONNECTION_STRING ? 'enabled' : 'disabled',
+      sentry: process.env.SENTRY_DSN ? 'enabled' : 'disabled',
     },
   });
 });

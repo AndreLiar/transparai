@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { fetchDashboardData } from '@/services/InfoService';
 import {
-  MagnifyingGlass, ArrowCircleUp, SignOut, X, List, Robot, Lock, User
+  MagnifyingGlass, ArrowCircleUp, SignOut, X, List, Robot, Lock, User, Eye
 } from 'phosphor-react';
 import LanguageSwitcher from '@/components/Layout/LanguageSwitcher';
 import ThemeSwitcher from '@/components/Layout/ThemeSwitcher';
@@ -46,6 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   const navItems = [
     { label: t('sidebar.analyze'), path: '/analyze', icon: <MagnifyingGlass size={18} /> },
+    { label: 'Documents surveillés', path: '/watch', icon: <Eye size={18} /> },
     { label: t('sidebar.account'), path: '/account', icon: <User size={18} /> },
     { label: 'Param. IA', path: '/ai-settings', icon: <Robot size={18} /> },
     { label: 'Confidentialité', path: '/privacy-settings', icon: <Lock size={18} /> },

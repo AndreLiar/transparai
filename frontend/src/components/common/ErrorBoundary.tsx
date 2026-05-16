@@ -1,7 +1,6 @@
 // src/components/common/ErrorBoundary.tsx
 //
-// React error boundary — catches unhandled render errors and reports them
-// to Application Insights instead of crashing the entire app.
+// React error boundary — catches unhandled render errors instead of crashing the entire app.
 
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { trackException } from '@/config/appInsights';

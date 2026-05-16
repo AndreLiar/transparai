@@ -18,4 +18,5 @@ process.env.STRIPE_PRICE_STANDARD = 'price_test_standard';
 process.env.STRIPE_PRICE_PREMIUM = 'price_test_premium';
 process.env.STRIPE_PRICE_ENTERPRISE = 'price_test_enterprise';
 process.env.GEMINI_API_KEY = 'test_gemini_key';
+process.env.OPENAI_API_KEY = 'sk-test-placeholder-openai-key';
 process.env.LOG_LEVEL = 'silent';

@@ -12,11 +12,6 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
     pool: 'vmThreads',
-    poolOptions: {
-      vmThreads: {
-        execArgv: ['--max-old-space-size=2048'],
-      },
-    },
     sequence: {
       concurrent: false,
       shuffle: false,

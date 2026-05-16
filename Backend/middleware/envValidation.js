@@ -12,6 +12,7 @@ const validateEnvironmentVariables = () => {
     'MONGO_URI',
     'FIREBASE_SERVICE_ACCOUNT_JSON',
     'FRONTEND_URL',
+    'OPENAI_API_KEY',
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET',
     'LOG_LEVEL',

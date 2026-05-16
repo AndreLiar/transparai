@@ -2,6 +2,7 @@
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const crypto = require('crypto');
+const ApiKey = require('../models/ApiKey');
 
 /**
  * Generate nonce for CSP
@@ -207,29 +208,57 @@ const mediumRequestLimiter = createSizeLimiter(5 * 1024 * 1024, 'medium');
 const largeRequestLimiter = createSizeLimiter(20 * 1024 * 1024, 'large');
 
 // API key validation for external access
-const validateApiKey = (req, res, next) => {
-  const apiKey = req.headers['x-api-key'];
-
-  if (req.path.startsWith('/api/external/')) {
-    if (!apiKey) {
-      return res.status(401).json({
-        error: 'Clé API requise',
-        code: 'API_KEY_REQUIRED',
-      });
-    }
-
-    // Validate API key format and existence
-    if (!/^[a-zA-Z0-9]{32,}$/.test(apiKey)) {
-      return res.status(401).json({
-        error: 'Format de clé API invalide',
-        code: 'INVALID_API_KEY_FORMAT',
-      });
-    }
-
-    // TODO: Validate against database of valid API keys
-    // For now, we'll just check format
+const validateApiKey = async (req, res, next) => {
+  if (!req.path.startsWith('/api/external/')) {
+    return next();
   }
 
+  const rawKey = req.headers['x-api-key'];
+
+  if (!rawKey) {
+    return res.status(401).json({
+      error: 'Clé API requise',
+      code: 'API_KEY_REQUIRED',
+    });
+  }
+
+  if (!/^[a-f0-9]{64}$/.test(rawKey)) {
+    return res.status(401).json({
+      error: 'Format de clé API invalide',
+      code: 'INVALID_API_KEY_FORMAT',
+    });
+  }
+
+  const keyHash = ApiKey.hashKey(rawKey);
+
+  let record;
+  try {
+    record = await ApiKey.findOne({ keyHash, isActive: true }).lean();
+  } catch (err) {
+    return res.status(500).json({
+      error: 'Erreur lors de la validation de la clé API',
+      code: 'API_KEY_VALIDATION_ERROR',
+    });
+  }
+
+  if (!record) {
+    return res.status(401).json({
+      error: 'Clé API invalide ou désactivée',
+      code: 'INVALID_API_KEY',
+    });
+  }
+
+  if (record.expiresAt && record.expiresAt < new Date()) {
+    return res.status(401).json({
+      error: 'Clé API expirée',
+      code: 'API_KEY_EXPIRED',
+    });
+  }
+
+  // Stamp last use without blocking the request
+  ApiKey.updateOne({ _id: record._id }, { lastUsedAt: new Date() }).exec();
+
+  req.apiKeyOwner = record.owner;
   next();
 };
 

@@ -2,7 +2,7 @@
 //
 // Winston logger with Elastic Common Schema (ECS) 1.x output format.
 // All JSON log lines are ECS-compliant — ready to ship to Elasticsearch,
-// Azure Monitor, or any ECS-aware sink without transformation.
+// Datadog, Elastic, or any ECS-aware sink without transformation.
 //
 // ECS field reference: https://www.elastic.co/guide/en/ecs/current/ecs-field-reference.html
 //

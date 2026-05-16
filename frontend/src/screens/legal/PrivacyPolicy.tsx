@@ -128,14 +128,14 @@ const PrivacyPolicy: React.FC = () => (
               <td>UE / US</td>
             </tr>
             <tr>
-              <td><strong>Microsoft Azure OpenAI</strong></td>
-              <td>Traitement IA des documents — données non conservées</td>
-              <td>Europe Ouest</td>
+              <td><strong>OpenAI</strong></td>
+              <td>Traitement IA des documents — données non conservées pour entraînement par défaut (voir politique OpenAI)</td>
+              <td>Selon région du compte / configuration</td>
             </tr>
             <tr>
-              <td><strong>Microsoft Azure</strong></td>
-              <td>Hébergement infrastructure</td>
-              <td>Europe Ouest</td>
+              <td><strong>Prestataires d&apos;hébergement</strong></td>
+              <td>Hébergement API et application web</td>
+              <td>UE ou US selon l’offre choisie par le responsable de traitement</td>
             </tr>
           </tbody>
         </table>

@@ -1,8 +1,8 @@
 // src/screens/AuthenticationsPages/Signup.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { auth } from '@/configFirebase/Firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import SignupForm from '@/components/AuthComponents/Signup/SignupForm';
 import VerificationModal from '@/components/AuthComponents/Signup/VerificationModal';
@@ -17,7 +17,7 @@ const TRUST = [
   },
   {
     title: 'Données hébergées en UE',
-    sub: 'Microsoft Azure — Europe Ouest. Conforme RGPD.',
+    sub: 'Infrastructure cloud — Europe. Conforme RGPD.',
   },
   {
     title: 'Résultats en 30 secondes',
@@ -31,36 +31,7 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [invitationDetails, setInvitationDetails] = useState<any>(null);
-  const [loadingInvitation, setLoadingInvitation] = useState(false);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const invitationToken = searchParams.get('invitation');
-
-  useEffect(() => {
-    if (invitationToken) {
-      loadInvitationDetails();
-    }
-  }, [invitationToken]);
-
-  const loadInvitationDetails = async () => {
-    setLoadingInvitation(true);
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/organization/invitation/${invitationToken}`);
-      if (response.ok) {
-        const details = await response.json();
-        setInvitationDetails(details);
-        setEmail(details.email);
-      } else {
-        setError('Invitation invalide ou expirée.');
-      }
-    } catch {
-      setError("Erreur lors du chargement de l'invitation.");
-    } finally {
-      setLoadingInvitation(false);
-    }
-  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,11 +60,7 @@ const Signup: React.FC = () => {
 
   const handleModalClose = () => {
     setShowModal(false);
-    if (invitationToken) {
-      navigate(`/verify-email?invitation=${invitationToken}`);
-    } else {
-      navigate('/verify-email');
-    }
+    navigate('/verify-email');
   };
 
   return (
@@ -136,28 +103,8 @@ const Signup: React.FC = () => {
             <span className="auth-back-arrow">&#8592;</span> Accueil
           </Link>
 
-          {loadingInvitation && (
-            <div className="auth-alert success" style={{ marginBottom: '24px' }}>
-              Chargement de l'invitation...
-            </div>
-          )}
-
-          {invitationDetails && (
-            <div className="auth-invite-notice">
-              <strong>Invitation — {invitationDetails.organizationName}</strong>
-              {invitationDetails.inviterName} vous invite en tant que {invitationDetails.role}.
-              {invitationDetails.customMessage && (
-                <span style={{ display: 'block', fontStyle: 'italic', marginTop: '4px' }}>
-                  "{invitationDetails.customMessage}"
-                </span>
-              )}
-            </div>
-          )}
-
           <p className="auth-form-eyebrow">Nouveau compte</p>
-          <h2 className="auth-form-title">
-            {invitationDetails ? 'Créer votre compte' : 'Créer un compte'}
-          </h2>
+          <h2 className="auth-form-title">Créer un compte</h2>
           <p className="auth-form-subtitle">
             Déjà inscrit ?{' '}
             <Link to="/login" style={{ color: 'var(--auth-red)', fontWeight: 700, textDecoration: 'none' }}>

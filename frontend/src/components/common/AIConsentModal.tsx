@@ -23,12 +23,12 @@ const AIConsentModal: React.FC<AIConsentModalProps> = ({ onAccept, onDecline, lo
             Pour analyser votre document, TransparAI utilise des modèles d'intelligence artificielle de tiers :
           </p>
           <ul>
-            <li><strong>Azure OpenAI / GPT-4o mini</strong> (Microsoft, région UE) — modèle principal</li>
-            <li><strong>Azure OpenAI / GPT-4o</strong> (Microsoft, région UE) — plans Premium et Enterprise</li>
+            <li><strong>OpenAI / GPT-4o mini</strong> — modèle principal (analyses standard)</li>
+            <li><strong>OpenAI / GPT-4o</strong> — plans Premium et Enterprise lorsque disponible</li>
           </ul>
           <p>
             Le texte de votre document sera transmis à ces services pour traitement automatisé.
-            Microsoft Azure est soumis à un contrat de traitement des données (DPA) conforme au RGPD, avec données hébergées en Union Européenne.
+            OpenAI propose des engagements de traitement des données (DPA) conformes au RGPD ; la localisation des traitements dépend de votre configuration et de la politique du fournisseur.
           </p>
           <p>
             <strong>Ce que cela implique :</strong>

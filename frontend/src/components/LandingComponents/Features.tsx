@@ -95,7 +95,7 @@ const Features: React.FC = () => {
               visibility: 'visible',
               opacity: 1
             }}>
-              Azure OpenAI GPT-4o pour une analyse exhaustive et des résumés clairs en quelques secondes.
+              OpenAI GPT-4o pour une analyse exhaustive et des résumés clairs en quelques secondes.
             </p>
             <div style={{
               position: 'absolute',

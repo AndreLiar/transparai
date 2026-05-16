@@ -11,7 +11,7 @@ const TRUST = [
   },
   {
     title: 'Données hébergées en UE',
-    sub: 'Microsoft Azure — Europe Ouest. Conforme RGPD.',
+    sub: 'Infrastructure cloud — Europe. Conforme RGPD.',
   },
   {
     title: 'Avis IA, pas juridique',

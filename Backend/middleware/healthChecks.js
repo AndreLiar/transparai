@@ -3,14 +3,10 @@ const mongoose = require('mongoose');
 const admin = require('firebase-admin');
 const axios = require('axios');
 
-/**
- * Database health check
- */
 const checkDatabaseHealth = async () => {
   try {
     const startTime = Date.now();
 
-    // Simple ping to check MongoDB connection
     await mongoose.connection.db.admin().ping();
 
     const responseTime = Date.now() - startTime;
@@ -38,24 +34,25 @@ const checkDatabaseHealth = async () => {
 };
 
 /**
- * Azure AI Foundry health check
+ * OpenAI API reachability (models list — lightweight, no document sent).
  */
-const checkAzureAIHealth = async () => {
+const checkOpenAIHealth = async () => {
   try {
-    const { AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY } = process.env;
+    const apiKey = process.env.OPENAI_API_KEY;
 
-    if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY) {
+    if (!apiKey) {
       return {
         status: 'unhealthy',
         responseTime: null,
-        error: 'Azure AI Foundry not configured (AZURE_OPENAI_ENDPOINT or AZURE_OPENAI_API_KEY missing)',
+        error: 'OpenAI not configured (OPENAI_API_KEY missing)',
       };
     }
 
+    const baseURL = (process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/$/, '');
     const startTime = Date.now();
-    const testUrl = `${AZURE_OPENAI_ENDPOINT}openai/models?api-version=2024-08-01-preview`;
-    const response = await axios.get(testUrl, {
-      headers: { 'api-key': AZURE_OPENAI_API_KEY },
+    const response = await axios.get(`${baseURL}/models`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      params: { limit: 1 },
       timeout: 5000,
     });
 
@@ -75,9 +72,6 @@ const checkAzureAIHealth = async () => {
   }
 };
 
-/**
- * Stripe API health check
- */
 const checkStripeHealth = async () => {
   try {
     const startTime = Date.now();
@@ -91,7 +85,6 @@ const checkStripeHealth = async () => {
       };
     }
 
-    // Simple test by listing products (limited to 1)
     await stripe.products.list({ limit: 1 });
 
     const responseTime = Date.now() - startTime;
@@ -116,9 +109,6 @@ const checkStripeHealth = async () => {
   }
 };
 
-/**
- * Firebase Admin health check
- */
 const checkFirebaseHealth = async () => {
   try {
     const startTime = Date.now();
@@ -131,7 +121,6 @@ const checkFirebaseHealth = async () => {
       };
     }
 
-    // Test Firebase Auth by creating a custom token (without actually using it)
     const testUid = 'health-check-test-uid';
     await admin.auth().createCustomToken(testUid);
 
@@ -157,30 +146,26 @@ const checkFirebaseHealth = async () => {
   }
 };
 
-/**
- * System resource health check
- */
 const checkSystemHealth = () => {
   const memoryUsage = process.memoryUsage();
   const cpuUsage = process.cpuUsage();
   const uptime = process.uptime();
 
-  // Check if memory usage is concerning (over 80% of heap limit)
   const heapLimit = memoryUsage.heapTotal;
   const { heapUsed } = memoryUsage;
   const memoryUsagePercentage = (heapUsed / heapLimit) * 100;
 
   const isMemoryHealthy = memoryUsagePercentage < 80;
-  const isUptimeHealthy = uptime > 0; // Basic uptime check
+  const isUptimeHealthy = uptime > 0;
 
   return {
     status: isMemoryHealthy && isUptimeHealthy ? 'healthy' : 'degraded',
     details: {
       memory: {
-        heapUsed: Math.round(heapUsed / 1024 / 1024), // MB
-        heapTotal: Math.round(heapLimit / 1024 / 1024), // MB
+        heapUsed: Math.round(heapUsed / 1024 / 1024),
+        heapTotal: Math.round(heapLimit / 1024 / 1024),
         usagePercentage: Math.round(memoryUsagePercentage),
-        external: Math.round(memoryUsage.external / 1024 / 1024), // MB
+        external: Math.round(memoryUsage.external / 1024 / 1024),
       },
       cpu: {
         user: cpuUsage.user,
@@ -193,9 +178,6 @@ const checkSystemHealth = () => {
   };
 };
 
-/**
- * Comprehensive health check that runs all checks
- */
 const { getCircuitStatus } = require('../orchestrator/resilience');
 
 const runAllHealthChecks = async () => {
@@ -203,9 +185,9 @@ const runAllHealthChecks = async () => {
 
   console.log('🔍 Running health checks...');
 
-  const [database, azureAI, stripe, firebase] = await Promise.allSettled([
+  const [database, openai, stripe, firebase] = await Promise.allSettled([
     checkDatabaseHealth(),
-    checkAzureAIHealth(),
+    checkOpenAIHealth(),
     checkStripeHealth(),
     checkFirebaseHealth(),
   ]);
@@ -217,7 +199,7 @@ const runAllHealthChecks = async () => {
 
   const checks = {
     database: database.status === 'fulfilled' ? database.value : { status: 'unhealthy', error: database.reason?.message },
-    azureAI: azureAI.status === 'fulfilled' ? azureAI.value : { status: 'unhealthy', error: azureAI.reason?.message },
+    openai: openai.status === 'fulfilled' ? openai.value : { status: 'unhealthy', error: openai.reason?.message },
     stripe: stripe.status === 'fulfilled' ? stripe.value : { status: 'unhealthy', error: stripe.reason?.message },
     firebase: firebase.status === 'fulfilled' ? firebase.value : { status: 'unhealthy', error: firebase.reason?.message },
     system,
@@ -227,7 +209,6 @@ const runAllHealthChecks = async () => {
     },
   };
 
-  // Determine overall health status
   const healthyChecks = Object.values(checks).filter((check) => check.status === 'healthy').length;
   const totalChecks = Object.keys(checks).length;
   const degradedChecks = Object.values(checks).filter((check) => check.status === 'degraded').length;
@@ -260,7 +241,7 @@ const runAllHealthChecks = async () => {
 
 module.exports = {
   checkDatabaseHealth,
-  checkAzureAIHealth,
+  checkOpenAIHealth,
   checkStripeHealth,
   checkFirebaseHealth,
   checkSystemHealth,

@@ -1,8 +1,6 @@
 // Backend/index.js
 require('dotenv').config();
 
-// Initialise Application Insights FIRST — must be before any other require
-// so the SDK can auto-instrument Express, Mongoose, and outbound HTTP calls.
 const { initAppInsights } = require('./config/appInsights');
 
 initAppInsights();
@@ -35,7 +33,13 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`   Port: ${PORT}`);
   console.log(`   Frontend URL: ${process.env.FRONTEND_URL}`);
   console.log('✅ Application startup completed successfully');
-  startWatcherCron();
+
+  if (process.env.RUN_WATCHER_CRON === 'true') {
+    startWatcherCron();
+    console.log('✅ Watcher cron enabled');
+  } else {
+    console.log('ℹ️ Watcher cron disabled (set RUN_WATCHER_CRON=true to enable)');
+  }
 });
 
 // Handle server errors

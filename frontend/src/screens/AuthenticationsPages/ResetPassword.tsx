@@ -54,7 +54,7 @@ const ResetPassword: React.FC = () => {
             <span className="auth-trust-dot" />
             <div className="auth-trust-text">
               <strong>Données hébergées en UE</strong>
-              <span>Microsoft Azure — Europe Ouest. Conforme RGPD.</span>
+              <span>Infrastructure cloud — Europe. Conforme RGPD.</span>
             </div>
           </li>
         </ul>

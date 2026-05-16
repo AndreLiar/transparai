@@ -72,7 +72,7 @@ const userSchema = new mongoose.Schema({
     marketing: { type: Boolean, default: false },
     dataProcessing: { type: Boolean, default: true }, // Required for service
     // Explicit consent for AI processing of document content (Art. 22 GDPR)
-    // Also covers third-party processors: Azure OpenAI (Microsoft)
+    // Also covers third-party processors (e.g. OpenAI)
     aiProcessing: { type: Boolean, default: false },
     aiProcessingDate: { type: Date, default: null },
     lastUpdated: { type: Date, default: Date.now },
